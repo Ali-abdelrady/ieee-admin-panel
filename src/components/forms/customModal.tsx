@@ -37,7 +37,6 @@ interface CustomDialogProps {
   actionLabel?: string;
   isLoading: boolean;
   onSubmit?: () => Promise<boolean>;
-  modal?: boolean;
   isFullWidth?: boolean;
 }
 
@@ -51,7 +50,6 @@ export const CustomDialog = forwardRef<CustomDialogRef, CustomDialogProps>(
       actionLabel = "",
       isLoading,
       onSubmit,
-      modal,
       isFullWidth = false,
     },
     ref

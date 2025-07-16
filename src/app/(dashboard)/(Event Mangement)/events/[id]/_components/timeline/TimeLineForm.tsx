@@ -48,7 +48,6 @@ const TimeLineForm = ({
       onSuccess={onSuccess}
       isLoadingAdd={isLoadingAdd}
       isLoadingEdit={isLoadingEdit}
-      isModal={false}
     />
   );
 };

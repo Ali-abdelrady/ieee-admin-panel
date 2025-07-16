@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
   images: {
-    domains: ["api.ieee-bub.org"],
+    domains: ["api.ieee-bub.org", "images.unsplash.com"],
   },
 
   //   for production

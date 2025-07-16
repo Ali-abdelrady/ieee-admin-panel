@@ -7,20 +7,18 @@ import {
   useAddEventMutation,
   useUpdateEventMutation,
 } from "@/services/Api/events";
-import { useFieldArray } from "react-hook-form";
 
 interface EventFormProps {
   operation: "add" | "edit" | "preview";
   defaultValues?: Partial<z.infer<typeof eventFormSchema>> & {
     id?: number;
   };
-  onSuccess?: () => void;
+  trigger?: React.ReactNode;
 }
 
-const EventForm = ({ operation, defaultValues, onSuccess }: EventFormProps) => {
+const EventForm = ({ operation, defaultValues, trigger }: EventFormProps) => {
   const [addItem, { isLoading: isLoadingAdd }] = useAddEventMutation();
   const [updateItem, { isLoading: isLoadingEdit }] = useUpdateEventMutation();
-
   const fields: FormFieldType[] = [
     { name: "name", label: "Event Name", type: "text" },
     { name: "description", label: "Description", type: "textArea" },
@@ -58,10 +56,9 @@ const EventForm = ({ operation, defaultValues, onSuccess }: EventFormProps) => {
       onAdd={(data) => addItem(data).unwrap()}
       onUpdate={(data) => updateItem(data).unwrap()}
       itemName="Event"
-      onSuccess={onSuccess}
       isLoadingAdd={isLoadingAdd}
       isLoadingEdit={isLoadingEdit}
-      isModal={false}
+      trigger={trigger}
     />
   );
 };

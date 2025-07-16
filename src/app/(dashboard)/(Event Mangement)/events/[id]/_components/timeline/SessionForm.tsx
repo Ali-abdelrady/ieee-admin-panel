@@ -50,7 +50,6 @@ const SessionForm = ({
       onSuccess={onSuccess}
       isLoadingAdd={isLoadingAdd}
       isLoadingEdit={isLoadingEdit}
-      isModal={false}
     />
   );
 };

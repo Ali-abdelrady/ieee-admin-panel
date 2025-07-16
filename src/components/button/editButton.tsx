@@ -3,20 +3,35 @@ import { Button } from "../ui/button";
 import { SquarePen } from "lucide-react";
 
 interface EditButtonProps extends React.ComponentPropsWithRef<"button"> {
-  label?: string;
+  label: string;
+  asIcon?: boolean;
+  variant?:
+    | "default"
+    | "outline"
+    | "ghost"
+    | "link"
+    | "secondary"
+    | "destructive";
 }
 
 const EditButton = React.forwardRef<HTMLButtonElement, EditButtonProps>(
-  ({ label, ...props }, ref) => {
+  ({ label, asIcon = false, variant = "default", children, ...props }, ref) => {
     return (
       <Button
         ref={ref}
         {...props}
-        variant="outline"
-        size="icon"
+        variant={variant}
+        size={asIcon ? "icon" : "default"}
         aria-label={`Edit ${label}`}
       >
-        <SquarePen />
+        {asIcon ? (
+          <SquarePen />
+        ) : (
+          <>
+            <SquarePen />
+            {children}
+          </>
+        )}
       </Button>
     );
   }

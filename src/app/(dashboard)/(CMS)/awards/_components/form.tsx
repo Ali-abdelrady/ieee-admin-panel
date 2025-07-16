@@ -39,7 +39,6 @@ const AwardForm = ({ operation, defaultValues, onSuccess }: AwardFormProps) => {
       onSuccess={onSuccess}
       isLoadingAdd={isLoadingAdd}
       isLoadingEdit={isLoadingEdit}
-      isModal={false}
     />
   );
 };

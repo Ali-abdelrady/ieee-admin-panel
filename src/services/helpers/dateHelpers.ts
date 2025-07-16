@@ -22,3 +22,21 @@ export const formatTime = (dateString: string) => {
     minute: "2-digit",
   });
 };
+
+export function calculateDuration(startDate: string, endDate: string): number {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  // Ensure both dates are valid
+  if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+    throw new Error("Invalid date format");
+  }
+
+  // Calculate the difference in milliseconds
+  const diffTime = end.getTime() - start.getTime();
+
+  // Convert milliseconds to days
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+  return diffDays;
+}

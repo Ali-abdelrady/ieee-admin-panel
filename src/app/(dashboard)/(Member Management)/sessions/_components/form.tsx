@@ -34,7 +34,6 @@ const FaqForm = ({ operation, defaultValues, onSuccess }: FaqFormProps) => {
       onSuccess={onSuccess}
       isLoadingAdd={isLoadingAdd}
       isLoadingEdit={isLoadingEdit}
-      isModal={false}
     />
   );
 };

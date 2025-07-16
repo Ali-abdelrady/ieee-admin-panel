@@ -40,7 +40,6 @@ const PostForm = ({ operation, defaultValues, onSuccess }: PostFormProps) => {
       onSuccess={onSuccess}
       isLoadingAdd={isLoadingAdd}
       isLoadingEdit={isLoadingEdit}
-      isModal={false}
     />
   );
 };

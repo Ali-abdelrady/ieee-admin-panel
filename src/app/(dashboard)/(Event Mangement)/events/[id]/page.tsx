@@ -10,6 +10,9 @@ import DeleteDialog from "@/components/forms/deleteDialog";
 import { SpeakerType } from "@/types/speakers";
 
 import TimeLineTab from "./_components/timeline/TimelineTab";
+import { EventType } from "react-hook-form";
+import DetailsTab from "./_components/details/page";
+import Loader from "@/components/Loader";
 
 export default function EventDetails({
   params,
@@ -17,8 +20,7 @@ export default function EventDetails({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
-  // Get Event Details
-  const { data, isLoading } = useGetEventByIdQuery(id);
+  const { data, isLoading, isError } = useGetEventByIdQuery(id);
   const eventData = data?.data?.event;
 
   console.log("eventData:", eventData);
@@ -28,10 +30,13 @@ export default function EventDetails({
   if (eventData) {
     ({ speakers, sponsors, eventDays: timeline } = eventData);
   }
+  if (isLoading) {
+    return <Loader error={isError} />;
+  }
   const tabs = [
     {
       value: "details",
-      component: <DetailsTab eventId={id} />,
+      component: <DetailsTab eventId={id} event={eventData} />,
       label: "Details",
       icon: null,
     },
@@ -85,7 +90,7 @@ export default function EventDetails({
         </p>
       </div>
 
-      <Tabs defaultValue="timeline" className="w-full space-y-6">
+      <Tabs defaultValue="details" className="w-full space-y-6">
         <div className="overflow-x-auto">
           <TabsList className="w-full  justify-start">
             {tabs.map((tab) => (
@@ -110,9 +115,6 @@ export default function EventDetails({
   );
 }
 
-function DetailsTab({ eventId }) {
-  return <div className="">Details content here</div>;
-}
 function SpeakersTab({
   eventId,
   speakers,

@@ -55,7 +55,6 @@ const BoardForm = ({ operation, defaultValues, onSuccess }: BoardFormProps) => {
       onSuccess={onSuccess}
       isLoadingAdd={isLoadingAdd}
       isLoadingEdit={isLoadingEdit}
-      isModal={false}
     />
   );
 };

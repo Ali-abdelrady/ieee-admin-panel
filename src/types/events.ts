@@ -20,6 +20,8 @@ export interface EventType {
   speakers: SpeakerType[];
   sponsors: SponsorType[];
   eventDays: TimelineType[];
+  createdAt: string;
+  updatedAt: string;
 }
 export interface ApiResponse<T> {
   data?: { event: T };

@@ -2,7 +2,7 @@
 "use client";
 import DataTable from "@/components/table/dataTable";
 import React from "react";
-import { Loader2Icon } from "lucide-react";
+import { Loader2Icon, Search } from "lucide-react";
 import { toast } from "sonner";
 import DeleteDialog from "@/components/forms/deleteDialog";
 import {
@@ -15,6 +15,9 @@ import ImportDialog from "@/components/dialogs/importDialog";
 import { eventFormSchema } from "@/validations/events";
 import EventForm from "./_components/form";
 import { eventColumns } from "./_components/coulmns";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import Loader from "@/components/Loader";
 
 export default function EventsPage() {
   const { data, isError, isLoading: isFetching, error } = useGetEventsQuery();
@@ -34,15 +37,17 @@ export default function EventsPage() {
         isIcon={true}
       />
     ),
-    (row) => <EventForm operation="preview" defaultValues={row} />
+    (row) => (
+      <Link href={`/events/${row.id}`}>
+        <Button variant={"outline"} >
+          <Search />
+        </Button>
+      </Link>
+    )
   );
 
   if (isFetching) {
-    return (
-      <div className="absolute left-1/2 top-1/2 -translate-1/2">
-        <Loader2Icon className="animate-spin" size={40} />
-      </div>
-    );
+    return <Loader error={isError} />;
   }
 
   if (isError) {

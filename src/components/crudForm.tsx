@@ -61,7 +61,6 @@ import { Switch } from "./ui/switch";
 interface CrudFormProps<T extends z.ZodTypeAny> {
   schema: T;
   fields: FormFieldType[];
-  onSuccess?: () => void;
   operation: "add" | "edit" | "preview";
   defaultValues?: Partial<z.infer<T>> & { id?: number };
   onAdd?: (data: z.infer<T>) => Promise<any>;
@@ -69,13 +68,12 @@ interface CrudFormProps<T extends z.ZodTypeAny> {
   itemName: string;
   isLoadingAdd?: boolean;
   isLoadingEdit?: boolean;
-  isModal?: boolean;
   asDialog?: boolean;
+  trigger?: React.ReactNode;
 }
 export const CrudForm = <T extends z.ZodTypeAny>({
   schema,
   fields: theFields,
-  onSuccess,
   operation,
   defaultValues,
   onAdd,
@@ -83,8 +81,8 @@ export const CrudForm = <T extends z.ZodTypeAny>({
   itemName,
   isLoadingAdd = false,
   isLoadingEdit = false,
-  isModal = true,
   asDialog = true,
+  trigger,
 }: CrudFormProps<T>) => {
   const [fields, setFields] = useState<FormFieldType[]>(theFields);
 
@@ -185,7 +183,7 @@ export const CrudForm = <T extends z.ZodTypeAny>({
       }
 
       form.reset();
-      onSuccess?.();
+
       return true;
     } catch (err: any) {
       console.error("Submission error:", err);
@@ -199,9 +197,11 @@ export const CrudForm = <T extends z.ZodTypeAny>({
       case "add":
         return <AddButton label={itemName} />;
       case "edit":
-        return <EditButton />;
+        return <EditButton label={itemName} value={"outline"} asIcon={true} />;
       case "preview":
-        return <PreviewButton />; // Replace with your own
+        return (
+          <PreviewButton label={itemName} value={"outline"} asIcon={true} />
+        ); // Replace with your own
       default:
         return null;
     }
@@ -220,8 +220,7 @@ export const CrudForm = <T extends z.ZodTypeAny>({
 
   return (
     <CustomDialog
-      modal={isModal}
-      trigger={getTriggerButton()}
+      trigger={trigger ?? getTriggerButton()}
       title={
         operation === "add"
           ? `Add ${itemName}`
