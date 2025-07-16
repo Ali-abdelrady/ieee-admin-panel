@@ -1,11 +1,11 @@
 export interface TimelineType {
-  id?: number;
+  id: number;
   date: string;
   label: string;
   agenda: AgendaItemType[];
 }
 export interface ApiResponse<T> {
-  data?: { Timelines: T };
+  data?: { timeline: T };
   message?: string;
 }
 
@@ -14,6 +14,7 @@ export type TimelineResponse = ApiResponse<TimelineType>;
 export type TimelinesResponse = ApiResponse<TimelineType[]>;
 
 export interface AgendaItemType {
+  id: number | string;
   name: string;
   description: string;
   startTime: string;

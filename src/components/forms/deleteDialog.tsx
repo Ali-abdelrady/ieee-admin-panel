@@ -8,6 +8,13 @@ type DeleteDialogProps<T> = {
   deleteFn: (id: string | number) => Promise<any>;
   getId: (row: T) => string | number;
   isLoading: boolean;
+  variant?:
+    | "default"
+    | "outline"
+    | "ghost"
+    | "link"
+    | "secondary"
+    | "destructive";
 };
 export default function DeleteDialog<T>({
   rows,
@@ -15,6 +22,7 @@ export default function DeleteDialog<T>({
   deleteFn,
   getId,
   isLoading = false,
+  variant = "default",
 }: DeleteDialogProps<T>) {
   const rowsArr = Array.isArray(rows) ? rows : [rows];
   const rowCount = rowsArr.length;
@@ -39,7 +47,9 @@ export default function DeleteDialog<T>({
   }
   return (
     <CustomDialog
-      trigger={<DeleteButton isIcon={isIcon} rowsCnt={rowCount} />}
+      trigger={
+        <DeleteButton variant={variant} isIcon={isIcon} rowsCnt={rowCount} />
+      }
       title="Are you absolutely sure?"
       actionLabel="Delete"
       description={`This action cannot be undone. This will permanently delete ${rowCount} selected ${

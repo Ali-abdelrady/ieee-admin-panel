@@ -4,10 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useGetEventByIdQuery } from "@/services/Api/events";
 import Link from "next/link";
-import { use } from "react";
+import { use, useEffect, useState } from "react";
 import { speakerColumns } from "./_components/speakers/speakersCoulmns";
 import DeleteDialog from "@/components/forms/deleteDialog";
 import { SpeakerType } from "@/types/speakers";
+
+import TimeLineTab from "./_components/timeline/TimelineTab";
 
 export default function EventDetails({
   params,
@@ -46,9 +48,9 @@ export default function EventDetails({
       icon: null,
     },
     {
-      value: "agenda",
-      component: <AgendaTab eventId={id} />,
-      label: "Agenda",
+      value: "timeline",
+      component: <TimeLineTab eventId={id} speakers={speakers ?? []} />,
+      label: "Timeline",
       icon: null,
     },
     {
@@ -83,7 +85,7 @@ export default function EventDetails({
         </p>
       </div>
 
-      <Tabs defaultValue="details" className="w-full space-y-6">
+      <Tabs defaultValue="timeline" className="w-full space-y-6">
         <div className="overflow-x-auto">
           <TabsList className="w-full  justify-start">
             {tabs.map((tab) => (
@@ -118,8 +120,6 @@ function SpeakersTab({
   eventId: string;
   speakers: SpeakerType[];
 }) {
-
-  
   const columns = speakerColumns({
     // onEdit: (row) => <EventForm operation="edit" defaultValues={row} />,
     onDelete: (rows) => (
@@ -148,9 +148,7 @@ function SponsorsTab({ eventId, sponsors }) {
     </div>
   );
 }
-function AgendaTab({ eventId }) {
-  return <div className="">Agenda content here</div>;
-}
+
 function FormsTab({ eventId }) {
   return <div className="">Forms content here</div>;
 }

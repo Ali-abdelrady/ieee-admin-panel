@@ -4,12 +4,22 @@ import { PlusIcon, Trash2 } from "lucide-react";
 
 interface DeleteButtonProps extends React.ComponentPropsWithRef<"button"> {
   label?: string;
-  isIcon: boolean;
+  isIcon?: boolean;
   rowsCnt?: number;
+  variant?:
+    | "default"
+    | "outline"
+    | "ghost"
+    | "link"
+    | "secondary"
+    | "destructive";
 }
 
 const DeleteButton = React.forwardRef<HTMLButtonElement, DeleteButtonProps>(
-  ({ label, isIcon = false, rowsCnt = 0, ...props }, ref) => {
+  (
+    { label, isIcon = false, rowsCnt = 0, variant = "outline", ...props },
+    ref
+  ) => {
     return (
       <Button
         ref={ref}
@@ -17,7 +27,7 @@ const DeleteButton = React.forwardRef<HTMLButtonElement, DeleteButtonProps>(
         className={`${isIcon ? "" : "ml-auto capitalize"}`}
         aria-label={`Delete ${label}`}
         size={isIcon ? "icon" : "default"}
-        variant="outline"
+        variant={variant}
       >
         <Trash2 />
         {!isIcon && `Delete `}
