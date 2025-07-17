@@ -15,6 +15,7 @@ type DeleteDialogProps<T> = {
     | "link"
     | "secondary"
     | "destructive";
+  trigger?: React.ReactNode;
 };
 export default function DeleteDialog<T>({
   rows,
@@ -23,6 +24,7 @@ export default function DeleteDialog<T>({
   getId,
   isLoading = false,
   variant = "default",
+  trigger,
 }: DeleteDialogProps<T>) {
   const rowsArr = Array.isArray(rows) ? rows : [rows];
   const rowCount = rowsArr.length;
@@ -31,8 +33,12 @@ export default function DeleteDialog<T>({
     console.log("handleDeleteRows");
     console.log(rowsArr);
     try {
+      if (rowsArr.length > 1) {
+        await Promise.all(rowsArr.map((row) => deleteFn(getId(row))));
+      } else {
+        await deleteFn(getId(rowsArr[0]));
+      }
       // Wait for all delete calls to finish
-      await Promise.all(rowsArr.map((row) => deleteFn(getId(row))));
       toast.success("Selected items deleted successfully", {
         duration: 3000,
       });
@@ -48,7 +54,13 @@ export default function DeleteDialog<T>({
   return (
     <CustomDialog
       trigger={
-        <DeleteButton variant={variant} isIcon={isIcon} rowsCnt={rowCount} />
+        trigger ?? (
+          <DeleteButton
+            variant={"outline"}
+            isIcon={isIcon}
+            rowsCnt={rowCount}
+          />
+        )
       }
       title="Are you absolutely sure?"
       actionLabel="Delete"

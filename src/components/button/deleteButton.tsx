@@ -29,7 +29,7 @@ const DeleteButton = React.forwardRef<HTMLButtonElement, DeleteButtonProps>(
         size={isIcon ? "icon" : "default"}
         variant={variant}
       >
-        <Trash2 />
+        <Trash2 className="" />
         {!isIcon && `Delete `}
         {rowsCnt != 0 && !isIcon && (
           <span className="bg-background text-muted-foreground/70 -me-1 inline-flex h-5 max-h-full items-center rounded border px-1 font-[inherit] text-[0.625rem] font-medium">

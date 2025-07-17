@@ -53,7 +53,9 @@ import { useDispatch } from "react-redux";
 import { triggerCloseAll } from "@/services/store/features/dialogSlice";
 import Stepper from "@/components/Stepper";
 import { useWatch } from "react-hook-form";
-import SocialLinksManager from "./forms/SocialLinksManger";
+import SocialLinksManager, {
+  parseSocialLinks,
+} from "./forms/SocialLinksManger";
 import TopicsBuilder from "./forms/TopicsBuilder";
 import { Textarea } from "./ui/textarea";
 import { Switch } from "./ui/switch";
@@ -104,7 +106,9 @@ export const CrudForm = <T extends z.ZodTypeAny>({
         // Ensure the value is a string (or the expected type used in select's options)
         value = value !== undefined ? String(value) : "";
       }
-
+      if (field.type === "socialLinks") {
+        value = parseSocialLinks(value);
+      }
       acc[field.name] = value ?? "";
       return acc;
     }, {} as Record<string, any>) as z.infer<T>,
@@ -197,10 +201,12 @@ export const CrudForm = <T extends z.ZodTypeAny>({
       case "add":
         return <AddButton label={itemName} />;
       case "edit":
-        return <EditButton label={itemName} value={"outline"} asIcon={true} />;
+        return (
+          <EditButton label={itemName} variant={"outline"} asIcon={true} />
+        );
       case "preview":
         return (
-          <PreviewButton label={itemName} value={"outline"} asIcon={true} />
+          <PreviewButton label={itemName} variant={"outline"} asIcon={true} />
         ); // Replace with your own
       default:
         return null;
@@ -453,7 +459,6 @@ function FormDetails<T extends z.ZodTypeAny>({
                     <SocialLinksManager
                       name={fieldItem.name}
                       disabled={operation === "preview"}
-                      defaultValues={field.value} // Pass the value from the form field
                     />
                   </FormControl>
                 )}

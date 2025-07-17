@@ -10,62 +10,39 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Trash2 } from "lucide-react";
-
-interface SocialLink {
-  platform: string;
-  url: string;
-}
+import { SocialLinksType } from "@/types/forms";
 
 interface SocialLinksManagerProps {
   name: string;
   disabled?: boolean;
-  defaultValues?: SocialLink[] | string;
+}
+export function parseSocialLinks(
+  socialLinks?: SocialLinksType[]
+): { platform: string; url: string }[] {
+  return (
+    socialLinks?.map((item) => ({
+      platform: item.icon.toLowerCase(), // or name.toLowerCase()
+      url: item.url,
+    })) || [
+      {
+        platform: "",
+        url: "",
+      },
+    ]
+  );
 }
 
 const SocialLinksManager = ({
   name,
   disabled = false,
-  defaultValues,
 }: SocialLinksManagerProps) => {
-  const { control, setValue } = useFormContext();
-
-  // Parse and normalize default values
-  const parsedDefaultValues = React.useMemo(() => {
-    if (!defaultValues) return [];
-
-    try {
-      // Handle string input
-      if (typeof defaultValues === "string") {
-        const parsed = JSON.parse(defaultValues);
-        return parsed.map((item: any) => ({
-          platform: item.icon || item.platform || "",
-          url: item.url || "",
-        }));
-      }
-
-      // Handle object array input
-      return defaultValues.map((item: any) => ({
-        platform: item.icon || item.platform || "",
-        url: item.url || "",
-      }));
-    } catch (e) {
-      console.error("Error parsing social links:", e);
-      return [];
-    }
-  }, [defaultValues]);
+  const { control } = useFormContext();
 
   const { fields, append, remove } = useFieldArray({
     control,
     name: name,
     keyName: "id",
   });
-
-  // Initialize with parsed default values
-  React.useEffect(() => {
-    if (parsedDefaultValues.length > 0 && fields.length === 0) {
-      setValue(name, parsedDefaultValues);
-    }
-  }, [name, parsedDefaultValues, setValue, fields.length]);
 
   const socialPlatforms = [
     { value: "facebook", label: "Facebook" },
@@ -83,10 +60,9 @@ const SocialLinksManager = ({
 
   // Preview mode
   if (disabled) {
-    const values = fields.length > 0 ? fields : parsedDefaultValues;
     return (
       <div className="space-y-3">
-        {values.map((link: any, index: number) => {
+        {fields.map((link: any, index: number) => {
           const platform = socialPlatforms.find(
             (p) => p.value === link.platform
           );
@@ -104,37 +80,30 @@ const SocialLinksManager = ({
       </div>
     );
   }
+
   return (
     <div className="space-y-4">
       <div className="space-y-4">
         {fields.map((field, index) => (
           <div key={field.id} className="flex gap-3 items-end justify-center">
-            {/* Platform Select with Controller */}
+            {/* Platform Select */}
             <div className="grid gap-2 flex-1">
-              <label className="text-sm font-medium">Platform</label>
               <Controller
                 name={`${name}.${index}.platform`}
                 control={control}
-                render={({ field: controllerField }) => (
-                  <Select
-                    value={controllerField.value}
-                    onValueChange={controllerField.onChange}
-                  >
-                    
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <div>fieldValue:{field.value}</div>
                     <SelectTrigger className="w-full">
-                      <SelectValue defaultValue={controllerField.value}>
+                      <SelectValue placeholder="Select Platform">
                         {socialPlatforms.find(
-                          (option) => option.value === controllerField.value
+                          (option) => option.value === field.value
                         )?.label ?? "Select platform"}
                       </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
                       {socialPlatforms.map((platform) => (
-                        <SelectItem
-                          key={platform.value}
-                          value={platform.value}
-                          defaultValue={controllerField.value}
-                        >
+                        <SelectItem key={platform.value} value={platform.value}>
                           {platform.label}
                         </SelectItem>
                       ))}
@@ -146,15 +115,14 @@ const SocialLinksManager = ({
 
             {/* URL Input */}
             <div className="grid gap-2 flex-1">
-              <label className="text-sm font-medium">URL</label>
               <Controller
                 name={`${name}.${index}.url`}
                 control={control}
-                render={({ field: controllerField }) => (
+                render={({ field: field }) => (
                   <Input
                     type="url"
                     placeholder="https://example.com/profile"
-                    {...controllerField}
+                    {...field}
                   />
                 )}
               />
@@ -163,14 +131,15 @@ const SocialLinksManager = ({
             <Button
               type="button"
               onClick={() => remove(index)}
-              variant="destructive"
+              variant="ghost"
               size="icon"
             >
-              <Trash2 size={16} />
+              <Trash2 size={16} className="text-destructive" />
             </Button>
           </div>
         ))}
       </div>
+
       <Button
         type="button"
         onClick={addNewLink}

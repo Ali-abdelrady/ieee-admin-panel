@@ -5,7 +5,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useGetEventByIdQuery } from "@/services/Api/events";
 import Link from "next/link";
 import { use, useEffect, useState } from "react";
-import { speakerColumns } from "./_components/speakers/speakersCoulmns";
 import DeleteDialog from "@/components/forms/deleteDialog";
 import { SpeakerType } from "@/types/speakers";
 
@@ -13,6 +12,8 @@ import TimeLineTab from "./_components/timeline/TimelineTab";
 import { EventType } from "react-hook-form";
 import DetailsTab from "./_components/details/page";
 import Loader from "@/components/Loader";
+import SpeakersTab from "./_components/speakers/SpeakerTab";
+import SponsorsTab from "./_components/sponsors/SponsorTab";
 
 export default function EventDetails({
   params,
@@ -42,7 +43,7 @@ export default function EventDetails({
     },
     {
       value: "speakers",
-      component: <SpeakersTab speakers={speakers ?? []} eventId={id} />,
+      component: <SpeakersTab eventId={id} />,
       label: "Speakers",
       icon: null,
     },
@@ -90,7 +91,7 @@ export default function EventDetails({
         </p>
       </div>
 
-      <Tabs defaultValue="details" className="w-full space-y-6">
+      <Tabs defaultValue="speakers" className="w-full space-y-6">
         <div className="overflow-x-auto">
           <TabsList className="w-full  justify-start">
             {tabs.map((tab) => (
@@ -111,42 +112,6 @@ export default function EventDetails({
           </TabsContent>
         ))}
       </Tabs>
-    </div>
-  );
-}
-
-function SpeakersTab({
-  eventId,
-  speakers,
-}: {
-  eventId: string;
-  speakers: SpeakerType[];
-}) {
-  const columns = speakerColumns({
-    // onEdit: (row) => <EventForm operation="edit" defaultValues={row} />,
-    onDelete: (rows) => (
-      <DeleteDialog<SpeakerType>
-        rows={rows}
-        isLoading={false}
-        deleteFn={(id) => {
-          console.log("delete me");
-        }}
-        getId={(row) => row.id}
-        isIcon={true}
-      />
-    ),
-    // onPreview: (row) => <EventForm operation="preview" defaultValues={row} />,
-  });
-  return (
-    <div>
-      <DataTable data={speakers} columns={columns} />
-    </div>
-  );
-}
-function SponsorsTab({ eventId, sponsors }) {
-  return (
-    <div>
-      <DataTable data={[]} columns={[]} />
     </div>
   );
 }

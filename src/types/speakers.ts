@@ -8,7 +8,7 @@ export interface SpeakerType {
   company?: string;
   socialLinks?: SocialLinksType[];
   bio?: string;
-  image: File | string;
+  image?: File | string;
 }
 export interface ApiResponse<T> {
   data?: {

@@ -1,6 +1,7 @@
 export interface SponsorType {
-  id: number;
+  id: number | string;
   name: string;
+  url: string;
   image: File | string;
   isSeasonSponsor: boolean;
 }

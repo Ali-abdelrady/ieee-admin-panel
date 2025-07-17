@@ -35,7 +35,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <Head>
         <title>IEEE BUB</title>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/images/favicon.ico" />
       </Head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
