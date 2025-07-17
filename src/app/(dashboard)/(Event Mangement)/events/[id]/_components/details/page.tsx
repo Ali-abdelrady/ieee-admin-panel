@@ -38,13 +38,11 @@ export default function DetailsTab({
         <div className="relative">
           <div className="aspect-[2/1] relative overflow-hidden rounded-t-lg bg-gradient-to-br from-primary/20 via-primary/10 to-background">
             <Image
-              src={
-                "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158"
-              }
+              src={"/images/event.jpg"}
               alt={"eventImage"}
               className="object-cover w-full h-full"
-              width={20}
-              height={20}
+              width={800}
+              height={600}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
             <div className="absolute bottom-6 left-6 right-6">

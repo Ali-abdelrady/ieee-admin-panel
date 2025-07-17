@@ -91,7 +91,7 @@ export default function EventDetails({
         </p>
       </div>
 
-      <Tabs defaultValue="speakers" className="w-full space-y-6">
+      <Tabs defaultValue="details" className="w-full space-y-6">
         <div className="overflow-x-auto">
           <TabsList className="w-full  justify-start">
             {tabs.map((tab) => (
