@@ -29,10 +29,14 @@ export const authApi = api.injectEndpoints({
       }),
       invalidatesTags: ["User"],
     }),
+    authCheck: builder.query<LoginResponse, void>({
+      query: () => "/auth/check",
+    }),
   }),
   overrideExisting: false,
 });
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useLoginMutation, useLogoutMutation } = authApi;
+export const { useLoginMutation, useLogoutMutation, useAuthCheckQuery } =
+  authApi;

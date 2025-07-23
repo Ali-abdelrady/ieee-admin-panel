@@ -41,6 +41,7 @@ import { Badge } from "@/components/ui/badge";
 import SocialLinksManager, {
   parseSocialLinks,
 } from "@/components/forms/SocialLinksManger";
+import DynamicArrayField from "@/components/forms/DynamicArrayFields";
 
 interface SpeakerFormProps {
   operation: "add" | "edit";
@@ -187,7 +188,7 @@ export default function SpeakerForm({
           <EditButton label="edit speaker" asIcon={true} variant="ghost" />
         )}
       </SheetTrigger>
-      <SheetContent>
+      <SheetContent className="overflow-auto">
         <SheetHeader>
           <SheetTitle className="capitalize ">{operation} Speaker</SheetTitle>
         </SheetHeader>
@@ -285,24 +286,6 @@ export default function SpeakerForm({
                       </FormItem>
                     )}
                   />
-                  <FormField
-                    control={form.control}
-                    name="socialLinks"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Social Links</FormLabel>
-                        <FormControl>
-                          <SocialLinksManager
-                            name="socialLinks"
-                            // value={field.value}
-                            // defaultValues={field.value}
-                            // onChange={field.onChange}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
                 </TabsContent>
                 <TabsContent value="social" className="space-y-4 p-4">
                   <FormField
@@ -312,7 +295,26 @@ export default function SpeakerForm({
                       <FormItem>
                         <FormLabel>Social Links</FormLabel>
                         <FormControl>
-                          <SocialLinksManager name="socialLinks" />
+                          <DynamicArrayField
+                            itemName="socialLink"
+                            name="socialLinks"
+                            minItems={1}
+                            fieldsConfig={[
+                              { name: "url", label: "Url", type: "text" },
+                              {
+                                name: "platform",
+                                label: "Platform",
+                                type: "select",
+                                options: [
+                                  { value: "facebook", label: "Facebook" },
+                                  { value: "twitter", label: "Twitter" },
+                                  { value: "instagram", label: "Instagram" },
+                                  { value: "linkedin", label: "LinkedIn" },
+                                  { value: "behance", label: "Behance" },
+                                ],
+                              },
+                            ]}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

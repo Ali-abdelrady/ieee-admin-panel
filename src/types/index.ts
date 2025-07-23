@@ -7,6 +7,12 @@ export type FormFieldType = {
   placeholder?: string;
   description?: string;
   readonly?: boolean;
+  dynamicArrayFieldsConfig?: {
+    fields?: FormFieldType[];
+    isSimpleArray?: boolean;
+    addButtonLabel?: string;
+    itemName?: string;
+  };
   type:
     | "text"
     | "checkbox"
@@ -26,7 +32,8 @@ export type FormFieldType = {
     | "password"
     | "socialLinks"
     | "topics"
-    | "switch";
+    | "switch"
+    | "dynamicArrayField";
   options?: { label: string; value: number | string }[]; // for select
   dynamicOptions?: boolean;
   extraProps?: object;

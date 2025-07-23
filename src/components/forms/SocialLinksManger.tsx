@@ -49,9 +49,7 @@ const SocialLinksManager = ({
     { value: "twitter", label: "Twitter" },
     { value: "instagram", label: "Instagram" },
     { value: "linkedin", label: "LinkedIn" },
-    { value: "youtube", label: "YouTube" },
-    { value: "pinterest", label: "Pinterest" },
-    { value: "tiktok", label: "TikTok" },
+    { value: "behance", label: "Behance" },
   ];
 
   const addNewLink = () => {

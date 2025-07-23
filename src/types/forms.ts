@@ -3,10 +3,10 @@ export interface SocialLinksType {
   icon: string;
   name: string;
 }
-export interface FormFiledsType {
-  label: string;
-  type: string;
-  name: string;
-  required: boolean;
-  options?: string[];
-}
+// export interface FormFiledsType {
+//   label: string;
+//   type: string;
+//   name: string;
+//   required: boolean;
+//   options?: string[];
+// }

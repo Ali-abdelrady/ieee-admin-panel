@@ -50,7 +50,18 @@ const CommitteeForm = ({
     },
     { name: "description", label: "Description", type: "textArea" },
     { name: "image", label: "Image", type: "file" },
-    { name: "topics", label: "Topic", type: "topics" },
+    {
+      name: "topics",
+      label: "Topics",
+      type: "dynamicArrayField",
+      dynamicArrayFieldsConfig: {
+        fields: [
+          { name: "title", type: "text", label: "Title" },
+          { name: "content", type: "textArea", label: "Content" },
+        ],
+        itemName: "Topic",
+      },
+    },
   ];
   console.log("board", boardOptions);
   return (
@@ -62,7 +73,6 @@ const CommitteeForm = ({
       onAdd={(data) => addItem(data).unwrap()}
       onUpdate={(data) => updateItem(data).unwrap()}
       itemName="Committee"
-      onSuccess={onSuccess}
       isLoadingAdd={isLoadingAdd}
       isLoadingEdit={isLoadingEdit}
     />

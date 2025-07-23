@@ -2,12 +2,12 @@ import { CustomDialog } from "./customModal";
 import DeleteButton from "../button/deleteButton";
 import { toast } from "sonner";
 
-type DeleteDialogProps<T> = {
+type DeleteDialogProps<T, DeleteParams = string | number> = {
   rows: T | T[];
   isIcon?: boolean;
-  deleteFn: (id: string | number) => Promise<any>;
-  getId: (row: T) => string | number;
-  isLoading: boolean;
+  deleteFn: (params: DeleteParams) => Promise<any>;
+  getDeleteParams: (row: T) => DeleteParams;
+  isLoading?: boolean;
   variant?:
     | "default"
     | "outline"
@@ -16,56 +16,63 @@ type DeleteDialogProps<T> = {
     | "secondary"
     | "destructive";
   trigger?: React.ReactNode;
+  successMessage?: string | ((deletedCount: number) => string);
+  errorMessage?: string;
 };
-export default function DeleteDialog<T>({
+
+export default function DeleteDialog<T, DeleteParams = string | number>({
   rows,
   isIcon = false,
   deleteFn,
-  getId,
+  getDeleteParams,
   isLoading = false,
-  variant = "default",
+  variant = "outline",
   trigger,
-}: DeleteDialogProps<T>) {
+  successMessage,
+  errorMessage = "Couldn't delete selected rows",
+}: DeleteDialogProps<T, DeleteParams>) {
   const rowsArr = Array.isArray(rows) ? rows : [rows];
   const rowCount = rowsArr.length;
 
-  async function handleDeleteRows() {
-    console.log("handleDeleteRows");
-    console.log(rowsArr);
+  async function handleDeleteRows(): Promise<boolean> {
     try {
       if (rowsArr.length > 1) {
-        await Promise.all(rowsArr.map((row) => deleteFn(getId(row))));
+        await Promise.all(rowsArr.map((row) => deleteFn(getDeleteParams(row))));
       } else {
-        await deleteFn(getId(rowsArr[0]));
+        await deleteFn(getDeleteParams(rowsArr[0]));
       }
-      // Wait for all delete calls to finish
-      toast.success("Selected items deleted successfully", {
-        duration: 3000,
-      });
+
+      const successMsg =
+        typeof successMessage === "function"
+          ? successMessage(rowCount)
+          : successMessage ||
+            `Successfully deleted ${rowCount} ${
+              rowCount === 1 ? "item" : "items"
+            }`;
+
+      toast.success(successMsg, { duration: 3000 });
       return true;
     } catch (err) {
+      console.error("Delete error:", err);
       toast.error("Something went wrong", {
-        description: "Couldn't delete selected rows",
+        description: errorMessage,
         duration: 3000,
       });
       return false;
     }
   }
+
   return (
     <CustomDialog
       trigger={
         trigger ?? (
-          <DeleteButton
-            variant={"outline"}
-            isIcon={isIcon}
-            rowsCnt={rowCount}
-          />
+          <DeleteButton variant={variant} isIcon={isIcon} rowsCnt={rowCount} />
         )
       }
       title="Are you absolutely sure?"
       actionLabel="Delete"
       description={`This action cannot be undone. This will permanently delete ${rowCount} selected ${
-        rowCount === 1 ? "row" : "rows"
+        rowCount === 1 ? "item" : "items"
       }.`}
       onSubmit={handleDeleteRows}
       isLoading={isLoading}

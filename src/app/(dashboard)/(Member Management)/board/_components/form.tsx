@@ -8,6 +8,7 @@ import {
   useUpdateBoardMutation,
 } from "@/services/Api/board";
 import { useFieldArray } from "react-hook-form";
+import { parseSocialLinks } from "@/components/forms/SocialLinksManger";
 
 interface BoardFormProps {
   operation: "add" | "edit" | "preview";
@@ -39,7 +40,25 @@ const BoardForm = ({ operation, defaultValues, onSuccess }: BoardFormProps) => {
     {
       name: "socialLinks",
       label: "Social Links",
-      type: "socialLinks",
+      type: "dynamicArrayField",
+      dynamicArrayFieldsConfig: {
+        fields: [
+          { name: "url", label: "Url", type: "text" },
+          {
+            name: "platform",
+            label: "Platform",
+            type: "select",
+            options: [
+              { value: "facebook", label: "Facebook" },
+              { value: "twitter", label: "Twitter" },
+              { value: "instagram", label: "Instagram" },
+              { value: "linkedin", label: "LinkedIn" },
+              { value: "behance", label: "Behance" },
+            ],
+          },
+        ],
+        itemName: "socialLink",
+      },
     },
   ];
 
@@ -48,11 +67,13 @@ const BoardForm = ({ operation, defaultValues, onSuccess }: BoardFormProps) => {
       schema={boardFormSchema}
       fields={fields}
       operation={operation}
-      defaultValues={defaultValues}
+      defaultValues={{
+        ...defaultValues,
+        socialLinks: parseSocialLinks(defaultValues?.socialLinks),
+      }}
       onAdd={(data) => addItem(data).unwrap()}
       onUpdate={(data) => updateItem(data).unwrap()}
       itemName="Board Member"
-      onSuccess={onSuccess}
       isLoadingAdd={isLoadingAdd}
       isLoadingEdit={isLoadingEdit}
     />

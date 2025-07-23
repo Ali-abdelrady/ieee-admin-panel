@@ -59,6 +59,7 @@ import SocialLinksManager, {
 import TopicsBuilder from "./forms/TopicsBuilder";
 import { Textarea } from "./ui/textarea";
 import { Switch } from "./ui/switch";
+import DynamicArrayField from "./forms/DynamicArrayFields";
 
 interface CrudFormProps<T extends z.ZodTypeAny> {
   schema: T;
@@ -101,7 +102,10 @@ export const CrudForm = <T extends z.ZodTypeAny>({
       if (field.type === "selectInputType") {
         value = typeof value === "string" ? value : JSON.stringify(value);
       }
-
+      if (field.type === "dynamicArrayField") {
+        // Ensure the value is a string (or the expected type used in select's options)
+        value = value ?? [];
+      }
       if (field.type === "select") {
         // Ensure the value is a string (or the expected type used in select's options)
         value = value !== undefined ? String(value) : "";
@@ -120,12 +124,21 @@ export const CrudForm = <T extends z.ZodTypeAny>({
       const isValid = await form.trigger();
 
       if (!isValid) {
-        console.error("Validation errors:", form.formState.errors);
+        // Get current form values
+        const formValues = form.getValues();
+        console.log("Form State:", form.formState);
+        console.group("Validation Error Details");
+        console.log("Current Form Values:", formValues);
+        console.log("Validation Errors:", form.formState.errors);
+        console.groupEnd();
+
+        // Show errors to user
         Object.entries(form.formState.errors).forEach(([field, error]) => {
           toast.error(
             `${field}: ${(error as any)?.message || "Validation error"}`
           );
         });
+
         resolve(false);
         return;
       }
@@ -133,8 +146,10 @@ export const CrudForm = <T extends z.ZodTypeAny>({
       try {
         // Get form values directly
         const formData = form.getValues();
-
+        console.log("Form State:", form.formState);
+        console.group("Form Submission Data");
         console.log("Form data before submission:", formData);
+        console.groupEnd();
 
         // Call onSubmit directly
         const result = await onSubmit(formData);
@@ -600,7 +615,26 @@ function FormDetails<T extends z.ZodTypeAny>({
                     </div>
                   </FormControl>
                 )}
-
+                {fieldItem.type === "dynamicArrayField" && (
+                  <FormControl>
+                    <DynamicArrayField
+                      minItems={1}
+                      name={fieldItem.name}
+                      addButtonLabel={
+                        fieldItem.dynamicArrayFieldsConfig?.addButtonLabel ??
+                        fieldItem.label
+                      }
+                      disabled={operation == "preview"}
+                      simpleArray={
+                        fieldItem.dynamicArrayFieldsConfig?.isSimpleArray
+                      }
+                      itemName={
+                        fieldItem.dynamicArrayFieldsConfig?.itemName ?? "item"
+                      }
+                      fieldsConfig={fieldItem.dynamicArrayFieldsConfig?.fields}
+                    />
+                  </FormControl>
+                )}
                 <FormMessage />
               </FormItem>
             )}

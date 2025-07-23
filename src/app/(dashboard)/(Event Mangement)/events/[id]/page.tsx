@@ -14,6 +14,7 @@ import DetailsTab from "./_components/details/page";
 import Loader from "@/components/Loader";
 import SpeakersTab from "./_components/speakers/SpeakerTab";
 import SponsorsTab from "./_components/sponsors/SponsorTab";
+import { FoodMenuTab } from "./_components/foodMenu/FoodMenuTab";
 
 export default function EventDetails({
   params,
@@ -91,14 +92,14 @@ export default function EventDetails({
         </p>
       </div>
 
-      <Tabs defaultValue="details" className="w-full space-y-6">
+      <Tabs className="w-full space-y-6">
         <div className="overflow-x-auto">
           <TabsList className="w-full  justify-start">
             {tabs.map((tab) => (
               <TabsTrigger
                 key={tab.value}
                 value={tab.value}
-                className="relative h-full   rounded-lg "
+                className="relative h-full  rounded-lg "
               >
                 {tab.label}
               </TabsTrigger>
@@ -118,7 +119,4 @@ export default function EventDetails({
 
 function FormsTab({ eventId }) {
   return <div className="">Forms content here</div>;
-}
-function FoodMenuTab({ eventId }) {
-  return <div className="">Food Menu content here</div>;
 }
