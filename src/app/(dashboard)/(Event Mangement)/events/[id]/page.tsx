@@ -22,23 +22,11 @@ export default function EventDetails({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
-  const { data, isLoading, isError } = useGetEventByIdQuery(id);
-  const eventData = data?.data?.event;
 
-  console.log("eventData:", eventData);
-
-  let speakers, sponsors, timeline;
-
-  if (eventData) {
-    ({ speakers, sponsors, eventDays: timeline } = eventData);
-  }
-  if (isLoading) {
-    return <Loader error={isError} />;
-  }
   const tabs = [
     {
       value: "details",
-      component: <DetailsTab eventId={id} event={eventData} />,
+      component: <DetailsTab eventId={id} />,
       label: "Details",
       icon: null,
     },
@@ -50,13 +38,13 @@ export default function EventDetails({
     },
     {
       value: "sponsors",
-      component: <SponsorsTab sponsors={sponsors ?? []} eventId={id} />,
+      component: <SponsorsTab eventId={id} />,
       label: "Sponsors",
       icon: null,
     },
     {
       value: "timeline",
-      component: <TimeLineTab eventId={id} speakers={speakers ?? []} />,
+      component: <TimeLineTab eventId={id} />,
       label: "Timeline",
       icon: null,
     },
@@ -92,7 +80,7 @@ export default function EventDetails({
         </p>
       </div>
 
-      <Tabs className="w-full space-y-6">
+      <Tabs className="w-full space-y-6" defaultValue="details">
         <div className="overflow-x-auto">
           <TabsList className="w-full  justify-start">
             {tabs.map((tab) => (

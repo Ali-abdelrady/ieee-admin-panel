@@ -1,4 +1,9 @@
 // src/services/Api/admin/events.ts
+import {
+  EventSpeakerRequest,
+  EventSpeakerResponse,
+  EventSpeakerType,
+} from "@/types/EventSpeakers";
 import { api } from "./api";
 import {
   EventDetailsType,
@@ -7,6 +12,7 @@ import {
   EventsResponse,
   EventType,
 } from "@/types/events";
+import { SpeakerRequest } from "@/types/speakers";
 
 export const EventApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -31,7 +37,7 @@ export const EventApi = api.injectEndpoints({
       providesTags: (result) =>
         result
           ? [
-              { type: "Events" as const, id: result?.data?.events?.id },
+              { type: "Events" as const, id: result?.data?.event?.id },
               { type: "Events" as const, id: "LIST" },
             ]
           : [{ type: "Events" as const, id: "LIST" }],

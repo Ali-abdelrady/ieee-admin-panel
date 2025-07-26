@@ -339,6 +339,7 @@ function FormDetails<T extends z.ZodTypeAny>({
                       checked={field.value}
                       onCheckedChange={field.onChange}
                       disabled={operation === "preview"}
+                      defaultChecked={false}
                     />
                   </FormControl>
                 )}

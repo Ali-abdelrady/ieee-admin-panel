@@ -20,26 +20,27 @@ import {
 import Image from "next/image";
 import EventForm from "../../../_components/form";
 import EditButton from "@/components/button/editButton";
+import { useGetEventByIdQuery } from "@/services/Api/events";
+import Loader from "@/components/Loader";
 
-export default function DetailsTab({
-  eventId,
-  event,
-}: {
-  eventId: string;
-  event: EventType;
-}) {
-  if (!event) {
-    return <div>Loading</div>;
+export default function DetailsTab({ eventId }: { eventId: string }) {
+  const { data, isLoading, isError } = useGetEventByIdQuery(eventId);
+  const event = data?.data?.event;
+
+  console.log("event:", event);
+
+  if (isLoading) {
+    return <Loader error={isError} />;
   }
   return (
     <div className="space-y-8">
       {/* Hero Section with Image */}
-      <Card className="overflow-hidden border-0 shadow-xl">
+      <Card className="overflow-hidden border-0 shadow-xl py-0">
         <div className="relative">
           <div className="aspect-[2/1] relative overflow-hidden rounded-t-lg bg-gradient-to-br from-primary/20 via-primary/10 to-background">
             <Image
-              src={"/images/event.jpg"}
-              alt={"eventImage"}
+              src={event?.images?.[0] ?? "/images/event.jpg"}
+              alt={event?.name ?? "eventImage"}
               className="object-cover w-full h-full"
               width={800}
               height={600}
@@ -81,7 +82,7 @@ export default function DetailsTab({
                       <Clock className="h-4 w-4 text-green-600" />
                     </div>
                     <span className="font-medium">
-                      {event.startDate && formatDate(event.startDate)}
+                      {event?.startDate && formatDate(event?.startDate)}
                     </span>
                   </div>
                 </div>
@@ -94,7 +95,7 @@ export default function DetailsTab({
                       <Clock className="h-4 w-4 text-red-600" />
                     </div>
                     <span className="font-medium">
-                      {formatDate(event.endDate)}
+                      {formatDate(event?.endDate ?? "")}
                       {/* 20/12/2023 */}
                     </span>
                   </div>
@@ -104,14 +105,17 @@ export default function DetailsTab({
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Duration</span>
                 <Badge variant="outline" className="font-medium">
-                  {calculateDuration(event.startDate, event.endDate)}
+                  {calculateDuration(
+                    event?.startDate ?? "",
+                    event?.endDate ?? ""
+                  )}
                 </Badge>
               </div>
             </CardContent>
           </Card>
 
           {/* Registration Period */}
-          {(event.registrationStart || event.registrationEnd) && (
+          {(event?.registrationStart || event?.registrationEnd) && (
             <Card className="shadow-lg border-l-4 border-l-blue-500">
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center text-lg">
@@ -130,8 +134,8 @@ export default function DetailsTab({
                         <CalendarDays className="h-4 w-4 text-blue-600" />
                       </div>
                       <span className="font-medium">
-                        {event.registrationStart
-                          ? formatDate(event.registrationStart)
+                        {event?.registrationStart
+                          ? formatDate(event?.registrationStart)
                           : "Not set"}
                       </span>
                     </div>
@@ -145,8 +149,8 @@ export default function DetailsTab({
                         <Timer className="h-4 w-4 text-orange-600" />
                       </div>
                       <span className="font-medium">
-                        {event.registrationEnd
-                          ? formatDate(event.registrationEnd)
+                        {event?.registrationEnd
+                          ? formatDate(event?.registrationEnd)
                           : "Not set"}
                       </span>
                     </div>
@@ -188,7 +192,8 @@ export default function DetailsTab({
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground leading-relaxed">
-                {event.description || "No description provided for this event."}
+                {event?.description ||
+                  "No description provided for this event."}
               </p>
             </CardContent>
           </Card>
@@ -205,19 +210,19 @@ export default function DetailsTab({
               <div className="grid grid-cols-2 gap-4">
                 <div className="text-center p-4 bg-primary/5 rounded-lg border">
                   <div className="text-2xl font-bold text-primary">
-                    {event.speakers?.length || 0}
+                    {event?.speakers?.length || 0}
                   </div>
                   <div className="text-xs text-muted-foreground">Speakers</div>
                 </div>
                 <div className="text-center p-4 bg-blue-50 rounded-lg border">
                   <div className="text-2xl font-bold text-blue-600">
-                    {event.sponsors?.length || 0}
+                    {event?.sponsors?.length || 0}
                   </div>
                   <div className="text-xs text-muted-foreground">Sponsors</div>
                 </div>
                 <div className="text-center p-4 bg-emerald-50 rounded-lg border">
                   <div className="text-2xl font-bold text-emerald-600">
-                    {event.eventDays?.length || 0}
+                    {event?.eventDays?.length || 0}
                   </div>
                   <div className="text-xs text-muted-foreground">
                     Event Days
@@ -246,14 +251,14 @@ export default function DetailsTab({
                   Event Type
                 </span>
                 <Badge variant="default" className="capitalize">
-                  {event.private ? "Private" : "Public"}
+                  {event?.private ? "Private" : "Public"}
                 </Badge>
               </div>
               <Separator />
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Category</span>
                 <Badge variant="default" className="capitalize">
-                  {event.category}
+                  {event?.category}
                 </Badge>
               </div>
 
@@ -262,15 +267,18 @@ export default function DetailsTab({
               <div className="space-y-2">
                 <div className="text-sm text-muted-foreground">Created</div>
                 <div className="text-sm font-medium">
-                  {new Date(event.createdAt).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
+                  {new Date(event?.createdAt ?? "").toLocaleDateString(
+                    "en-US",
+                    {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    }
+                  )}
                 </div>
               </div>
 
-              {event.updatedAt && event.updatedAt !== event.createdAt && (
+              {event?.updatedAt && event?.updatedAt !== event?.createdAt && (
                 <>
                   <Separator />
                   <div className="space-y-2">

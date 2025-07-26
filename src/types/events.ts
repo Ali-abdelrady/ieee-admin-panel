@@ -1,10 +1,12 @@
-import { FormFiledsType } from "./forms";
+import { string } from "zod";
+import { FormFieldType } from ".";
 import { SpeakerType } from "./speakers";
 import { SponsorType } from "./sponsors";
 import { TimelineType } from "./timeline";
+import { SocialLinksType } from "./forms";
 
 export interface EventType {
-  id: number;
+  id: number | string;
   name: string;
   description: string;
   startDate: string;
@@ -15,7 +17,8 @@ export interface EventType {
   category: "event" | "bootcamp" | "workshop" | "outing";
   formId: number | string;
   location: string;
-  images?: File | string[];
+  images?: string[];
+  image?: File;
   videos?: File | string[];
   speakers: SpeakerType[];
   sponsors: SponsorType[];
@@ -41,5 +44,7 @@ export interface EventDetailsType {
   speakers?: { id: string; photoId: string }[];
   sponsors?: { id: string; photoId: string }[];
   timeline?: TimelineType[];
-  formFields?: FormFiledsType[];
+  formFields?: FormFieldType[];
 }
+
+

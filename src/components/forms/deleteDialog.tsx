@@ -39,7 +39,7 @@ export default function DeleteDialog<T, DeleteParams = string | number>({
       if (rowsArr.length > 1) {
         await Promise.all(rowsArr.map((row) => deleteFn(getDeleteParams(row))));
       } else {
-        await deleteFn(getDeleteParams(rowsArr[0]));
+        await deleteFn(rowsArr[0].id);
       }
 
       const successMsg =

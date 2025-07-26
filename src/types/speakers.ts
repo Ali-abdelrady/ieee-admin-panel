@@ -16,7 +16,14 @@ export interface ApiResponse<T> {
   };
   message?: string;
 }
+export interface ApiSingleSpeakerResponse<T> {
+  data?: {
+    speaker: T;
+    imageId?: string;
+  };
+  message?: string;
+}
 
 export type SpeakerRequest = Omit<SpeakerType, "id">;
-export type SpeakerResponse = ApiResponse<SpeakerType>;
+export type SpeakerResponse = ApiSingleSpeakerResponse<SpeakerType>;
 export type SpeakersResponse = ApiResponse<SpeakerType[]>;

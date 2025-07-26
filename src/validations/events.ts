@@ -7,10 +7,13 @@ export const eventFormSchema = z.object({
   description: z.string().min(1, "Description is required"),
   startDate: dateToISO,
   endDate: dateToISO,
-  private: z.boolean().default(false),
+  private: z.coerce
+    .boolean()
+    .default(false)
+    .transform((val) => String(val)),
   category: z.enum(["event", "bootcamp", "workshop", "outing"]),
   location: z.string().min(1, "Location is required"),
-  images: z.any().optional(),
+  image: z.any().optional(),
   videos: z.any().optional(),
   registrationStart: dateToISO.optional(),
   registrationEnd: dateToISO.optional(),
