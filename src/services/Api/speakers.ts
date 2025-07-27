@@ -30,12 +30,12 @@ export const SpeakerApi = api.injectEndpoints({
       providesTags: (result) =>
         result
           ? [
-              { type: "Speakers" as const, id: result?.data?.speakers?.id },
+              { type: "Speakers" as const, id: result?.data?.speaker?.id },
               { type: "Speakers" as const, id: "LIST" },
             ]
           : [{ type: "Speakers" as const, id: "LIST" }],
     }),
-    addSpeaker: builder.mutation<SpeakerResponse, SpeakerRequest>({
+    addSpeaker: builder.mutation<SpeakerResponse, SpeakerRequest | FormData>({
       query: (data) => ({
         url: "/admin/speakers",
         method: "POST",

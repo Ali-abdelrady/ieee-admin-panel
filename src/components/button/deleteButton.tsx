@@ -1,8 +1,10 @@
 import React from "react";
 import { Button } from "../ui/button";
 import { PlusIcon, Trash2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface DeleteButtonProps extends React.ComponentPropsWithRef<"button"> {
+  className?: string;
   label?: string;
   isIcon?: boolean;
   rowsCnt?: number;
@@ -17,14 +19,21 @@ interface DeleteButtonProps extends React.ComponentPropsWithRef<"button"> {
 
 const DeleteButton = React.forwardRef<HTMLButtonElement, DeleteButtonProps>(
   (
-    { label, isIcon = false, rowsCnt = 0, variant = "outline", ...props },
+    {
+      className,
+      label,
+      isIcon = false,
+      rowsCnt = 0,
+      variant = "outline",
+      ...props
+    },
     ref
   ) => {
     return (
       <Button
         ref={ref}
         {...props}
-        className={`${isIcon ? "" : "ml-auto capitalize"}`}
+        className={cn(`${isIcon ? "" : "ml-auto capitalize"}`, className)}
         aria-label={`Delete ${label}`}
         size={isIcon ? "icon" : "default"}
         variant={variant}

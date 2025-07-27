@@ -2,7 +2,7 @@ import { string } from "zod";
 import { FormFieldType } from ".";
 import { SpeakerType } from "./speakers";
 import { SponsorType } from "./sponsors";
-import { TimelineType } from "./timeline";
+import { TimelineType } from "./eventTimeline";
 import { SocialLinksType } from "./forms";
 
 export interface EventType {
@@ -46,5 +46,3 @@ export interface EventDetailsType {
   timeline?: TimelineType[];
   formFields?: FormFieldType[];
 }
-
-

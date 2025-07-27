@@ -19,17 +19,12 @@ interface SocialLinksManagerProps {
 export function parseSocialLinks(
   socialLinks?: SocialLinksType[]
 ): { platform: string; url: string }[] {
-  return (
-    socialLinks?.map((item) => ({
-      platform: item.icon.toLowerCase(), // or name.toLowerCase()
-      url: item.url,
-    })) || [
-      {
-        platform: "",
-        url: "",
-      },
-    ]
-  );
+  if (!Array.isArray(socialLinks)) return [];
+
+  return socialLinks.map((item) => ({
+    platform: item.icon.toLowerCase(),
+    url: item.url,
+  }));
 }
 
 const SocialLinksManager = ({

@@ -2,11 +2,12 @@
 import { CrudForm } from "@/components/crudForm";
 import { z } from "zod";
 import { FormFieldType } from "@/types";
-import { timelineFormSchema } from "@/validations/timeline";
+import { timelineFormSchema } from "@/validations/eventTimeline";
+
 import {
-  useAddAwardMutation,
-  useUpdateAwardMutation,
-} from "@/services/Api/awards";
+  useAddTimelineMutation,
+  useUpdateTimelineMutation,
+} from "@/services/Api/eventTimeline";
 // import { TimeLineFormSchema } from "@/validations/TimeLine";
 // import { useAddTimeLineMutation, useUpdateTimeLineMutation } from "@/services/Api/TimeLine";
 
@@ -15,7 +16,7 @@ interface TimeLineFormProps {
   defaultValues?: Partial<z.infer<typeof timelineFormSchema>> & {
     id?: number;
   };
-  onSuccess?: () => void;
+  eventId: string;
 }
 
 const fields: FormFieldType[] = [
@@ -31,10 +32,10 @@ const fields: FormFieldType[] = [
 const TimeLineForm = ({
   operation,
   defaultValues,
-  onSuccess,
+  eventId,
 }: TimeLineFormProps) => {
-  const [addItem, { isLoading: isLoadingAdd }] = useAddAwardMutation();
-  const [updateItem, { isLoading: isLoadingEdit }] = useUpdateAwardMutation();
+  const [addTimeline, { isLoading: isAdding }] = useAddTimelineMutation();
+  const [updateTimeline, { isLoading: isEdting }] = useUpdateTimelineMutation();
 
   return (
     <CrudForm
@@ -42,12 +43,17 @@ const TimeLineForm = ({
       fields={fields}
       operation={operation}
       defaultValues={defaultValues}
-      onAdd={(data) => addItem(data).unwrap()}
-      onUpdate={(data) => updateItem(data).unwrap()}
+      onAdd={(data) => addTimeline({ data, eventId }).unwrap()}
+      onUpdate={(data) =>
+        updateTimeline({
+          data,
+          eventId,
+          timelineId: data?.id?.toString(),
+        }).unwrap()
+      }
       itemName="Day"
-      onSuccess={onSuccess}
-      isLoadingAdd={isLoadingAdd}
-      isLoadingEdit={isLoadingEdit}
+      isLoadingAdd={isAdding}
+      isLoadingEdit={isEdting}
     />
   );
 };

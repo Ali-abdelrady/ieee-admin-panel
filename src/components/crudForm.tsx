@@ -65,7 +65,7 @@ interface CrudFormProps<T extends z.ZodTypeAny> {
   schema: T;
   fields: FormFieldType[];
   operation: "add" | "edit" | "preview";
-  defaultValues?: Partial<z.infer<T>> & { id?: number };
+  defaultValues?: Partial<z.infer<T>> & { id?: number | string };
   onAdd?: (data: z.infer<T>) => Promise<any>;
   onUpdate?: (data: { id: number } & z.infer<T>) => Promise<any>;
   itemName: string;
@@ -101,6 +101,9 @@ export const CrudForm = <T extends z.ZodTypeAny>({
       }
       if (field.type === "selectInputType") {
         value = typeof value === "string" ? value : JSON.stringify(value);
+      }
+      if (field.type === "time") {
+        value = "10:30:00";
       }
       if (field.type === "dynamicArrayField") {
         // Ensure the value is a string (or the expected type used in select's options)
@@ -304,7 +307,8 @@ function FormDetails<T extends z.ZodTypeAny>({
                 </FormLabel>
                 {(fieldItem.type === "text" ||
                   fieldItem.type === "email" ||
-                  fieldItem.type === "number") && (
+                  fieldItem.type === "number" ||
+                  fieldItem.type === "time") && (
                   <FormControl>
                     <Input
                       placeholder={fieldItem.label}
@@ -312,6 +316,11 @@ function FormDetails<T extends z.ZodTypeAny>({
                       {...field}
                       disabled={operation === "preview" || fieldItem?.readonly}
                       min={fieldItem.type === "number" ? 0 : undefined}
+                      className={
+                        fieldItem.type === "time"
+                          ? "bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+                          : ""
+                      }
                     />
                   </FormControl>
                 )}

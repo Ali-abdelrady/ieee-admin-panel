@@ -15,6 +15,7 @@ export type FormFieldType = {
   };
   type:
     | "text"
+    | "time"
     | "checkbox"
     | "select"
     | "file"

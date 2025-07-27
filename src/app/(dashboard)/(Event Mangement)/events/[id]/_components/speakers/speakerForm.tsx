@@ -25,12 +25,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AddButton from "@/components/button/addButton";
 import EditButton from "@/components/button/editButton";
 import { User } from "lucide-react";
-import {
-  useAddSpeakerMutation,
-  useGetSpeakersQuery,
-  useUpdateSpeakerMutation,
-} from "@/services/Api/speakers";
-import { useMemo, useState } from "react";
+
+import { useEffect, useMemo, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import SpeakerSearch from "./SpeakerSearch";
 import { useForm } from "react-hook-form";
@@ -42,130 +38,53 @@ import SocialLinksManager, {
   parseSocialLinks,
 } from "@/components/forms/SocialLinksManger";
 import DynamicArrayField from "@/components/forms/DynamicArrayFields";
+import {
+  useAddEventSpeakerMutation,
+  useUpdateEventSpeakerMutation,
+} from "@/services/Api/EventSpeakers";
+import {
+  useAddSpeakerMutation,
+  useGetSpeakersQuery,
+} from "@/services/Api/speakers";
+import { EventSpeakerType } from "@/types/EventSpeakers";
+import { toast } from "sonner";
 
 interface SpeakerFormProps {
   operation: "add" | "edit";
-  defaultValues?: SpeakerType;
+  defaultValues?: EventSpeakerType;
+  eventId: string;
 }
 export default function SpeakerForm({
   operation,
   defaultValues,
+  eventId,
 }: SpeakerFormProps) {
   // RTK
+  const [addEventSpeaker, { isLoading: isAdding }] =
+    useAddEventSpeakerMutation();
+  const [addNewSpeaker] = useAddSpeakerMutation();
+  const [updateEventSpeaker, { isLoading: isUpdating }] =
+    useUpdateEventSpeakerMutation();
   const { data: speakersResponse, isLoading, isError } = useGetSpeakersQuery();
-  const [addSpeaker, { isLoading: isAdding }] = useAddSpeakerMutation();
-  const [updateSpeaker, { isLoading: isUpdating }] = useUpdateSpeakerMutation();
-
-  // const allSpeakers = speakersResponse?.data?.speakers ??[];
-  const allSpeakers = [
-    {
-      id: 1,
-      name: "Ali Mohamed",
-      title: "Lead Engineer",
-      job: "Software Developer",
-      company: "Tech Innovations Inc.",
-      bio: "Ali is a passionate software engineer with 5+ years of experience in full-stack development, focusing on modern web technologies and scalable architecture.",
-      socialLinks: [
-        {
-          name: "LinkedIn",
-          icon: "LinkedIn",
-          url: "https://linkedin.com/in/alimohamed",
-        },
-        {
-          name: "Twitter",
-          icon: "Twitter",
-          url: "https://twitter.com/alimohameddev",
-        },
-      ],
-      image: "https://via.placeholder.com/150?text=Ali",
-    },
-    {
-      id: 2,
-      name: "Sara Mostafa",
-      title: "UI/UX Designer",
-      job: "Product Designer",
-      company: "Creative Minds Studio",
-      bio: "Sara has over 6 years of experience in designing user-centric interfaces and creating seamless digital experiences for web and mobile platforms.",
-      socialLinks: [
-        {
-          name: "Dribbble",
-          icon: "Dribbble",
-          url: "https://dribbble.com/saramostafa",
-        },
-        {
-          name: "LinkedIn",
-          icon: "LinkedIn",
-          url: "https://linkedin.com/in/saramostafa",
-        },
-      ],
-      image: "https://via.placeholder.com/150?text=Sara",
-    },
-    {
-      id: 3,
-      name: "Omar Khaled",
-      title: "AI Researcher",
-      job: "Machine Learning Engineer",
-      company: "NeuralNet Labs",
-      bio: "Omar specializes in deep learning and computer vision, with publications in top AI conferences and a strong background in algorithm optimization.",
-      socialLinks: [
-        {
-          name: "GitHub",
-          icon: "GitHub",
-          url: "https://github.com/omarkhaled",
-        },
-        {
-          name: "LinkedIn",
-          icon: "LinkedIn",
-          url: "https://linkedin.com/in/omarkhaled",
-        },
-      ],
-      image: "https://via.placeholder.com/150?text=Omar",
-    },
-    {
-      id: 4,
-      name: "Laila Nabil",
-      title: "Project Manager",
-      job: "Agile Coach",
-      company: "Digital Flow",
-      bio: "Laila has led over 20 agile teams, helping organizations adopt agile practices and improve delivery pipelines with a people-first mindset.",
-      socialLinks: [
-        {
-          name: "LinkedIn",
-          icon: "LinkedIn",
-          url: "https://linkedin.com/in/lailanabil",
-        },
-        {
-          name: "Twitter",
-          icon: "Twitter",
-          url: "https://twitter.com/lailanabilpm",
-        },
-      ],
-      image: "https://via.placeholder.com/150?text=Laila",
-    },
-  ];
-  // States
-  const [isSearchMode, setIsSearchMode] = useState<boolean>(
-    operation == "add" && allSpeakers?.length > 0
-  );
+  const allSpeakers = speakersResponse?.data?.speakers ?? [];
+  const [selectedSpeaker, setSelectedSpeaker] = useState<SpeakerType>();
+  const [isSearchMode, setIsSearchMode] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>("details");
-  // const [selectedSpeaker, setSelectedSpeaker] = useState<SpeakerType>();
-  // const parsedSocialLinks = defaultValues?.socialLinks?.map((item) => ({
-  //   platform: item.icon.toLowerCase(), // or name.toLowerCase()
-  //   url: item.url,
-  // })) || [
-  //   {
-  //     platform: "",
-  //     url: "",
-  //   },
-  // ];
-  // console.log("parsed:", parsedSocialLinks);
+
+  useEffect(() => {
+    if (operation === "add" && allSpeakers.length > 0) {
+      setIsSearchMode(true);
+    }
+  }, [operation, allSpeakers]);
   const form = useForm<SpeakerFormValues>({
-    resolver: zodResolver(speakerFormSchema),
+    resolver: zodResolver(speakerFormSchema(operation === "edit")),
     defaultValues: {
-      name: defaultValues?.name || "",
-      title: defaultValues?.title || "",
-      image: defaultValues?.image || "",
-      socialLinks: parseSocialLinks(defaultValues?.socialLinks),
+      name: defaultValues?.speaker?.name || "",
+      title: defaultValues?.speaker?.title || "",
+      image: defaultValues?.speaker?.image || "",
+      socialLinks: parseSocialLinks(defaultValues?.speaker?.socialLinks),
+      // socialLinks: parseSocialLinks([{ url: "", name: "", icon: "" }]),
+      ...defaultValues,
     },
   });
   function handleSelectExistingSpeaker(speaker: SpeakerType) {
@@ -175,17 +94,74 @@ export default function SpeakerForm({
       socialLinks: parseSocialLinks(speaker.socialLinks),
       image: speaker.image || "",
     });
-    // setSelectedSpeaker(speaker);
+    setSelectedSpeaker(speaker);
     setIsSearchMode(false);
   }
-  async function handleSubmit(data: SpeakerFormValues) {}
+  async function handleSubmit(data: SpeakerFormValues) {
+    console.log("Enter Submition");
+    try {
+      const formData = new FormData();
+      const formatedSocialLinks = data.socialLinks.map((item) => ({
+        url: item.url,
+        icon: item.platform,
+        name: item.platform,
+      }));
+      // Append basic fields
+      formData.append("name", data.name);
+      formData.append("title", data.title);
+
+      // Append image if it exists (and is a File object)
+      if (data.image instanceof File) {
+        formData.append("image", data.image);
+      }
+
+      // Append social links as JSON string
+      if (data.socialLinks && data.socialLinks.length > 0) {
+        formData.append("socialLinks", JSON.stringify(formatedSocialLinks));
+      }
+      if (operation === "add") {
+        if (selectedSpeaker) {
+          formData.append("speakerId", selectedSpeaker?.id.toString());
+          await addEventSpeaker({
+            data: formData,
+            eventId,
+          });
+        } else {
+          await addEventSpeaker({
+            data: formData,
+            eventId,
+          }).unwrap();
+        }
+      } else if (operation === "edit" && defaultValues?.speaker?.id) {
+        const eventId = defaultValues?.eventId; // Replace with actual eventId from props
+        await updateEventSpeaker({
+          data: formData,
+          speakerId: defaultValues.speakerId,
+          eventId,
+        }).unwrap();
+      }
+      toast.success(`Speaker ${operation}ed successfully`);
+      form.reset();
+    } catch (error) {
+      // Handle error (you might want to show a toast notification)
+      console.error("Error submitting speaker:", error.message);
+      toast.error(`Something wrong`, {
+        description: error.message,
+      });
+    }
+  }
   return (
     <Sheet>
       <SheetTrigger asChild>
         {operation == "add" ? (
-          <AddButton label="speaker" />
+          <AddButton label="speaker" disabled={isAdding} />
         ) : (
-          <EditButton label="edit speaker" asIcon={true} variant="ghost" />
+          <EditButton
+            label="edit speaker"
+            asIcon={true}
+            variant="ghost"
+            disabled={isUpdating}
+          />
         )}
       </SheetTrigger>
       <SheetContent className="overflow-auto">
@@ -198,13 +174,19 @@ export default function SpeakerForm({
               speakers={allSpeakers}
               onSelectSpeaker={handleSelectExistingSpeaker}
             />
-            <AddButton label="New Speaker" className="mx-2" />
+            <AddButton
+              label="New Speaker"
+              className="mx-2"
+              onClick={() => {
+                setIsSearchMode(false);
+              }}
+            />
           </div>
         ) : (
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid grid-cols-2 w-full ">
+            <TabsList className="grid grid-cols-1 w-full ">
               <TabsTrigger value="details">Details</TabsTrigger>
-              <TabsTrigger value="social">Social Links</TabsTrigger>
+              {/* <TabsTrigger value="social">Social Links</TabsTrigger> */}
             </TabsList>
 
             <Form {...form}>
@@ -267,27 +249,43 @@ export default function SpeakerForm({
                   <FormField
                     control={form.control}
                     name="image"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Speaker Event Image</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => {
-                              const file = e.target.files?.[0];
-                              if (file) {
-                                field.onChange(file); // Update field value with selected File
-                              }
-                            }}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    render={({ field }) => {
+                      // Get current value
+                      const value = field.value;
+
+                      return (
+                        <FormItem>
+                          <FormLabel>Speaker Event Image</FormLabel>
+                          {value && typeof value === "string" && (
+                            <div className="mb-2">
+                              <Avatar className="w-16 h-16">
+                                <AvatarImage
+                                  src={value}
+                                  alt="Current speaker image"
+                                />
+                                <AvatarFallback>
+                                  <User />
+                                </AvatarFallback>
+                              </Avatar>
+                            </div>
+                          )}
+                          <FormControl>
+                            <Input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                  field.onChange(file);
+                                }
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
                   />
-                </TabsContent>
-                <TabsContent value="social" className="space-y-4 p-4">
                   <FormField
                     control={form.control}
                     name="socialLinks"
@@ -336,7 +334,11 @@ export default function SpeakerForm({
                     <SheetClose asChild>
                       <Button variant="outline">Close</Button>
                     </SheetClose>
-                    <Button type="submit">
+                    <Button
+                      type="submit"
+                      disabled={isAdding || isUpdating}
+                      isLoading={isAdding || isUpdating}
+                    >
                       {operation == "edit" ? "Update Speaker" : "Add Speaker"}
                     </Button>
                   </div>

@@ -12,6 +12,8 @@ import {
   Edit,
   Globe,
   MapPin,
+  Pen,
+  ScrollText,
   Shield,
   Tag,
   Timer,
@@ -20,11 +22,17 @@ import {
 import Image from "next/image";
 import EventForm from "../../../_components/form";
 import EditButton from "@/components/button/editButton";
-import { useGetEventByIdQuery } from "@/services/Api/events";
+import {
+  useDeleteEventMutation,
+  useGetEventByIdQuery,
+} from "@/services/Api/events";
 import Loader from "@/components/Loader";
+import DeleteDialog from "@/components/forms/deleteDialog";
+import DeleteButton from "@/components/button/deleteButton";
 
 export default function DetailsTab({ eventId }: { eventId: string }) {
   const { data, isLoading, isError } = useGetEventByIdQuery(eventId);
+  const [deleteEvent, { isLoading: isDeleting }] = useDeleteEventMutation();
   const event = data?.data?.event;
 
   console.log("event:", event);
@@ -35,34 +43,34 @@ export default function DetailsTab({ eventId }: { eventId: string }) {
   return (
     <div className="space-y-8">
       {/* Hero Section with Image */}
-      <Card className="overflow-hidden border-0 shadow-xl py-0">
-        <div className="relative">
-          <div className="aspect-[2/1] relative overflow-hidden rounded-t-lg bg-gradient-to-br from-primary/20 via-primary/10 to-background">
-            <Image
-              src={event?.images?.[0] ?? "/images/event.jpg"}
-              alt={event?.name ?? "eventImage"}
-              className="object-cover w-full h-full"
-              width={800}
-              height={600}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-            <div className="absolute bottom-6 left-6 right-6">
-              <div className="flex items-center justify-between">
-                <div className="space-y-3">
-                  <h1 className="text-4xl font-bold text-white drop-shadow-lg">
-                    {event?.name}
-                  </h1>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </Card>
 
       {/* Main Content */}
       <div className="grid gap-8 lg:grid-cols-3">
         {/* Event Information Cards */}
         <div className="lg:col-span-2 space-y-6">
+          <Card className="overflow-hidden border-0 shadow-xl py-0">
+            <div className="relative">
+              <div className="aspect-[2/1] relative overflow-hidden rounded-t-lg bg-gradient-to-br from-primary/20 via-primary/10 to-background">
+                <Image
+                  src={event?.images?.[0] ?? "/images/event.jpg"}
+                  alt={event?.name ?? "eventImage"}
+                  className="object-cover w-full h-full"
+                  width={800}
+                  height={600}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                <div className="absolute bottom-6 left-6 right-6">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-3">
+                      <h1 className="text-4xl font-bold text-white drop-shadow-lg">
+                        {event?.name}
+                      </h1>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Card>
           {/* Date & Time */}
           <Card className="shadow-lg border-l-4 border-l-primary">
             <CardHeader className="pb-4">
@@ -162,39 +170,14 @@ export default function DetailsTab({ eventId }: { eventId: string }) {
 
           {/* Location */}
           <Card className="shadow-lg border-l-4 border-l-emerald-500">
-            <CardHeader className="pb-4">
+            <CardHeader>
               <CardTitle className="flex items-center text-lg">
-                <MapPin className="mr-3 h-5 w-5 text-emerald-500" />
-                Location & Details
+                <ScrollText className="mr-3 h-5 w-5 text-emerald-500" />
+                About Event
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-3">
-                <div className="text-sm font-medium text-muted-foreground">
-                  Venue
-                </div>
-                <div className="flex items-center  space-x-3">
-                  <div className="p-2 rounded-full bg-emerald-100 mt-1">
-                    <MapPin className="h-4 w-4 text-emerald-600" />
-                  </div>
-                  <span className="font-medium leading-relaxed">
-                    {event.location || "No location specified"}
-                  </span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Description */}
-          <Card className="shadow-lg">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-lg">About This Event</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground leading-relaxed">
-                {event?.description ||
-                  "No description provided for this event."}
-              </p>
+              <div className="space-y-3">{event?.description}</div>
             </CardContent>
           </Card>
         </div>
@@ -261,9 +244,16 @@ export default function DetailsTab({ eventId }: { eventId: string }) {
                   {event?.category}
                 </Badge>
               </div>
-
               <Separator />
-
+              <div className="flex items-center justify-between">
+                <div className="text-sm text-muted-foreground flex items-center gap-3">
+                  Location <MapPin className="h-4 w-4 text-emerald-600" />
+                </div>
+                <Badge variant="default" className="capitalize">
+                  {event?.location}
+                </Badge>
+              </div>
+              <Separator />
               <div className="space-y-2">
                 <div className="text-sm text-muted-foreground">Created</div>
                 <div className="text-sm font-medium">
@@ -297,15 +287,26 @@ export default function DetailsTab({ eventId }: { eventId: string }) {
               )}
             </CardContent>
           </Card>
-          <EventForm
-            operation="edit"
-            defaultValues={event}
-            trigger={
-              <EditButton label="Event Details" className="w-full p-5">
-                Edit Event Details
-              </EditButton>
-            }
-          />
+          <div className="flex flex-col gap-5">
+            <EventForm
+              operation="edit"
+              defaultValues={event}
+              trigger={
+                <EditButton label="Event Details" className="w-full p-5">
+                  Edit Event Details
+                </EditButton>
+              }
+            />
+            <DeleteDialog
+              deleteFn={deleteEvent}
+              // getDeleteParams={(row)=>}
+              rows={event}
+              isLoading={isDeleting}
+              trigger={
+                <DeleteButton className="w-full" variant="destructive" />
+              }
+            />
+          </div>
         </div>
       </div>
     </div>

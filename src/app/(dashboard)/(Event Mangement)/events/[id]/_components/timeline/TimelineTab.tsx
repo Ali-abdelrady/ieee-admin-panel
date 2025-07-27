@@ -9,12 +9,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Calendar, Clock, UserRoundIcon } from "lucide-react";
+import { Calendar, Clock, NotebookText, UserRoundIcon } from "lucide-react";
 import EditButton from "@/components/table/editButton";
 import PreviewButton from "@/components/button/previewButton";
 import DeleteButton from "@/components/button/deleteButton";
 import { SpeakerType } from "@/types/speakers";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { formatDateString, formatTime } from "@/services/helpers/dateHelpers";
 import {
   Accordion,
@@ -23,79 +23,70 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
-import { AgendaItemType, TimelineType } from "@/types/timeline";
+import { AgendaItemType, TimelineType } from "@/types/eventTimeline";
 import SessionForm from "./SessionForm";
 import TimeLineForm from "./TimeLineForm";
 import DeleteDialog from "@/components/forms/deleteDialog";
-import { useDeletePartnerMutation } from "@/services/Api/partners";
+import {
+  useDeleteAgendaItemMutation,
+  useDeleteTimelineMutation,
+  useGetTimelinesQuery,
+} from "@/services/Api/eventTimeline";
+import Loader from "@/components/Loader";
+import { useGetEventSpeakersQuery } from "@/services/Api/EventSpeakers";
 
-export default function TimeLineTab({
-  eventId,
-  speakers = [],
-}: {
-  eventId: string;
-  speakers: SpeakerType[];
-}) {
-  const [timeline, setTimeline] = useState<TimelineType[]>([]);
-  const [deletePartner, { isLoading: isDeleting }] = useDeletePartnerMutation();
+export default function TimeLineTab({ eventId }: { eventId: string }) {
+  // Timeline Queries
+  const {
+    data: timelineResponse,
+    isLoading,
+    isError,
+  } = useGetTimelinesQuery(eventId);
+  const [deleteTimeline, { isLoading: isDeletingTimeline }] =
+    useDeleteTimelineMutation();
 
-  // Mock data - replace with actual API call
-  useEffect(() => {
-    setTimeline([
-      {
-        date: "2025-05-20T00:00:00Z",
-        label: "Day 1",
-        agenda: [
-          {
-            name: "AI in 2025",
-            description: "A deep dive into modern AI trends.",
-            startTime: "2025-05-20T10:30:00Z",
-            endTime: "2025-05-20T11:30:00Z",
-            speakerId: "8447d38f-96ca-44b1-8fe3-fc992378045d",
-          },
-          {
-            name: "Future of Web Development",
-            description: "Exploring next-gen web technologies.",
-            startTime: "2025-05-20T13:00:00Z",
-            endTime: "2025-05-20T14:30:00Z",
-            speakerId: "8447d38f-96ca-44b1-8fe3-fc992378045d",
-          },
-        ],
-      },
-      {
-        date: "2025-05-21T00:00:00Z",
-        label: "Day 2",
-        agenda: [
-          {
-            name: "Quantum Computing",
-            description: "Understanding quantum algorithms.",
-            startTime: "2025-05-21T09:00:00Z",
-            endTime: "2025-05-21T10:30:00Z",
-            speakerId: "8447d38f-96ca-44b1-8fe3-fc992378045d",
-          },
-        ],
-      },
-    ]);
-  }, [eventId]);
+  // Agedna Queies
+  const [deleteAgendaItem, { isLoading: isDeletingAgendaItem }] =
+    useDeleteAgendaItemMutation();
+  // Get Event Speakers
+  const { data: eventSpeakersResponse } = useGetEventSpeakersQuery(eventId);
+  const eventSpeakersOptions = useMemo(() => {
+    const options =
+      eventSpeakersResponse?.data?.map(({ speaker }) => ({
+        label: speaker.name,
+        value: speaker.id,
+      })) || [];
+    return options;
+  }, [eventSpeakersResponse]);
+  if (isLoading) {
+    return <Loader error={isError} />;
+  }
 
-  const getSpeakerName = (speakerId: string) => {
-    const speaker = speakers.find((s) => s.id === speakerId);
-    return speaker ? speaker.name : "Unknown Speaker";
-  };
+  const timeline = timelineResponse?.data?.timeline ?? [];
 
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <h1 className="font-bold text-2xl md:text-3xl">Event Timeline</h1>
         <NoPropagationWrapper>
-          <TimeLineForm operation="add" />
+          <TimeLineForm operation="add" eventId={eventId} />
         </NoPropagationWrapper>
       </div>
 
       {timeline.length === 0 ? (
-        <div className="text-center py-12 bg-muted rounded-lg">
-          <p className="text-gray-500">No days added yet</p>
-        </div>
+        <Card>
+          <CardContent className="p-8 text-center">
+            <NotebookText className="mx-auto h-12 w-12 text-muted-foreground" />
+            <h3 className="mt-4 text-lg font-medium">No Timeline Yet</h3>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Add a timeline to clearly communicate your event’s flow and keep
+              attendees informed.
+            </p>
+            <div className="mt-4 flex justify-center gap-2">
+              <TimeLineForm operation="add" eventId={eventId} />
+            </div>
+          </CardContent>
+        </Card>
       ) : (
         <Accordion type="multiple" className="w-full" defaultValue={["item-0"]}>
           {timeline.map((day, dayIndex) => (
@@ -119,19 +110,23 @@ export default function TimeLineTab({
                       </div>
                       <div className="flex items-center gap-3">
                         <Badge className="bg-emerald-700 px-2 py-0.5">
-                          {day.agenda.length} session
-                          {day.agenda.length !== 1 ? "s" : ""}
+                          {day.agendaItems.length} session
+                          {day.agendaItems.length !== 1 ? "s" : ""}
                         </Badge>
                         <NoPropagationWrapper className="flex gap-2">
                           {/* <DeleteButton label="Session" variant="destructive" /> */}
                           <DeleteDialog<TimelineType>
-                            deleteFn={deletePartner}
-                            isLoading={isDeleting}
-                            rows={[]}
-                            getId={(row) => row.id}
-                            variant="destructive"
+                            deleteFn={deleteTimeline}
+                            isLoading={isDeletingTimeline}
+                            rows={day}
+                            variant="default"
                           />
-                          <SessionForm operation="add" />
+                          <SessionForm
+                            operation="add"
+                            speakersOptions={eventSpeakersOptions}
+                            eventId={eventId}
+                            timelineId={day.id}
+                          />
                         </NoPropagationWrapper>
                         {/* <SessionForm operation="add" /> */}
                       </div>
@@ -141,13 +136,13 @@ export default function TimeLineTab({
 
                 <AccordionContent>
                   <CardContent className="">
-                    {day.agenda.length === 0 ? (
+                    {day.agendaItems.length === 0 ? (
                       <div className="text-center py-8">
                         <p className="text-gray-500">No sessions scheduled</p>
                       </div>
                     ) : (
                       <div className="divide-y flex flex-col gap-4">
-                        {day.agenda.map((session, sessionIndex) => (
+                        {day.agendaItems.map((session, sessionIndex) => (
                           <Card
                             key={sessionIndex}
                             className="hover:bg-muted/50 transition-colors "
@@ -174,7 +169,7 @@ export default function TimeLineTab({
                                   </Badge>
                                   <div className="flex gap-2 items-center">
                                     <UserRoundIcon size={20} />
-                                    <p>{getSpeakerName(session.speakerId)}</p>
+                                    <p>{session.speaker.name}</p>
                                   </div>
                                 </CardDescription>
                                 <div className="text-base  bg-accent p-5">
@@ -187,13 +182,15 @@ export default function TimeLineTab({
                                 <NoPropagationWrapper className="flex gap-2">
                                   <SessionForm
                                     operation="edit"
-                                    defaultValues={{}}
+                                    defaultValues={session}
+                                    speakersOptions={eventSpeakersOptions}
+                                    eventId={eventId}
+                                    timelineId={day.id}
                                   />
-                                  <DeleteDialog<TimelineType>
-                                    deleteFn={deletePartner}
-                                    isLoading={isDeleting}
+                                  <DeleteDialog<AgendaItemType>
+                                    deleteFn={deleteAgendaItem}
+                                    isLoading={isDeletingAgendaItem}
                                     rows={[]}
-                                    getId={(row) => row.id}
                                     variant="outline"
                                     isIcon={true}
                                   />

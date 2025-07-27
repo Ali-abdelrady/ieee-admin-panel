@@ -22,7 +22,11 @@ export default function EventDetails({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
-
+  const { data, isLoading, isError } = useGetEventByIdQuery(id);
+  if (isLoading) {
+    return <Loader error={isError} />;
+  }
+  const event = data?.data?.event;
   const tabs = [
     {
       value: "details",
@@ -74,10 +78,7 @@ export default function EventDetails({
 
       {/* Event Name & Creation Date */}
       <div className="space-y-2">
-        <h1 className="text-3xl font-semibold tracking-tight">Event Name</h1>
-        <p className="text-sm text-muted-foreground">
-          Created on {new Date().toLocaleDateString()}
-        </p>
+        <h1 className="text-3xl font-semibold tracking-tight">{event?.name}</h1>
       </div>
 
       <Tabs className="w-full space-y-6" defaultValue="details">

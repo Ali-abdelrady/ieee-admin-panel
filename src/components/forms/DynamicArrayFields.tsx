@@ -95,7 +95,7 @@ const DynamicArrayField = ({
       </div>
     );
   }
-  console.log("fields:", fields);
+  // console.log("fields:", fields);
   return (
     <div className="space-y-4">
       <div className="space-y-4">

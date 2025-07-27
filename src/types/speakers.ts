@@ -1,7 +1,7 @@
 import { SocialLinksType } from "./forms";
 
 export interface SpeakerType {
-  id: number;
+  id: number | string;
   name: string;
   title: string;
   job?: string;
@@ -9,6 +9,7 @@ export interface SpeakerType {
   socialLinks?: SocialLinksType[];
   bio?: string;
   image?: File | string;
+  images?: { id: string; url: string };
 }
 export interface ApiResponse<T> {
   data?: {
