@@ -49,7 +49,15 @@ const CommitteeForm = ({
       options: boardOptions,
     },
     { name: "description", label: "Description", type: "textArea" },
-    { name: "image", label: "Image", type: "file" },
+    {
+      name: "image",
+      label: "Image",
+      type: "file",
+      fileUploadConfig: {
+        fileType: "image",
+        maxFiles: 1,
+      },
+    },
     {
       name: "topics",
       label: "Topics",

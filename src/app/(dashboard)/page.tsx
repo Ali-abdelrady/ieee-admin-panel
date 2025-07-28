@@ -22,6 +22,7 @@ import { BarChartVertical } from "@/components/charts/barChartVertical";
 import { ChartPieLabelList } from "@/components/charts/pieChart";
 import { CustomLineChart } from "@/components/charts/lineChart";
 import TabsDatables from "@/components/table/tabsDataTable";
+import { FileUploadFormDemo } from "@/components/forms/file-upload-form-demo";
 // import { BaseTabConfig } from "@/types/tabs";
 
 export default function DashboardPage() {
@@ -60,24 +61,25 @@ export default function DashboardPage() {
   //   },
   // ] satisfies BaseTabConfig<any, any>[];
   return (
-    <div className="flex flex-1 flex-col">
-      <div className="flex flex-1 flex-col gap-2">
-        <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-          {/* Summary Cards */}
-          {/* <SummaryCards dashboardData={dashboardData} isLoading={isLoading} />
-          {isLoading ? (
-            <SkeletonCards isLoading={isLoading} />
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4  gap-4 lg:gap-6 px-6">
-              <Charts dashboardData={dashboardData} isLoading={isLoading} />
-              <TabsDatables tabs={tabs} />
-            </div>
-          )} */}
-          dashboardPage
-          {/* Charts */}
-        </div>
-      </div>
-    </div>
+    // <div className="flex flex-1 flex-col">
+    //   <div className="flex flex-1 flex-col gap-2">
+    //     <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+    //       {/* Summary Cards */}
+    //       {/* <SummaryCards dashboardData={dashboardData} isLoading={isLoading} />
+    //       {isLoading ? (
+    //         <SkeletonCards isLoading={isLoading} />
+    //       ) : (
+    //         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4  gap-4 lg:gap-6 px-6">
+    //           <Charts dashboardData={dashboardData} isLoading={isLoading} />
+    //           <TabsDatables tabs={tabs} />
+    //         </div>
+    //       )} */}
+    //       dashboardPage
+    //       {/* Charts */}
+    //     </div>
+    //   </div>
+    // </div>
+    <FileUploadFormDemo />
   );
 }
 

@@ -47,6 +47,12 @@ const EventForm = ({ operation, defaultValues, trigger }: EventFormProps) => {
     { name: "registrationEnd", label: "Registration End", type: "date" },
   ];
 
+  // async function handleAddNewEevnt(data) {
+  //   try {
+  //     await addItem(data).unwrap();
+
+  //   } catch (error) {}
+  // }
   return (
     <CrudForm
       schema={eventFormSchema}

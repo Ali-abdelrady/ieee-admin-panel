@@ -36,7 +36,10 @@ const DynamicArrayField = ({
   simpleArray = false,
   itemName,
 }: DynamicArrayFieldProps) => {
-  const { control } = useFormContext();
+  const {
+    control,
+    formState: { errors },
+  } = useFormContext();
 
   const getDefaultItem = () => {
     if (defaultItemValue) return defaultItemValue;
@@ -124,15 +127,27 @@ const DynamicArrayField = ({
             {simpleArray ? (
               <div className="space-y-2">
                 <Controller
-                  name={`${name}.${index}`} // Simple array path
+                  name={`${name}.${index}`}
                   control={control}
-                  render={({ field: controllerField }) => (
-                    <Input
-                      type="text" // Default type for simple array
-                      placeholder="Enter value"
-                      {...controllerField}
-                    />
-                  )}
+                  render={({ field: controllerField }) => {
+                    const fieldError = errors?.[name]?.[index]?.message as
+                      | string
+                      | undefined;
+                    return (
+                      <>
+                        <Input
+                          type="text"
+                          placeholder="Enter value"
+                          {...controllerField}
+                        />
+                        {fieldError && (
+                          <p className="text-sm text-destructive">
+                            {fieldError}
+                          </p>
+                        )}
+                      </>
+                    );
+                  }}
                 />
               </div>
             ) : (
@@ -143,45 +158,72 @@ const DynamicArrayField = ({
                       {config.label}
                     </label>
                     <Controller
-                      name={`${name}.${index}.${config.name}`} // Object array path
+                      name={`${name}.${index}.${config.name}`}
                       control={control}
                       render={({ field: controllerField }) => {
+                        const fieldError = errors?.[name]?.[index]?.[
+                          config.name
+                        ]?.message as string | undefined;
+
                         if (config.type === "select") {
                           return (
-                            <Select
-                              value={controllerField.value}
-                              onValueChange={controllerField.onChange}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder={config.label} />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {config.options?.map((option) => (
-                                  <SelectItem
-                                    key={option.value}
-                                    value={option.value.toString()}
-                                  >
-                                    {option.label}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
+                            <>
+                              <Select
+                                value={controllerField.value}
+                                onValueChange={controllerField.onChange}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder={config.label} />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {config.options?.map((option) => (
+                                    <SelectItem
+                                      key={option.value}
+                                      value={option.value.toString()}
+                                    >
+                                      {option.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              {fieldError && (
+                                <p className="text-sm text-destructive">
+                                  {fieldError}
+                                </p>
+                              )}
+                            </>
                           );
                         }
+
                         if (config.type === "textArea") {
                           return (
-                            <Textarea
-                              {...controllerField}
-                              placeholder={config.label}
-                            />
+                            <>
+                              <Textarea
+                                {...controllerField}
+                                placeholder={config.label}
+                              />
+                              {fieldError && (
+                                <p className="text-sm text-destructive">
+                                  {fieldError}
+                                </p>
+                              )}
+                            </>
                           );
                         }
+
                         return (
-                          <Input
-                            type={config.type}
-                            placeholder={config.label}
-                            {...controllerField}
-                          />
+                          <>
+                            <Input
+                              type={config.type}
+                              placeholder={config.label}
+                              {...controllerField}
+                            />
+                            {fieldError && (
+                              <p className="text-sm text-destructive">
+                                {fieldError}
+                              </p>
+                            )}
+                          </>
                         );
                       }}
                     />

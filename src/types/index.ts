@@ -38,7 +38,11 @@ export type FormFieldType = {
   options?: { label: string; value: number | string }[]; // for select
   dynamicOptions?: boolean;
   extraProps?: object;
-  isMultiFiles?: boolean;
+  fileUploadConfig?: {
+    maxFiles: number;
+    maxSize?: number;
+    fileType: "video" | "image" | "all";
+  };
 };
 export type FormSection = {
   label: string;

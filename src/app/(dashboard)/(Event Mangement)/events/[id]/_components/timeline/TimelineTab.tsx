@@ -10,10 +10,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Calendar, Clock, NotebookText, UserRoundIcon } from "lucide-react";
-import EditButton from "@/components/table/editButton";
 import PreviewButton from "@/components/button/previewButton";
 import DeleteButton from "@/components/button/deleteButton";
-import { SpeakerType } from "@/types/speakers";
 import { useEffect, useMemo, useState } from "react";
 import { formatDateString, formatTime } from "@/services/helpers/dateHelpers";
 import {
@@ -34,6 +32,7 @@ import {
 } from "@/services/Api/eventTimeline";
 import Loader from "@/components/Loader";
 import { useGetEventSpeakersQuery } from "@/services/Api/EventSpeakers";
+import EditButton from "@/components/button/editButton";
 
 export default function TimeLineTab({ eventId }: { eventId: string }) {
   // Timeline Queries
@@ -67,7 +66,7 @@ export default function TimeLineTab({ eventId }: { eventId: string }) {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <h1 className="font-bold text-2xl md:text-3xl">Event Timeline</h1>
+        <h1 className="font-semibold text-xl md:text-xl">Event Timeline</h1>
         <NoPropagationWrapper>
           <TimeLineForm operation="add" eventId={eventId} />
         </NoPropagationWrapper>
@@ -97,11 +96,11 @@ export default function TimeLineTab({ eventId }: { eventId: string }) {
             >
               <Card className="overflow-hidden border-l-5 border-l-primary  ">
                 <AccordionTrigger className="hover:no-underline p-0 cursor-pointer flex items-center">
-                  <CardHeader className="p-4 w-full">
+                  <CardHeader className=" w-full">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 w-full text-left">
                       <div className="flex flex-col">
-                        <CardTitle className="text-xl md:text-2xl font-bold flex items-center gap-2">
-                          <Calendar />
+                        <CardTitle className="text-xl md:text-xl font-bold flex items-center gap-2">
+                          {/* <Calendar /> */}
                           {day.label}
                         </CardTitle>
                         <CardDescription className="text-base mt-1">
@@ -115,11 +114,40 @@ export default function TimeLineTab({ eventId }: { eventId: string }) {
                         </Badge>
                         <NoPropagationWrapper className="flex gap-2">
                           {/* <DeleteButton label="Session" variant="destructive" /> */}
-                          <DeleteDialog<TimelineType>
+                          <TimeLineForm
+                            operation="edit"
+                            eventId={eventId}
+                            defaultValues={day}
+                            trigger={
+                              <EditButton
+                                label="Edit Timeline"
+                                variant="ghost"
+                              />
+                            }
+                          />
+
+                          <DeleteDialog<
+                            TimelineType,
+                            {
+                              eventId: string;
+                              timelineId: string | number;
+                            }
+                          >
                             deleteFn={deleteTimeline}
                             isLoading={isDeletingTimeline}
+                            getDeleteParams={(day) => ({
+                              eventId: eventId,
+                              timelineId: day.id,
+                            })}
                             rows={day}
-                            variant="default"
+                            // variant="default"
+                            trigger={
+                              <DeleteButton
+                                variant="ghost"
+                                isIcon={true}
+                                className=" text-red-500 hover:text-500"
+                              />
+                            }
                           />
                           <SessionForm
                             operation="add"
@@ -186,13 +214,29 @@ export default function TimeLineTab({ eventId }: { eventId: string }) {
                                     speakersOptions={eventSpeakersOptions}
                                     eventId={eventId}
                                     timelineId={day.id}
+                                    trigger={
+                                      <EditButton
+                                        label="Edit Session"
+                                        variant="ghost"
+                                      />
+                                    }
                                   />
                                   <DeleteDialog<AgendaItemType>
                                     deleteFn={deleteAgendaItem}
                                     isLoading={isDeletingAgendaItem}
-                                    rows={[]}
-                                    variant="outline"
-                                    isIcon={true}
+                                    rows={session}
+                                    getDeleteParams={(session) => ({
+                                      eventId: eventId,
+                                      timelineId: day.id,
+                                      agendaItemId: session.id,
+                                    })}
+                                    trigger={
+                                      <DeleteButton
+                                        variant="ghost"
+                                        isIcon={true}
+                                        className=" text-red-500 hover:text-500"
+                                      />
+                                    }
                                   />
                                 </NoPropagationWrapper>
                               </div>

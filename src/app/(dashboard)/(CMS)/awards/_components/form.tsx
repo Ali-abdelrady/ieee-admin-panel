@@ -12,7 +12,6 @@ interface AwardFormProps {
   defaultValues?: Partial<z.infer<typeof awardFormSchema>> & {
     id?: number;
   };
-  onSuccess?: () => void;
 }
 
 const fields: FormFieldType[] = [
@@ -20,10 +19,18 @@ const fields: FormFieldType[] = [
   { name: "description", label: "Description", type: "textArea" },
   { name: "winningDate", label: "Winning Date", type: "date" },
   { name: "place", label: "Place", type: "number" },
-  { name: "image", label: "Image File", type: "file" },
+  {
+    name: "image",
+    label: "Image File",
+    type: "file",
+    fileUploadConfig: {
+      fileType: "image",
+      maxFiles: 1,
+    },
+  },
 ];
 
-const AwardForm = ({ operation, defaultValues, onSuccess }: AwardFormProps) => {
+const AwardForm = ({ operation, defaultValues }: AwardFormProps) => {
   const [addItem, { isLoading: isLoadingAdd }] = useAddAwardMutation();
   const [updateItem, { isLoading: isLoadingEdit }] = useUpdateAwardMutation();
 
@@ -36,7 +43,6 @@ const AwardForm = ({ operation, defaultValues, onSuccess }: AwardFormProps) => {
       onAdd={(data) => addItem(data).unwrap()}
       onUpdate={(data) => updateItem(data).unwrap()}
       itemName="Award"
-      onSuccess={onSuccess}
       isLoadingAdd={isLoadingAdd}
       isLoadingEdit={isLoadingEdit}
     />

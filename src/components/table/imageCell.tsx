@@ -10,10 +10,9 @@ interface ImageCellProps {
 export function ImageCell({
   imageUrl,
   label,
-  width = 75,
-  height = 75,
+  width = 100,
+  height = 100,
 }: ImageCellProps) {
-  return "N/A";
   const [isValid, setIsValid] = useState(false);
 
   useEffect(() => {

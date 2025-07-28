@@ -42,7 +42,7 @@ export default function SpeakersTab({ eventId }: { eventId: string }) {
                 className="hover:shadow-md transition-shadow"
               >
                 <CardContent className="flex items-center space-x-4">
-                  <div className="min-w-18 rounded-lg overflow-hidden bg-muted">
+                  <div className="min-w-18 rounded-xl overflow-hidden bg-muted">
                     <Image
                       src={speaker.images?.url ?? "/images/speaker2.jpg"}
                       alt={speaker.name}
@@ -62,7 +62,7 @@ export default function SpeakersTab({ eventId }: { eventId: string }) {
                     </p>
                   )} */}
                   </div>
-                  <div className="flex space-x-1">
+                  <div className="flex items-center">
                     <SpeakerForm
                       operation="edit"
                       defaultValues={item}

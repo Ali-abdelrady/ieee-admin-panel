@@ -36,10 +36,18 @@ const BoardForm = ({ operation, defaultValues, onSuccess }: BoardFormProps) => {
       ],
     },
     { name: "title", label: "Title", type: "text" },
-    { name: "image", label: "Profile Image", type: "file" },
+    {
+      name: "image",
+      label: "Profile Image",
+      type: "file",
+      fileUploadConfig: {
+        fileType: "image",
+        maxFiles: 1,
+      },
+    },
     {
       name: "socialLinks",
-      label: "Social Links",
+      label: "Social Links (you must add at least one)",
       type: "dynamicArrayField",
       dynamicArrayFieldsConfig: {
         fields: [
@@ -58,18 +66,21 @@ const BoardForm = ({ operation, defaultValues, onSuccess }: BoardFormProps) => {
           },
         ],
         itemName: "socialLink",
+        addButtonLabel: "Add Link",
       },
     },
   ];
 
   return (
     <CrudForm
-      schema={boardFormSchema}
+      schema={boardFormSchema(operation === "edit")}
       fields={fields}
       operation={operation}
       defaultValues={{
         ...defaultValues,
-        socialLinks: parseSocialLinks(defaultValues?.socialLinks),
+        socialLinks: defaultValues?.socialLinks
+          ? parseSocialLinks(defaultValues?.socialLinks)
+          : [{ platform: "", url: "" }],
       }}
       onAdd={(data) => addItem(data).unwrap()}
       onUpdate={(data) => updateItem(data).unwrap()}

@@ -1,8 +1,9 @@
 export interface SponsorType {
   id: number | string;
   name: string;
-  url: string;
+  url?: string;
   image: File | string;
+  images?: { id: string; url: string };
   isSeasonSponsor: boolean;
 }
 export interface ApiResponse<T> {

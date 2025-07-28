@@ -27,7 +27,8 @@ interface SessionFormProps {
     value: number | string;
   }[];
   eventId: string;
-  timelineId: string;
+  timelineId: string | number;
+  trigger?: React.ReactNode;
 }
 
 const SessionForm = ({
@@ -36,6 +37,7 @@ const SessionForm = ({
   speakersOptions,
   eventId,
   timelineId,
+  trigger,
 }: SessionFormProps) => {
   const [addItem, { isLoading: isLoadingAdd }] = useAddAgendaItemMutation();
   const [updateItem, { isLoading: isLoadingEdit }] =
@@ -59,6 +61,7 @@ const SessionForm = ({
 
   return (
     <CrudForm
+      trigger={trigger}
       schema={agendaItemFormSchema}
       fields={fields}
       operation={operation}

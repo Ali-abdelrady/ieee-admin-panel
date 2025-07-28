@@ -12,6 +12,8 @@ export const menuItemSchema = z.object({
 
 export const foodMenuSchema = z.object({
   name: z.string().min(1, "Menu name is required"),
+  coverImage: z.any(),
+  menuImages: z.any(),
   // menuImageUrl: z.array(z.string()),
 
   // items: z.array(menuItemSchema).min(1, "At least one menu item is required"),

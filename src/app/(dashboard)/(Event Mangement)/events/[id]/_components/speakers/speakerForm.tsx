@@ -48,6 +48,7 @@ import {
 } from "@/services/Api/speakers";
 import { EventSpeakerType } from "@/types/EventSpeakers";
 import { toast } from "sonner";
+import FileUploadField from "@/components/forms/fields/FileUploader";
 
 interface SpeakerFormProps {
   operation: "add" | "edit";
@@ -269,19 +270,14 @@ export default function SpeakerForm({
                               </Avatar>
                             </div>
                           )}
-                          <FormControl>
-                            <Input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => {
-                                const file = e.target.files?.[0];
-                                if (file) {
-                                  field.onChange(file);
-                                }
-                              }}
-                            />
-                          </FormControl>
-                          <FormMessage />
+                          <FileUploadField
+                            field={field}
+                            form={form}
+                            fileUploadConfig={{
+                              fileType: "image",
+                              maxFiles: 1,
+                            }}
+                          />
                         </FormItem>
                       );
                     }}

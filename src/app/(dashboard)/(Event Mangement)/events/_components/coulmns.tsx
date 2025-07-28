@@ -5,6 +5,7 @@ import { EventType } from "@/types/events";
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
+import { formatDate } from "@/services/helpers/dateHelpers";
 
 export const eventColumns = (
   onEdit: (row: EventType) => React.ReactNode,
@@ -34,11 +35,7 @@ export const eventColumns = (
     enableSorting: false,
     enableHiding: false,
   },
-  {
-    id: "id",
-    accessorKey: "id",
-    header: "ID",
-  },
+
   {
     accessorKey: "name",
     header: "Name",
@@ -55,12 +52,12 @@ export const eventColumns = (
   {
     accessorKey: "startDate",
     header: "Start Date",
-    // cell: ({ row }) => format(new Date(row.original.startDate), "PPp"),
+    cell: ({ row }) => formatDate(row.original.startDate),
   },
   {
     accessorKey: "endDate",
     header: "End Date",
-    cell: ({ row }) => format(new Date(row.original.endDate), "PPp"),
+    cell: ({ row }) => formatDate(row.original.endDate),
   },
   {
     accessorKey: "private",

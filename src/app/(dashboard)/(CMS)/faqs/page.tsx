@@ -33,7 +33,7 @@ export default function FaqPage() {
         rows={rows}
         isLoading={isDeleting}
         deleteFn={deleteFaq}
-        getId={(row) => row.id}
+        getDeleteParams={(faq) => faq.id}
         isIcon={true}
       />
     ),
@@ -67,7 +67,7 @@ export default function FaqPage() {
             rows={rows}
             isLoading={isDeleting}
             deleteFn={deleteFaq}
-            getId={(row) => row.id}
+            getDeleteParams={(faq) => faq.id}
           />
         )}
         label="FAQ"

@@ -30,7 +30,7 @@ export default function BoardPage() {
         rows={rows}
         isLoading={isDeleting}
         deleteFn={deleteBoard}
-        getId={(row) => row.id}
+        getDeleteParams={(board) => board.id}
         isIcon={true}
       />
     ),
@@ -64,20 +64,20 @@ export default function BoardPage() {
             rows={rows}
             isLoading={isDeleting}
             deleteFn={deleteBoard}
-            getId={(row) => row.id}
+            getDeleteParams={(board) => board.id}
           />
         )}
         label="Board Member"
         filterKey="name"
-        importDialogContent={
-          <ImportDialog<BoardType>
-            addFn={addBoard}
-            isLoading={isAdding}
-            columns={columns}
-            filterKey="name"
-            schema={boardFormSchema}
-          />
-        }
+        // importDialogContent={
+        //   <ImportDialog<BoardType>
+        //     addFn={addBoard}
+        //     isLoading={isAdding}
+        //     columns={columns}
+        //     filterKey="name"
+        //     schema={boardFormSchema}
+        //   />
+        // }
       />
     </div>
   );

@@ -8,7 +8,8 @@ export interface FoodMenuType {
   id: string | number;
   //   eventId: string;
   name: string;
-  menuImageUrl: string[];
+  coverImage: File;
+  menuImages: File[];
   items?: MenuItemType[];
 }
 export interface ApiResponse<T> {

@@ -26,13 +26,21 @@ const fields: FormFieldType[] = [
     placeholder: "Enter Menu Name",
   },
   {
-    name: "menuImagUrl",
+    name: "coverImage",
+    label: "Cover Image",
+    type: "file",
+    fileUploadConfig: {
+      fileType: "image",
+      maxFiles: 1,
+    },
+  },
+  {
+    name: "menuImages",
     label: "Menu Images",
-    type: "dynamicArrayField",
-    dynamicArrayFieldsConfig: {
-      isSimpleArray: true,
-      addButtonLabel: "Add New Menu",
-      itemName: "menu",
+    type: "file",
+    fileUploadConfig: {
+      fileType: "image",
+      maxFiles: 12,
     },
   },
 ];

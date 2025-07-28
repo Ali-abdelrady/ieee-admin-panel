@@ -17,6 +17,7 @@ interface TimeLineFormProps {
     id?: number;
   };
   eventId: string;
+  trigger?: React.ReactNode;
 }
 
 const fields: FormFieldType[] = [
@@ -33,12 +34,14 @@ const TimeLineForm = ({
   operation,
   defaultValues,
   eventId,
+  trigger,
 }: TimeLineFormProps) => {
   const [addTimeline, { isLoading: isAdding }] = useAddTimelineMutation();
   const [updateTimeline, { isLoading: isEdting }] = useUpdateTimelineMutation();
 
   return (
     <CrudForm
+      trigger={trigger}
       schema={timelineFormSchema}
       fields={fields}
       operation={operation}

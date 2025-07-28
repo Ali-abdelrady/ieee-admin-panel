@@ -11,7 +11,7 @@ import { api } from "./api";
 export const MenuApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getMenus: builder.query<FoodMenusResponse, string>({
-      query: (eventId) => `/admin/events/${eventId}/food-menu`,
+      query: (eventId) => `/admin/events/${eventId}/food-menus`,
       providesTags: (result, error, eventId) => {
         const data = result?.data?.menus ?? [];
         if (Array.isArray(data) && data.length) {
@@ -35,7 +35,7 @@ export const MenuApi = api.injectEndpoints({
       { eventId: string; menuId: string | number }
     >({
       query: ({ eventId, menuId }) =>
-        `/admin/events/${eventId}/food-menu/${menuId}`,
+        `/admin/events/${eventId}/food-menus/${menuId}`,
       providesTags: (result, error, { eventId, menuId }) =>
         result
           ? [
@@ -53,8 +53,7 @@ export const MenuApi = api.injectEndpoints({
       { eventId: string; data: FoodMenuRequest }
     >({
       query: ({ eventId, data }) => ({
-        
-        url: `/admin/events/${eventId}/food-menu`,
+        url: `/admin/events/${eventId}/food-menus`,
         method: "POST",
         body: { ...data, items: [] },
       }),
@@ -68,7 +67,7 @@ export const MenuApi = api.injectEndpoints({
       { eventId: string; data: FoodMenuType }
     >({
       query: ({ eventId, data }) => ({
-        url: `/admin/events/${eventId}/food-menu/${data.id}`,
+        url: `/admin/events/${eventId}/food-menus/${data.id}`,
         method: "PATCH",
         body: { ...data, items: [] },
       }),
@@ -83,7 +82,7 @@ export const MenuApi = api.injectEndpoints({
       { eventId: string; menuId: string | number }
     >({
       query: ({ eventId, menuId }) => ({
-        url: `/admin/events/${eventId}/food-menu/${menuId.toString()}`,
+        url: `/admin/events/${eventId}/food-menus/${menuId.toString()}`,
         method: "DELETE",
       }),
       invalidatesTags: (result, error, { eventId, menuId }) => [

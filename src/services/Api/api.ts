@@ -27,6 +27,7 @@ export const api = createApi({
     "Menus",
     "EventSpeakers",
     "Timelines",
+    "EventSponsors",
   ],
 
   endpoints: () => ({}), // start empty

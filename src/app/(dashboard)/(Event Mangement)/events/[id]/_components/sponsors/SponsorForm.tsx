@@ -30,7 +30,7 @@ import {
   useGetSponsorsQuery,
   useUpdateSponsorMutation,
 } from "@/services/Api/sponsors";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import SponsorSearch from "./SponsorSearch";
 import { useForm } from "react-hook-form";
@@ -42,64 +42,39 @@ import SocialLinksManager, {
   parseSocialLinks,
 } from "@/components/forms/SocialLinksManger";
 import { Switch } from "@/components/ui/switch";
+import {
+  useAddEventSponsorMutation,
+  useUpdateEventSponsorMutation,
+} from "@/services/Api/eventSponsors";
+import { toast } from "sonner";
+import { EventSponsorType } from "@/types/eventSponsors";
+import FileUploadField from "@/components/forms/fields/FileUploader";
 
 interface SponsorFormProps {
   operation: "add" | "edit";
-  defaultValues?: SponsorType;
+  defaultValues?: EventSponsorType;
+  eventId: string;
 }
 export default function SponsorForm({
   operation,
   defaultValues,
+  eventId,
 }: SponsorFormProps) {
   // RTK
   const { data: sponsorsResponse, isLoading, isError } = useGetSponsorsQuery();
-  const [addSponsor, { isLoading: isAdding }] = useAddSponsorMutation();
-  const [updateSponsor, { isLoading: isUpdating }] = useUpdateSponsorMutation();
-
-  // const allSponsors = sponsorsResponse?.data?.sponsors ??[];
-  const allSponsors = [
-    {
-      id: "6",
-      name: "CloudNova",
-      url: "https://www.cloudnova.tech",
-      image: "/sponsor1.png",
-      isSeasonSponsor: true,
-    },
-    {
-      id: "7",
-      name: "GreenSpark",
-      url: "https://www.greenspark.co",
-      image: "https://assets.greenspark.co/logo.svg",
-      isSeasonSponsor: false,
-    },
-    {
-      id: "8",
-      name: "AlphaStack",
-      url: "https://www.alphastack.dev",
-      image: "https://images.alphastack.dev/banner.png",
-      isSeasonSponsor: true,
-    },
-    {
-      id: "9",
-      name: "DevX Labs",
-      url: "https://www.devxlabs.com",
-      image: "https://cdn.devxlabs.com/images/logo.jpg",
-      isSeasonSponsor: false,
-    },
-    {
-      id: "10",
-      name: "PixelLogic",
-      url: "https://www.pixellogic.ai",
-      image: "https://cdn.pixellogic.ai/logo.png",
-      isSeasonSponsor: false,
-    },
-  ];
-  // States
-  const [isSearchMode, setIsSearchMode] = useState<boolean>(
-    operation == "add" && allSponsors?.length > 0
-  );
+  const [addEventSponsor, { isLoading: isAdding }] =
+    useAddEventSponsorMutation();
+  const [updateEventSponsor, { isLoading: isUpdating }] =
+    useUpdateEventSponsorMutation();
+  const allSponsors = sponsorsResponse?.data?.sponsors ?? [];
+  const [isSearchMode, setIsSearchMode] = useState<boolean>(false);
+  useEffect(() => {
+    if (operation === "add" && allSponsors.length > 0) {
+      setIsSearchMode(true);
+    }
+  }, [operation, allSponsors]);
   const [activeTab, setActiveTab] = useState<string>("details");
-  // const [selectedSponsor, setSelectedSponsor] = useState<SponsorType>();
+  const [selectedSponsor, setSelectedSponsor] = useState<SponsorType>();
   // const parsedSocialLinks = defaultValues?.socialLinks?.map((item) => ({
   //   platform: item.icon.toLowerCase(), // or name.toLowerCase()
   //   url: item.url,
@@ -111,12 +86,13 @@ export default function SponsorForm({
   // ];
   // console.log("parsed:", parsedSocialLinks);
   const form = useForm<SponsorFormValues>({
-    resolver: zodResolver(sponsorFormSchema),
+    resolver: zodResolver(sponsorFormSchema(operation === "edit")),
     defaultValues: {
-      name: defaultValues?.name || "",
-      url: defaultValues?.url || "",
-      image: defaultValues?.image || "",
-      isSeasonSponsor: defaultValues?.isSeasonSponsor || false,
+      name: defaultValues?.sponsor?.name || "",
+      // url: defaultValues?.sponsor?.url || "",
+      image: defaultValues?.sponsor?.image || "",
+      isSeasonSponsor: defaultValues?.sponsor?.isSeasonSponsor || false,
+      ...defaultValues,
     },
   });
   function handleSelectExistingSponsor(sponsor: SponsorType) {
@@ -126,17 +102,64 @@ export default function SponsorForm({
       image: sponsor.image || "",
       isSeasonSponsor: sponsor.isSeasonSponsor || false,
     });
-    // setSelectedSponsor(sponsor);
+    setSelectedSponsor(sponsor);
     setIsSearchMode(false);
   }
-  async function handleSubmit(data: SponsorFormValues) {}
+  async function handleSubmit(data: SponsorFormValues) {
+    try {
+      const formData = new FormData();
+      // Append basic fields
+      formData.append("name", data.name);
+      formData.append("isSeasonSponsor", String(data.isSeasonSponsor));
+
+      // Append image if it exists (and is a File object)
+      if (data.image instanceof File) {
+        formData.append("image", data.image);
+      }
+
+      if (operation === "add") {
+        if (selectedSponsor) {
+          formData.append("sponsorId", selectedSponsor?.id.toString());
+          await addEventSponsor({
+            data: formData,
+            eventId,
+          });
+        } else {
+          await addEventSponsor({
+            data: formData,
+            eventId,
+          }).unwrap();
+        }
+      } else if (operation === "edit" && defaultValues?.sponsor?.id) {
+        const eventId = defaultValues?.eventId; // Replace with actual eventId from props
+        await updateEventSponsor({
+          data: formData,
+          sponsorId: defaultValues.sponsorId,
+          eventId,
+        }).unwrap();
+      }
+      toast.success(`sponsor ${operation}ed successfully`);
+      form.reset();
+    } catch (error) {
+      // Handle error (you might want to show a toast notification)
+      console.error("Error submitting sponsor:", error.message);
+      toast.error(`Something wrong`, {
+        description: error.message,
+      });
+    }
+  }
   return (
     <Sheet>
       <SheetTrigger asChild>
         {operation == "add" ? (
-          <AddButton label="sponsor" />
+          <AddButton label="sponsor" disabled={isAdding} />
         ) : (
-          <EditButton label="edit sponsor" asIcon={true} variant="ghost" />
+          <EditButton
+            label="edit sponsor"
+            asIcon={true}
+            variant="ghost"
+            disabled={isUpdating}
+          />
         )}
       </SheetTrigger>
       <SheetContent>
@@ -149,7 +172,11 @@ export default function SponsorForm({
               sponsors={allSponsors}
               onSelectSponsor={handleSelectExistingSponsor}
             />
-            <AddButton label="New Sponsor" className="mx-2" />
+            <AddButton
+              label="New Sponsor"
+              className="mx-2"
+              onClick={() => setIsSearchMode(false)}
+            />
           </div>
         ) : (
           <Form {...form}>
@@ -170,7 +197,7 @@ export default function SponsorForm({
                   </FormItem>
                 )}
               />
-
+              {/* 
               <FormField
                 control={form.control}
                 name="url"
@@ -183,7 +210,7 @@ export default function SponsorForm({
                     <FormMessage />
                   </FormItem>
                 )}
-              />
+              /> */}
 
               <FormField
                 control={form.control}
@@ -191,18 +218,14 @@ export default function SponsorForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Sponsor Event Image</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            field.onChange(file); // Update field value with selected File
-                          }
-                        }}
-                      />
-                    </FormControl>
+                    <FileUploadField
+                      field={field}
+                      form={form}
+                      fileUploadConfig={{
+                        fileType: "image",
+                        maxFiles: 1,
+                      }}
+                    />
                     <FormMessage />
                   </FormItem>
                 )}

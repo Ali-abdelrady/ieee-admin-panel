@@ -29,7 +29,7 @@ export default function AwardPage() {
         rows={rows}
         isLoading={isDeleting}
         deleteFn={deleteAward}
-        getId={(row) => row.id}
+        getDeleteParams={(award) => award.id}
         isIcon={true}
       />
     ),
@@ -63,7 +63,7 @@ export default function AwardPage() {
             rows={rows}
             isLoading={isDeleting}
             deleteFn={deleteAward}
-            getId={(row) => row.id}
+            getDeleteParams={(award) => award.id}
           />
         )}
         label="Award"

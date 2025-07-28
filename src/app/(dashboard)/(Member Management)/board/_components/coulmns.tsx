@@ -4,6 +4,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { BoardType } from "@/types/board";
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
+import Image from "next/image";
+import { ImageCell } from "@/components/table/imageCell";
 
 export const boardColumns = (
   onEdit: (row: BoardType) => React.ReactNode,
@@ -34,11 +36,6 @@ export const boardColumns = (
     enableHiding: false,
   },
   {
-    id: "id",
-    accessorKey: "id",
-    header: "ID",
-  },
-  {
     accessorKey: "name",
     header: "Name",
   },
@@ -62,6 +59,15 @@ export const boardColumns = (
         ))}
       </div>
     ),
+  },
+  {
+    accessorKey: "image",
+    header: "Image",
+
+    cell: ({ row }) => {
+      const imageUrl = row.original.image?.toString();
+      return <ImageCell imageUrl={imageUrl} label={row.original.name} />;
+    },
   },
   {
     id: "actions",

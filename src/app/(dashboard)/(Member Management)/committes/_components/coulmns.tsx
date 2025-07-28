@@ -1,8 +1,10 @@
 // src/app/committee/_components/columns.tsx
 import ActionCell from "@/components/table/actionCell";
+import { ImageCell } from "@/components/table/imageCell";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CommitteeType } from "@/types/committee";
 import { ColumnDef } from "@tanstack/react-table";
+import Image from "next/image";
 
 export const committeeColumns = (
   onEdit: (row: CommitteeType) => React.ReactNode,
@@ -32,11 +34,7 @@ export const committeeColumns = (
     enableSorting: false,
     enableHiding: false,
   },
-  {
-    id: "id",
-    accessorKey: "id",
-    header: "ID",
-  },
+
   {
     accessorKey: "name",
     header: "Name",
@@ -55,6 +53,14 @@ export const committeeColumns = (
           : row.original.description}
       </div>
     ),
+  },
+  {
+    accessorKey: "image",
+    header: "Image",
+    cell: ({ row }) => {
+      const imageUrl = row.original.image?.toString();
+      return <ImageCell imageUrl={imageUrl} label={row.original.name} />;
+    },
   },
   {
     id: "actions",

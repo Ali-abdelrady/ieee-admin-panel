@@ -33,13 +33,13 @@ export default function EventsPage() {
         rows={rows}
         isLoading={isDeleting}
         deleteFn={deleteEvent}
-        getId={(row) => row.id}
+        getDeleteParams={(event) => event.id}
         isIcon={true}
       />
     ),
     (row) => (
       <Link href={`/events/${row.id}`}>
-        <Button variant={"outline"} >
+        <Button variant={"outline"}>
           <Search />
         </Button>
       </Link>
@@ -69,7 +69,7 @@ export default function EventsPage() {
             rows={rows}
             isLoading={isDeleting}
             deleteFn={deleteEvent}
-            getId={(row) => row.id}
+            getDeleteParams={(event) => event.id}
           />
         )}
         label="Event"

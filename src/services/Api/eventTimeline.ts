@@ -81,7 +81,11 @@ export const EventApi = api.injectEndpoints({
     // Agenda Items CRUD endpoints
     addAgendaItem: builder.mutation<
       AgendaItemResponse,
-      { data: AgendaItemRequest; eventId: string; timelineId: string }
+      {
+        data: AgendaItemRequest;
+        eventId: string | number;
+        timelineId: string | number;
+      }
     >({
       query: ({ data, timelineId, eventId }) => ({
         url: `/admin/events/${eventId}/timeline/${timelineId}/sessions`,
@@ -97,10 +101,10 @@ export const EventApi = api.injectEndpoints({
     deleteAgendaItem: builder.mutation<
       AgendaItemResponse,
       {
-        data: AgendaItemRequest;
-        eventId: string;
-        timelineId: string;
-        agendaItemId: string;
+        // data: AgendaItemRequest;
+        eventId: string | number;
+        timelineId: string | number;
+        agendaItemId: string | number;
       }
     >({
       query: ({ agendaItemId, timelineId, eventId }) => ({

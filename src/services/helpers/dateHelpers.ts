@@ -40,3 +40,16 @@ export function calculateDuration(startDate: string, endDate: string): number {
 
   return diffDays;
 }
+
+export function isoToTimeHHMM(isoString: string): string {
+  const date = new Date(isoString);
+
+  if (isNaN(date.getTime())) {
+    throw new Error("Invalid ISO date string");
+  }
+
+  const hours = date.getHours().toString().padStart(2, "0");
+  const minutes = date.getMinutes().toString().padStart(2, "0");
+
+  return `${hours}:${minutes}`;
+}

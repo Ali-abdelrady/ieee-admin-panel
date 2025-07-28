@@ -9,11 +9,6 @@ import {
 // Company Sessions Columns
 export const companySessionsColumns: ColumnDef<CompanySession>[] = [
   {
-    id: "id",
-    accessorKey: "id",
-    header: "ID",
-  },
-  {
     accessorKey: "companyName",
     header: "Company",
   },
@@ -30,11 +25,6 @@ export const companySessionsColumns: ColumnDef<CompanySession>[] = [
 // Certificates Per Course Columns
 export const certificatesPerCourseColumns: ColumnDef<CertificatePerCourse>[] = [
   {
-    id: "id",
-    accessorKey: "id",
-    header: "ID",
-  },
-  {
     accessorKey: "courseName",
     header: "Course",
   },
@@ -47,11 +37,6 @@ export const certificatesPerCourseColumns: ColumnDef<CertificatePerCourse>[] = [
 // Company Certificates Columns
 export const companyCertificatesColumns: ColumnDef<CompanyCertificate>[] = [
   {
-    id: "id",
-    accessorKey: "id",
-    header: "ID",
-  },
-  {
     accessorKey: "companyName",
     header: "Company",
   },
@@ -63,11 +48,6 @@ export const companyCertificatesColumns: ColumnDef<CompanyCertificate>[] = [
 
 // Sessions By Instructor Columns
 export const sessionsByInstructorColumns: ColumnDef<SessionByInstructor>[] = [
-  {
-    id: "id",
-    accessorKey: "id",
-    header: "ID",
-  },
   {
     accessorKey: "instructorName",
     header: "Instructor",

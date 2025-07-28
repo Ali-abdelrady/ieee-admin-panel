@@ -33,11 +33,7 @@ export const partnerColumns = (
     enableSorting: false,
     enableHiding: false,
   },
-  {
-    id: "id",
-    accessorKey: "id",
-    header: "ID",
-  },
+
   {
     accessorKey: "name",
     header: "Name",

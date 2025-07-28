@@ -33,11 +33,7 @@ export const awardColumns = (
     enableSorting: false,
     enableHiding: false,
   },
-  {
-    id: "id",
-    accessorKey: "id",
-    header: "ID",
-  },
+
   {
     accessorKey: "title",
     header: "Title",

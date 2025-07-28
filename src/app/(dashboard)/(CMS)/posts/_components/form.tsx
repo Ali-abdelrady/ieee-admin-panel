@@ -10,13 +10,20 @@ interface PostFormProps {
   defaultValues?: Partial<z.infer<typeof postFormSchema>> & {
     id?: number;
   };
-  onSuccess?: () => void;
 }
 
 const fields: FormFieldType[] = [
   { name: "title", label: "Title", type: "text" },
   { name: "content", label: "Content", type: "textArea" },
-  { name: "images", label: "Images", type: "file", isMultiFiles: true },
+  {
+    name: "images",
+    label: "Images",
+    type: "file",
+    fileUploadConfig: {
+      fileType: "image",
+      maxFiles: 1,
+    },
+  },
   {
     name: "private",
     label: "Members Only",
@@ -24,7 +31,7 @@ const fields: FormFieldType[] = [
   },
 ];
 
-const PostForm = ({ operation, defaultValues, onSuccess }: PostFormProps) => {
+const PostForm = ({ operation, defaultValues }: PostFormProps) => {
   const [addItem, { isLoading: isLoadingAdd }] = useAddPostMutation();
   const [updateItem, { isLoading: isLoadingEdit }] = useUpdatePostMutation();
 
@@ -37,7 +44,6 @@ const PostForm = ({ operation, defaultValues, onSuccess }: PostFormProps) => {
       onAdd={(data) => addItem(data).unwrap()}
       onUpdate={(data) => updateItem(data).unwrap()}
       itemName="Post"
-      onSuccess={onSuccess}
       isLoadingAdd={isLoadingAdd}
       isLoadingEdit={isLoadingEdit}
     />
