@@ -4,13 +4,12 @@ import {
   FoodMenuType,
   FoodMenuRequest,
   FoodMenuResponse,
-  FoodMenusResponse,
 } from "@/types/foodMenu";
 import { api } from "./api";
 
 export const MenuApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    getMenus: builder.query<FoodMenusResponse, string>({
+    getMenus: builder.query<FoodMenuResponse, string>({
       query: (eventId) => `/admin/events/${eventId}/food-menus`,
       providesTags: (result, error, eventId) => {
         const data = result?.data?.menus ?? [];
@@ -30,24 +29,6 @@ export const MenuApi = api.injectEndpoints({
         ];
       },
     }),
-    getMenuById: builder.query<
-      FoodMenuResponse,
-      { eventId: string; menuId: string | number }
-    >({
-      query: ({ eventId, menuId }) =>
-        `/admin/events/${eventId}/food-menus/${menuId}`,
-      providesTags: (result, error, { eventId, menuId }) =>
-        result
-          ? [
-              { type: "Menus" as const, id: result?.data?.menus?.id },
-              { type: "Menus" as const, id: "LIST" },
-              { type: "Menus" as const, id: `EVENT-${eventId}` },
-            ]
-          : [
-              { type: "Menus" as const, id: "LIST" },
-              { type: "Menus" as const, id: `EVENT-${eventId}` },
-            ],
-    }),
     addMenu: builder.mutation<
       FoodMenuResponse,
       { eventId: string; data: FoodMenuRequest }
@@ -55,7 +36,8 @@ export const MenuApi = api.injectEndpoints({
       query: ({ eventId, data }) => ({
         url: `/admin/events/${eventId}/food-menus`,
         method: "POST",
-        body: { ...data, items: [] },
+        body: data,
+        formData: true,
       }),
       invalidatesTags: (result, error, { eventId }) => [
         { type: "Menus", id: "LIST" },
@@ -69,7 +51,8 @@ export const MenuApi = api.injectEndpoints({
       query: ({ eventId, data }) => ({
         url: `/admin/events/${eventId}/food-menus/${data.id}`,
         method: "PATCH",
-        body: { ...data, items: [] },
+        body: data,
+        formData: true,
       }),
       invalidatesTags: (result, error, { eventId, data }) => [
         { type: "Menus", id: data.id },
@@ -97,7 +80,6 @@ export const MenuApi = api.injectEndpoints({
 
 export const {
   useGetMenusQuery,
-  useGetMenuByIdQuery,
   useAddMenuMutation,
   useUpdateMenuMutation,
   useDeleteMenuMutation,

@@ -8,14 +8,13 @@ import {
   useUpdateMenuMutation,
 } from "@/services/Api/foodMenu";
 import { foodMenuSchema } from "@/validations/foodMenu";
+import { FoodMenuType } from "@/types/foodMenu";
 
 interface MenuFormProps {
   operation: "add" | "edit" | "preview";
-  defaultValues?: Partial<z.infer<typeof foodMenuSchema>> & {
-    id?: number;
-  };
+  defaultValues?: FoodMenuType;
   eventId: string;
-  trigger: React.ReactNode;
+  trigger?: React.ReactNode;
 }
 
 const fields: FormFieldType[] = [

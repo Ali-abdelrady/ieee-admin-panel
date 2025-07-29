@@ -51,13 +51,23 @@ export default function FileUploadField({
   const files = React.useMemo(() => {
     if (!field.value) return [];
 
-    // For single file uploads, wrap in array if needed
-    if (isSingleFile && !Array.isArray(field.value)) {
-      return [field.value];
-    }
+    const valueArray =
+      isSingleFile && !Array.isArray(field.value) ? [field.value] : field.value;
 
-    return field.value;
+    return valueArray.map((file: any) => {
+      if (typeof file === "string") {
+        // Create a mock file-like object from URL
+        return {
+          name: file.split("/").pop() || "image.jpg",
+          type: "image/*", // or infer from extension
+          url: file, // custom field to hold URL
+          isExisting: true, // flag to differentiate
+        };
+      }
+      return file; // real File object
+    });
   }, [field.value, isSingleFile]);
+
   // Handle file value changes
   const handleValueChange = (newFiles: any[]) => {
     if (isSingleFile) {
@@ -71,7 +81,6 @@ export default function FileUploadField({
 
   return (
     <>
-      {" "}
       <FormControl>
         <FileUpload
           disabled={disabled}

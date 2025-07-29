@@ -7,26 +7,69 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function prepareRequestPayload(formData: any) {
-  const hasFile = Object.values(formData).some(
-    (val) => val instanceof File || val instanceof FileList
-  );
-  console.log("hasFile:", hasFile);
-  console.log(formData);
+  const hasFile = Object.values(formData).some((val) => {
+    if (val instanceof File) return true;
+    if (val instanceof FileList) return true;
+    if (Array.isArray(val) && val.some((item) => item instanceof File))
+      return true;
+    return false;
+  });
+
   if (!hasFile) return formData;
-  // console.log("has File");
+
   const fd = new FormData();
+
   for (const key in formData) {
     const val = formData[key];
 
-    if (val instanceof FileList) {
-      fd.append(key, val[0]);
-    } else if (val instanceof Date) {
-      // ✅ Format date before appending
+    if (val == null) continue;
+
+    // Handle arrays (including file arrays)
+    if (Array.isArray(val)) {
+      if (val.some((item) => item instanceof File)) {
+        // Convert file array to array of binary data
+        const fileArray = val
+          .map((file) => {
+            if (file instanceof File) {
+              return file; // Keep as File object for FormData
+            }
+            return null;
+          })
+          .filter(Boolean);
+
+        // Append each file with the same key
+        fileArray.forEach((file) => {
+          fd.append(key, file);
+        });
+      } else {
+        // Non-file array - stringify
+        fd.append(key, JSON.stringify(val));
+      }
+    }
+    // Handle single file
+    else if (val instanceof File) {
+      fd.append(key, val);
+    }
+    // Handle FileList
+    else if (val instanceof FileList) {
+      Array.from(val).forEach((file) => {
+        fd.append(key, file);
+      });
+    }
+    // Handle Date objects
+    else if (val instanceof Date) {
       fd.append(key, format(val, "yyyy-MM-dd"));
-    } else {
+    }
+    // Handle other objects
+    else if (typeof val === "object") {
+      fd.append(key, JSON.stringify(val));
+    }
+    // Handle primitives
+    else {
       fd.append(key, val);
     }
   }
+
   return fd;
 }
 export function getImageUrl(path: string): string {

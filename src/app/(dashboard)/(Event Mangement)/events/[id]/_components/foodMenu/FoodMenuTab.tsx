@@ -1,9 +1,9 @@
-import DeleteDialog from "@/components/forms/deleteDialog";
 import { FoodMenuType } from "@/types/foodMenu";
 import { useState } from "react";
 import { Plus, User, Edit, Trash2, Pizza } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+
 import Image from "next/image";
 import { ImageCell } from "@/components/table/imageCell";
 import MenuForm from "./MenuForm";
@@ -14,6 +14,9 @@ import {
 import Loader from "@/components/Loader";
 import EditButton from "@/components/button/editButton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import DeleteDialog from "@/components/forms/deleteDialog";
+import { ImageSwiper } from "@/components/dialogs/ImageSwiper";
 
 export function FoodMenuTab({ eventId }: { eventId: string }) {
   const { data, isLoading, isError } = useGetMenusQuery(eventId);
@@ -34,36 +37,32 @@ export function FoodMenuTab({ eventId }: { eventId: string }) {
           {menus.map((menu) => (
             <Card key={menu.id} className="hover:shadow-md transition-shadow">
               <CardContent className="flex items-center space-x-4">
-                {/* <div className="min-w-18 rounded-lg overflow-hidden bg-muted text-center font-bold text-2xl p-5">
-                  <Image
-                    src={menu.menuImageUrl ?? ""}
-                    alt={menu.menuImageUrl}
-                    width={80}
-                    height={80}
-                    className="h-full w-full object-cover"
-                  />
-                  {menu.name[0]}
-                </div> */}
-                <div className="*:data-[slot=avatar]:ring-background flex -space-x-2 *:data-[slot=avatar]:ring-2 *:data-[slot=avatar]:grayscale">
-                  {menu.menuImageUrl?.map((imageUrl, index) => (
-                    <Avatar key={index}>
-                      <AvatarImage src={imageUrl} alt={menu.name} />
-                      <AvatarFallback>{menu.name[0]}</AvatarFallback>
-                    </Avatar>
-                  )) ?? (
-                    <Avatar>
-                      {/* <AvatarImage src="" alt={menu.name} /> */}
-                      <AvatarFallback>{menu.name[0]}</AvatarFallback>
-                    </Avatar>
-                  )}
-                </div>
+                <Dialog>
+                  <DialogTrigger className="relative cursor-pointer group">
+                    <div className="relative min-w-18 rounded-xl overflow-hidden bg-muted">
+                      <Image
+                        src={menu.coverImage ?? ""}
+                        alt={menu.coverImage}
+                        width={100}
+                        height={100}
+                        className="h-full w-full object-cover group-hover:brightness-75 transition"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition bg-black/40 text-white text-sm font-medium">
+                        View Food Menu
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground text-center mt-1">
+                      Click to view all Food Menu
+                    </p>
+                  </DialogTrigger>
+
+                  <DialogContent className="max-w-2xl w-full p-0 bg-white dark:bg-zinc-900 rounded-xl overflow-hidden">
+                    <ImageSwiper images={menu.menuImages} />
+                  </DialogContent>
+                </Dialog>
+
                 <div className="flex-grow">
                   <h4 className="font-medium">{menu.name}</h4>
-                  {/* {menu.image && menu.image.length > 1 && (
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {menu.image.length} images available
-                      </p>
-                    )} */}
                 </div>
                 <div className="flex space-x-1">
                   <MenuForm
@@ -72,26 +71,20 @@ export function FoodMenuTab({ eventId }: { eventId: string }) {
                     eventId={eventId}
                     trigger={
                       <EditButton
-                        label="edit speaker"
+                        label="edit menu"
                         asIcon={true}
                         variant="ghost"
                       />
                     }
                   />
-                  <DeleteDialog<
-                    FoodMenuType,
-                    { eventId: string; menuId: string | number }
-                  >
+
+                  <DeleteDialog
                     rows={menu}
-                    deleteFn={({ eventId, menuId }) =>
-                      deleteMenu({ eventId, menuId })
-                    }
+                    deleteFn={deleteMenu}
                     getDeleteParams={(menu) => ({
                       eventId: eventId, // Make sure eventId is available in this scope
                       menuId: menu.id, // This will be string | number as per FoodMenuType
                     })}
-                    successMessage={(count) => `Deleted ${count} menu(s)`}
-                    errorMessage="Failed to delete menus"
                     isLoading={isDeleting}
                     trigger={
                       <Button variant="ghost" size="sm">
@@ -121,3 +114,5 @@ export function FoodMenuTab({ eventId }: { eventId: string }) {
     </div>
   );
 }
+
+

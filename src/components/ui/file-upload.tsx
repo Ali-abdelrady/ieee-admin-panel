@@ -1026,18 +1026,22 @@ const FileUploadItemPreview = React.forwardRef<
   const isImage = itemContext.fileState?.file.type.startsWith("image/");
 
   const onPreviewRender = React.useCallback(
-    (file: File) => {
+    (file: any) => {
       if (render) return render(file);
 
-      if (isImage) {
+      const isExistingImageUrl = typeof file.url === "string";
+
+      if (isImage || isExistingImageUrl) {
+        const src = isExistingImageUrl ? file.url : URL.createObjectURL(file);
         return (
           <img
-            src={URL.createObjectURL(file)}
+            src={src}
             alt={file.name}
             className="size-full rounded object-cover"
             onLoad={(event) => {
-              if (!(event.target instanceof HTMLImageElement)) return;
-              URL.revokeObjectURL(event.target.src);
+              if (!isExistingImageUrl) {
+                URL.revokeObjectURL((event.target as HTMLImageElement).src);
+              }
             }}
           />
         );

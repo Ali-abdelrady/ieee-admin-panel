@@ -46,7 +46,7 @@ export default function SponsorSearch({
                 <div className="flex items-center space-x-3 py-2">
                   <Avatar className="h-9 w-9">
                     <AvatarImage
-                      src={sponsor.image || undefined}
+                      src={sponsor.images[0].url || undefined}
                       alt={sponsor.name}
                     />
                     <AvatarFallback>{sponsor.name.charAt(0)}</AvatarFallback>

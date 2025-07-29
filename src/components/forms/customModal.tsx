@@ -38,6 +38,7 @@ interface CustomDialogProps {
   isLoading: boolean;
   onSubmit?: () => Promise<boolean>;
   isFullWidth?: boolean;
+  hasFooter?: boolean;
 }
 
 export const CustomDialog = forwardRef<CustomDialogRef, CustomDialogProps>(
@@ -51,6 +52,7 @@ export const CustomDialog = forwardRef<CustomDialogRef, CustomDialogProps>(
       isLoading,
       onSubmit,
       isFullWidth = false,
+      hasFooter = true,
     },
     ref
   ) => {
@@ -103,12 +105,12 @@ export const CustomDialog = forwardRef<CustomDialogRef, CustomDialogProps>(
         <DialogContent
           className={
             !isFullWidth
-              ? `w-full max-h-[90vh] overflow-y-auto `
-              : "sm:max-w-3xl overflow-auto"
+              ? `max-h-[90vh] overflow-y-auto px-5 `
+              : "sm:max-w-4xl overflow-auto"
           }
           onInteractOutside={(e) => e.preventDefault()}
         >
-          <DialogHeader>
+          <DialogHeader className="px-1">
             <DialogTitle>{title}</DialogTitle>
             {description && (
               <DialogDescription>{description}</DialogDescription>
@@ -117,23 +119,24 @@ export const CustomDialog = forwardRef<CustomDialogRef, CustomDialogProps>(
 
           {children && <div className="py-4 overflow-auto">{children}</div>}
           {/* {children} */}
-
-          <DialogFooter>
-            <DialogClose asChild ref={closeRef.current}>
-              <Button variant="outline">
-                {actionLabel ? "Cancel" : "Done"}
-              </Button>
-            </DialogClose>
-            {actionLabel && (
-              <Button
-                onClick={handleSubmit}
-                disabled={isLoading}
-                isLoading={isLoading}
-              >
-                {isLoading ? `${actionLabel}...` : `${actionLabel}`}
-              </Button>
-            )}
-          </DialogFooter>
+          {hasFooter && (
+            <DialogFooter>
+              <DialogClose asChild ref={closeRef.current}>
+                <Button variant="outline">
+                  {actionLabel ? "Cancel" : "Done"}
+                </Button>
+              </DialogClose>
+              {actionLabel && (
+                <Button
+                  onClick={handleSubmit}
+                  disabled={isLoading}
+                  isLoading={isLoading}
+                >
+                  {isLoading ? `${actionLabel}...` : `${actionLabel}`}
+                </Button>
+              )}
+            </DialogFooter>
+          )}
         </DialogContent>
       </Dialog>
     );

@@ -37,7 +37,15 @@ const EventForm = ({ operation, defaultValues, trigger }: EventFormProps) => {
       ],
     },
     { name: "location", label: "Location", type: "text" },
-    { name: "image", label: "Event Image", type: "file", isMultiFiles: true },
+    {
+      name: "image",
+      label: "Event Image",
+      type: "file",
+      fileUploadConfig: {
+        fileType: "image",
+        maxFiles: 1,
+      },
+    },
     // { name: "videos", label: "Videos", type: "file", isMultiFiles: true },
     {
       name: "registrationStart",

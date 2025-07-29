@@ -28,6 +28,7 @@ export const api = createApi({
     "EventSpeakers",
     "Timelines",
     "EventSponsors",
+    "EventMedia",
   ],
 
   endpoints: () => ({}), // start empty

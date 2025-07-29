@@ -3,7 +3,7 @@ import { z } from "zod";
 
 export type FormFieldType = {
   name: string;
-  label: string;
+  label?: string;
   placeholder?: string;
   description?: string;
   readonly?: boolean;

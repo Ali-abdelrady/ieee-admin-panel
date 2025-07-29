@@ -6,10 +6,10 @@ interface MenuItemType {
 }
 export interface FoodMenuType {
   id: string | number;
-  //   eventId: string;
+  eventId: string;
   name: string;
-  coverImage: File;
-  menuImages: File[];
+  coverImage: File | string;
+  menuImages: File[] | string[];
   items?: MenuItemType[];
 }
 export interface ApiResponse<T> {
@@ -18,5 +18,5 @@ export interface ApiResponse<T> {
 }
 
 export type FoodMenuRequest = Omit<FoodMenuType, "id" | "eventId">;
-export type FoodMenuResponse = ApiResponse<FoodMenuType>;
-export type FoodMenusResponse = ApiResponse<FoodMenuType[]>;
+// export type FoodMenuResponse = ApiResponse<FoodMenuType>;
+export type FoodMenuResponse = ApiResponse<FoodMenuType[]>;

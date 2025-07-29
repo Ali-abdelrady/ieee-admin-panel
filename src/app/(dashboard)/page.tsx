@@ -61,25 +61,25 @@ export default function DashboardPage() {
   //   },
   // ] satisfies BaseTabConfig<any, any>[];
   return (
-    // <div className="flex flex-1 flex-col">
-    //   <div className="flex flex-1 flex-col gap-2">
-    //     <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-    //       {/* Summary Cards */}
-    //       {/* <SummaryCards dashboardData={dashboardData} isLoading={isLoading} />
-    //       {isLoading ? (
-    //         <SkeletonCards isLoading={isLoading} />
-    //       ) : (
-    //         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4  gap-4 lg:gap-6 px-6">
-    //           <Charts dashboardData={dashboardData} isLoading={isLoading} />
-    //           <TabsDatables tabs={tabs} />
-    //         </div>
-    //       )} */}
-    //       dashboardPage
-    //       {/* Charts */}
-    //     </div>
-    //   </div>
-    // </div>
-    <FileUploadFormDemo />
+    <div className="flex flex-1 flex-col">
+      <div className="flex flex-1 flex-col gap-2">
+        <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+          {/* Summary Cards */}
+          {/* <SummaryCards dashboardData={dashboardData} isLoading={isLoading} />
+          {isLoading ? (
+            <SkeletonCards isLoading={isLoading} />
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4  gap-4 lg:gap-6 px-6">
+              <Charts dashboardData={dashboardData} isLoading={isLoading} />
+              <TabsDatables tabs={tabs} />
+            </div>
+          )} */}
+          dashboardPage
+          {/* Charts */}
+        </div>
+      </div>
+    </div>
+    // <FileUploadFormDemo />
   );
 }
 

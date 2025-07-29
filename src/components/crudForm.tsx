@@ -309,7 +309,7 @@ function FormDetails<T extends z.ZodTypeAny>({
 }: FormProps<T>) {
   return (
     <Form {...form}>
-      <div className="space-y-4">
+      <div className="space-y-4 ">
         {fields?.map((fieldItem) => (
           <FormField
             key={fieldItem.name}

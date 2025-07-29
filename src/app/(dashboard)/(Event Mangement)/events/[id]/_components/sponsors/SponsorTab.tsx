@@ -28,7 +28,11 @@ export default function SponsorsTab({ eventId }: { eventId: string }) {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-medium">Sponsors</h3>
-        <SponsorForm operation="add" eventId={eventId} />
+        <SponsorForm
+          operation="add"
+          eventId={eventId}
+          eventSponsors={sponsors}
+        />
       </div>
 
       {sponsors.length > 0 ? (
@@ -66,6 +70,7 @@ export default function SponsorsTab({ eventId }: { eventId: string }) {
                       operation="edit"
                       defaultValues={sponsor}
                       eventId={eventId}
+                      eventSponsors={sponsors}
                     />
                     <DeleteDialog
                       rows={sponsor}
@@ -96,7 +101,11 @@ export default function SponsorsTab({ eventId }: { eventId: string }) {
               Add sponsors to your event to showcase who will be presenting.
             </p>
             <div className="mt-4 flex justify-center gap-2">
-              <SponsorForm operation="add" eventId={eventId} />
+              <SponsorForm
+                operation="add"
+                eventId={eventId}
+                eventSponsors={sponsors}
+              />
             </div>
           </CardContent>
         </Card>

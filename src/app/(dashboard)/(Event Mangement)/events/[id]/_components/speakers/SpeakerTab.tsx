@@ -29,7 +29,11 @@ export default function SpeakersTab({ eventId }: { eventId: string }) {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-medium">Speakers</h3>
-        <SpeakerForm operation="add" eventId={eventId} />
+        <SpeakerForm
+          operation="add"
+          eventId={eventId}
+          eventSpeakers={speakers}
+        />
       </div>
 
       {speakers.length > 0 ? (
@@ -67,6 +71,7 @@ export default function SpeakersTab({ eventId }: { eventId: string }) {
                       operation="edit"
                       defaultValues={item}
                       eventId={eventId}
+                      eventSpeakers={speakers}
                     />
                     <DeleteDialog
                       rows={speaker}
@@ -98,7 +103,11 @@ export default function SpeakersTab({ eventId }: { eventId: string }) {
               Add speakers to your event to showcase who will be presenting.
             </p>
             <div className="mt-4 flex justify-center gap-2">
-              <SpeakerForm operation="add" eventId={eventId} />
+              <SpeakerForm
+                operation="add"
+                eventId={eventId}
+                eventSpeakers={speakers}
+              />
             </div>
           </CardContent>
         </Card>

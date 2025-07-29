@@ -46,7 +46,7 @@ export default function SpeakerSearch({
                 <div className="flex items-center space-x-3 py-2">
                   <Avatar className="h-9 w-9">
                     <AvatarImage
-                      src={speaker.image || undefined}
+                      src={speaker?.images[0]?.url}
                       alt={speaker.name}
                     />
                     <AvatarFallback>{speaker.name.charAt(0)}</AvatarFallback>

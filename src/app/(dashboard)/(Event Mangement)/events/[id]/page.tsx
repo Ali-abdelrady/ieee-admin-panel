@@ -15,6 +15,7 @@ import Loader from "@/components/Loader";
 import SpeakersTab from "./_components/speakers/SpeakerTab";
 import SponsorsTab from "./_components/sponsors/SponsorTab";
 import { FoodMenuTab } from "./_components/foodMenu/FoodMenuTab";
+import MediaTab from "./_components/media/MediaTab";
 
 export default function EventDetails({
   params,
@@ -32,6 +33,12 @@ export default function EventDetails({
       value: "details",
       component: <DetailsTab eventId={id} />,
       label: "Details",
+      icon: null,
+    },
+    {
+      value: "media",
+      component: <MediaTab eventId={id} />,
+      label: "Media",
       icon: null,
     },
     {
@@ -68,13 +75,13 @@ export default function EventDetails({
 
   return (
     <div className="flex w-full flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
-      <div className="flex items-center justify-between">
+      {/* <div className="flex items-center justify-between">
         <Link href="/events">
           <Button variant="outline" className="w-fit">
             Go Back
           </Button>
         </Link>
-      </div>
+      </div> */}
 
       {/* Event Name & Creation Date */}
       <div className="space-y-2">
