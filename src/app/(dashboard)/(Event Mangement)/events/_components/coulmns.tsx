@@ -6,6 +6,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { formatDate } from "@/services/helpers/dateHelpers";
+import { ImageCell } from "@/components/table/imageCell";
 
 export const eventColumns = (
   onEdit: (row: EventType) => React.ReactNode,
@@ -67,6 +68,14 @@ export const eventColumns = (
         {row.original.private ? "Private" : "Public"}
       </Badge>
     ),
+  },
+  {
+    accessorKey: "coverImage",
+    header: "Image",
+    cell: ({ row }) => {
+      const imageUrl = row.original?.coverImage?.toString();
+      return <ImageCell imageUrl={imageUrl} label={row.original.name} />;
+    },
   },
   {
     id: "actions",

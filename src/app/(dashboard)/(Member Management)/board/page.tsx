@@ -21,7 +21,7 @@ export default function BoardPage() {
   const [deleteBoard, { isLoading: isDeleting }] = useDeleteBoardMutation();
   const [addBoard, { isLoading: isAdding }] = useAddBoardMutation();
 
-  const initialRows = data?.data?.board ?? [];
+  const initialRows = data?.data?.boards ?? [];
 
   const columns = boardColumns(
     (row) => <BoardForm operation="edit" defaultValues={row} />,

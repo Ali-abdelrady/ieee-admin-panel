@@ -5,6 +5,7 @@ export default interface SocialLinks {
 }
 export interface BoardType {
   id: number;
+  userId: string;
   title: string;
   name: string;
   position: string;
@@ -13,7 +14,7 @@ export interface BoardType {
 }
 export interface ApiResponse<T> {
   data?: {
-    board: T;
+    boards: T;
   };
   message?: string;
 }

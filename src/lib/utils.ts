@@ -1,21 +1,22 @@
 import { clsx, type ClassValue } from "clsx";
 import { format } from "date-fns";
 import { twMerge } from "tailwind-merge";
+import { string } from "zod";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
 export function prepareRequestPayload(formData: any) {
-  const hasFile = Object.values(formData).some((val) => {
-    if (val instanceof File) return true;
-    if (val instanceof FileList) return true;
+  const hasFileOrHttpUrl = Object.values(formData).some((val) => {
+    if (val instanceof File || val instanceof FileList) return true;
+    if (typeof val === "string" && val.startsWith("http")) return true;
     if (Array.isArray(val) && val.some((item) => item instanceof File))
       return true;
     return false;
   });
 
-  if (!hasFile) return formData;
+  if (!hasFileOrHttpUrl) return formData;
 
   const fd = new FormData();
 

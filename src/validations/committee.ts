@@ -7,7 +7,7 @@ const topicSchema = z.object({
   content: z.string().min(1, { message: "content is required" }),
 });
 export const committeeFormSchema = z.object({
-  headId: z.string().min(1, "Head ID is required"),
+  headIds: z.array(z.string()),
   name: z.string().min(1, "Name is required"),
   description: z.string().min(1, "Description is required"),
   image: z.union([z.instanceof(File), z.string()]),

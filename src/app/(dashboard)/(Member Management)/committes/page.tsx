@@ -39,7 +39,7 @@ export default function CommitteePage() {
         rows={rows}
         isLoading={isDeleting}
         deleteFn={deleteCommittee}
-        getId={(row) => row.id}
+        getDeleteParams={(c) => c.id}
         isIcon={true}
       />
     ),
@@ -73,7 +73,7 @@ export default function CommitteePage() {
             rows={rows}
             isLoading={isDeleting}
             deleteFn={deleteCommittee}
-            getId={(row) => row.id}
+            getDeleteParams={(c) => c.id}
           />
         )}
         label="Committee"

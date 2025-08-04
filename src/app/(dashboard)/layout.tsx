@@ -16,8 +16,25 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { ModeToggle } from "@/components/ui/theme-toggle";
+import { broadcast } from "@/lib/broadcast";
+import { api } from "@/services/Api/api";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    broadcast.onmessage = (event) => {
+      const { type, tag, id } = event.data;
+      if (type === "invalidate") {
+        const invalidateTag = id
+          ? [{ type: tag, id }] // invalidate specific item
+          : [{ type: tag }]; // fallback
+        dispatch(api.util.invalidateTags(invalidateTag));
+      }
+    };
+  }, []);
   return (
     <SidebarProvider>
       <AppSidebar />

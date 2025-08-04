@@ -31,7 +31,6 @@ const FaqForm = ({ operation, defaultValues, onSuccess }: FaqFormProps) => {
       onAdd={(data) => addItem(data).unwrap()}
       onUpdate={(data) => updateItem(data).unwrap()}
       itemName="FAQ"
-      onSuccess={onSuccess}
       isLoadingAdd={isLoadingAdd}
       isLoadingEdit={isLoadingEdit}
     />

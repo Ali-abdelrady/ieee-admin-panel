@@ -8,6 +8,7 @@ import {
   BookOpenText,
   Bot,
   Building,
+  Building2,
   Calendar,
   Calendar1Icon,
   Cog,
@@ -119,6 +120,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             title: "Board",
             url: "/board",
           },
+          {
+            title: "Members",
+            url: "/members",
+          },
         ],
       },
       {
@@ -140,10 +145,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             url: "/awards",
           },
           {
-            title: "Partners",
-            url: "/partners",
+            title: "Sponsors",
+            url: "/sponsors",
           },
         ],
+      },
+      {
+        title: "Season Management",
+        icon: Building2,
+        isSubItem: false,
+        url: "/season",
       },
     ],
   };

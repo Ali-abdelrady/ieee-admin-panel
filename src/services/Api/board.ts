@@ -12,7 +12,7 @@ export const BoardApi = api.injectEndpoints({
     getBoards: builder.query<BoardsResponse, void>({
       query: () => "/board",
       providesTags: (result) => {
-        const data = result?.data?.board ?? [];
+        const data = result?.data?.boards ?? [];
         if (Array.isArray(data) && data.length) {
           return [
             ...data.map((e) => ({
@@ -30,7 +30,7 @@ export const BoardApi = api.injectEndpoints({
       providesTags: (result) =>
         result
           ? [
-              { type: "Boards" as const, id: result?.data?.board?.id },
+              { type: "Boards" as const, id: result?.data?.boards?.id },
               { type: "Boards" as const, id: "LIST" },
             ]
           : [{ type: "Boards" as const, id: "LIST" }],

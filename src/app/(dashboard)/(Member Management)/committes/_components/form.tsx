@@ -15,21 +15,16 @@ interface CommitteeFormProps {
   defaultValues?: Partial<z.infer<typeof committeeFormSchema>> & {
     id?: number;
   };
-  onSuccess?: () => void;
 }
 
-const CommitteeForm = ({
-  operation,
-  defaultValues,
-  onSuccess,
-}: CommitteeFormProps) => {
+const CommitteeForm = ({ operation, defaultValues }: CommitteeFormProps) => {
   const [addItem, { isLoading: isLoadingAdd }] = useAddCommitteeMutation();
   const [updateItem, { isLoading: isLoadingEdit }] =
     useUpdateCommitteeMutation();
   const { data } = useGetBoardsQuery();
   const boardOptions = useMemo(() => {
     const options =
-      data?.data?.board?.map((item) => ({
+      data?.data?.boards?.map((item) => ({
         label: item.name,
         value: item.id,
       })) || [];
@@ -43,9 +38,9 @@ const CommitteeForm = ({
       type: "text",
     },
     {
-      name: "headId",
-      label: "Head Name",
-      type: "select",
+      name: "headIds",
+      label: "one or more leader",
+      type: "multiSelect",
       options: boardOptions,
     },
     { name: "description", label: "Description", type: "textArea" },

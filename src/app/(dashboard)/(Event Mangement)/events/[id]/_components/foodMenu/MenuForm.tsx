@@ -14,6 +14,7 @@ interface MenuFormProps {
   operation: "add" | "edit" | "preview";
   defaultValues?: FoodMenuType;
   eventId: string;
+  menuId?: string;
   trigger?: React.ReactNode;
 }
 
@@ -48,11 +49,12 @@ const MenuForm = ({
   operation,
   defaultValues,
   eventId,
+  menuId,
   trigger,
 }: MenuFormProps) => {
   const [addMenu, { isLoading: isLoadingAdd }] = useAddMenuMutation();
   const [updateMenu, { isLoading: isLoadingEdit }] = useUpdateMenuMutation();
-
+  console.log(defaultValues?.id);
   return (
     <CrudForm
       schema={foodMenuSchema}
@@ -60,7 +62,13 @@ const MenuForm = ({
       operation={operation}
       defaultValues={defaultValues}
       onAdd={(data) => addMenu({ eventId, data }).unwrap()}
-      onUpdate={(data) => updateMenu({ eventId, data }).unwrap()}
+      onUpdate={(data) =>
+        updateMenu({
+          eventId,
+          menuId,
+          data,
+        }).unwrap()
+      }
       itemName="Food Menu"
       isLoadingAdd={isLoadingAdd}
       isLoadingEdit={isLoadingEdit}

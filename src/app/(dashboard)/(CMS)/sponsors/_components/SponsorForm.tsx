@@ -1,4 +1,5 @@
-import { SponsorType } from "@/types/sponsors";
+"use client";
+import { PartnerType } from "@/types/sponsors";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,7 +15,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AddButton from "@/components/button/addButton";
 import EditButton from "@/components/button/editButton";
 import { User } from "lucide-react";
-import { useGetSponsorsQuery } from "@/services/Api/sponsors";
+import {
+  useAddSponsorMutation,
+  useGetSponsorsQuery,
+  useUpdateSponsorMutation,
+} from "@/services/Api/sponsors";
 import { useEffect, useMemo, useState, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import SponsorSearch from "./SponsorSearch";
@@ -27,72 +32,64 @@ import SocialLinksManager, {
   parseSocialLinks,
 } from "@/components/forms/SocialLinksManger";
 import { Switch } from "@/components/ui/switch";
-import {
-  useAddEventSponsorMutation,
-  useUpdateEventSponsorMutation,
-} from "@/services/Api/eventSponsors";
 import { toast } from "sonner";
-import { EventSponsorType } from "@/types/eventSponsors";
 import FileUploadField from "@/components/forms/fields/FileUploader";
 import { CustomDialog } from "@/components/forms/customModal";
 
 interface SponsorFormProps {
   operation: "add" | "edit";
-  defaultValues?: EventSponsorType;
-  eventId: string;
-  eventSponsors: EventSponsorType[];
+  defaultValues?: PartnerType;
+  partners: PartnerType[];
 }
 
 export default function SponsorForm({
   operation,
   defaultValues,
-  eventId,
-  eventSponsors,
+  partners,
 }: SponsorFormProps) {
   console.log("I Rerenderd");
   const dialogRef = useRef<{ openDialog: () => void; closeDialog: () => void }>(
     null
   );
   const { data: sponsorsResponse, isLoading, isError } = useGetSponsorsQuery();
-  const [addEventSponsor, { isLoading: isAdding }] =
-    useAddEventSponsorMutation();
-  const [updateEventSponsor, { isLoading: isUpdating }] =
-    useUpdateEventSponsorMutation();
+  const [addSponsor, { isLoading: isAdding }] = useAddSponsorMutation();
+  const [updateSponsor, { isLoading: isUpdating }] = useUpdateSponsorMutation();
 
   const allSponsors = useMemo(() => {
     return (
       sponsorsResponse?.data?.sponsors.filter(
-        (sponsor) => !eventSponsors.some((s) => s.sponsor.id === sponsor.id)
+        (sponsor) => !partners.some((s) => s.id === sponsor.id)
       ) ?? []
     );
-  }, [sponsorsResponse?.data?.sponsors, eventSponsors]);
+  }, [sponsorsResponse?.data?.sponsors, partners]);
   // const allSponsors = sponsorsResponse?.data?.sponsors ?? [];
   const [isSearchMode, setIsSearchMode] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>("details");
-  const [selectedSponsor, setSelectedSponsor] = useState<SponsorType>();
+  const [selectedSponsor, setSelectedSponsor] = useState<PartnerType>();
 
-  useEffect(() => {
-    if (operation === "add" && allSponsors.length > 0 && !selectedSponsor) {
-      setIsSearchMode(true);
-    }
-  }, [operation, allSponsors.length, selectedSponsor]);
+  // useEffect(() => {
+  //   if (operation === "add" && allSponsors.length > 0 && !selectedSponsor) {
+  //     setIsSearchMode(true);
+  //   }
+  // }, [operation, allSponsors.length, selectedSponsor]);
 
   const form = useForm<SponsorFormValues>({
     resolver: zodResolver(sponsorFormSchema(operation === "edit")),
     defaultValues: {
-      name: defaultValues?.sponsor?.name || "",
-      image: defaultValues?.sponsor?.image || "",
-      // isSeasonSponsor: defaultValues?.sponsor?.isSeasonSponsor || false,
-      ...defaultValues,
+      name: defaultValues?.name || "",
+      image: defaultValues?.image || "",
+      isSeasonPartner: defaultValues?.isSeasonPartner || false,
+      isSeasonSponsor: defaultValues?.isSeasonSponsor || false,
+      id: defaultValues?.id,
     },
   });
 
-  function handleSelectExistingSponsor(sponsor: SponsorType) {
+  function handleSelectExistingSponsor(sponsor: PartnerType) {
     form.reset({
       name: sponsor.name,
-      // url: sponsor.url,
       image: sponsor.image || "",
-      // isSeasonSponsor: sponsor.isSeasonSponsor || false,
+      isSeasonPartner: sponsor.isSeasonPartner || false,
+      isSeasonSponsor: defaultValues?.isSeasonSponsor || false,
     });
     setSelectedSponsor(sponsor);
     setIsSearchMode(false);
@@ -102,7 +99,8 @@ export default function SponsorForm({
     try {
       const formData = new FormData();
       formData.append("name", data.name);
-      // formData.append("isSeasonSponsor", String(data.isSeasonSponsor));
+      formData.append("isSeasonPartner", String(data.isSeasonPartner));
+      formData.append("isSeasonSponsor", String(data.isSeasonSponsor));
 
       if (data.image instanceof File) {
         formData.append("image", data.image);
@@ -111,21 +109,14 @@ export default function SponsorForm({
       if (operation === "add") {
         if (selectedSponsor) {
           formData.append("sponsorId", selectedSponsor?.id.toString());
-          await addEventSponsor({
-            data: formData,
-            eventId,
-          });
+          await addSponsor(formData).unwrap();
         } else {
-          await addEventSponsor({
-            data: formData,
-            eventId,
-          }).unwrap();
+          await addSponsor(formData).unwrap();
         }
       } else if (operation === "edit") {
-        await updateEventSponsor({
+        await updateSponsor({
           data: formData,
-          sponsorId: defaultValues?.id,
-          eventId,
+          sponsorId: defaultValues?.id.toString(),
         }).unwrap();
       }
       toast.success(`sponsor ${operation}ed successfully`);
@@ -143,19 +134,14 @@ export default function SponsorForm({
     <CustomDialog
       ref={dialogRef}
       title={`${operation == "add" ? "Add" : "Edit"} Sponsor`}
-      description={
-        operation === "add"
-          ? "Add a new sponsor to the event"
-          : "Edit the sponsor details"
-      }
       trigger={
         operation == "add" ? (
-          <AddButton label="sponsor" disabled={isAdding} />
+          <AddButton label="Sponsor" disabled={isAdding} />
         ) : (
           <EditButton
-            label="edit sponsor"
+            label="edit Sponsor"
             asIcon={true}
-            variant="ghost"
+            variant="outline"
             disabled={isUpdating}
           />
         )
@@ -172,7 +158,7 @@ export default function SponsorForm({
             onSelectSponsor={handleSelectExistingSponsor}
           />
           <AddButton
-            label="New Sponsor"
+            label="New Partner"
             className="mx-2"
             onClick={() => setIsSearchMode(false)}
           />
@@ -190,7 +176,7 @@ export default function SponsorForm({
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter sponsor name" {...field} />
+                    <Input placeholder="Enter sponsor  name" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -202,7 +188,7 @@ export default function SponsorForm({
               name="image"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Sponsor Event Image</FormLabel>
+                  <FormLabel>Image</FormLabel>
                   <FileUploadField
                     field={field}
                     form={form}
@@ -215,7 +201,23 @@ export default function SponsorForm({
                 </FormItem>
               )}
             />
-            {/* <FormField
+            <FormField
+              control={form.control}
+              name="isSeasonPartner"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Season Partner</FormLabel>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
               control={form.control}
               name="isSeasonSponsor"
               render={({ field }) => (
@@ -230,7 +232,7 @@ export default function SponsorForm({
                   <FormMessage />
                 </FormItem>
               )}
-            /> */}
+            />
             <div className="flex flex-row justify-between pt-4">
               {operation == "add" && allSponsors.length > 0 && (
                 <Button
@@ -250,8 +252,18 @@ export default function SponsorForm({
                 >
                   Close
                 </Button>
-                <Button type="submit">
-                  {operation == "edit" ? "Update Sponsor" : "Add Sponsor"}
+                <Button
+                  type="submit"
+                  disabled={isAdding || isUpdating}
+                  isLoading={isAdding || isUpdating}
+                >
+                  {operation === "edit"
+                    ? isUpdating
+                      ? "Updating..."
+                      : "Update Sponsor"
+                    : isAdding
+                    ? "Adding..."
+                    : "Add Sponsor"}{" "}
                 </Button>
               </div>
             </div>

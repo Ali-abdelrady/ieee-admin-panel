@@ -1,7 +1,12 @@
 import React from "react";
-import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogClose,
+} from "@/components/ui/dialog";
 import Image from "next/image";
-import { Play } from "lucide-react";
+import { Play, X } from "lucide-react";
 
 interface MediaDialogProps {
   mediaUrl: string;
@@ -24,14 +29,18 @@ export default function MediaDialog({
         {triggerElement ? (
           triggerElement
         ) : (
-          <div className="relative cursor-pointer group">
-            <div className="relative min-w-18 rounded-xl overflow-hidden bg-muted aspect-video">
+          <div className="relative cursor-pointer group ">
+            <div
+              className={`relative min-w-18 rounded-t-xl overflow-hidden bg-muted  ${
+                mediaType === "image" ? " aspect-square" : "aspect-video"
+              }`}
+            >
               {mediaType === "image" ? (
                 <Image
                   src={previewThumbnail || mediaUrl}
                   alt={altText}
                   fill
-                  className="object-cover group-hover:brightness-75 transition"
+                  className="object-cover aspect-square group-hover:brightness-75 transition"
                 />
               ) : (
                 <>
@@ -49,27 +58,30 @@ export default function MediaDialog({
                   )}
                 </>
               )}
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition bg-black/40 text-white text-white text-sm font-medium">
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition bg-black/40 text-white  text-sm font-medium">
                 {mediaType === "video" && (
                   <div className="p-3 bg-black/50 rounded-full">
                     <Play className="w-6 h-6" />
                   </div>
                 )}
-                <span className="sr-only">View Media</span>
+                {mediaType === "image" && <span className="">View Media</span>}
               </div>
             </div>
           </div>
         )}
       </DialogTrigger>
 
-      <DialogContent className="max-w-4xl w-full p-0 bg-transparent border-none shadow-none">
-        <div className="relative w-full aspect-video bg-black rounded-lg overflow-hidden">
+      <DialogContent className="[&>button]:text-white max-w-4xl w-full p-0 bg-transparent border-none shadow-none ">
+        {/* <DialogClose className="absolute top-4 right-4 text-white hover:text-gray-300 transition">
+          <X className="w-6 h-6" />
+        </DialogClose> */}
+        <div className={`relative w-full ${mediaType == "image" ? "aspect-square":"aspect-video"} aspect-video bg-black rounded-lg overflow-hidden`}>
           {mediaType === "image" ? (
             <Image
               src={mediaUrl}
               alt={altText}
               fill
-              className="object-contain"
+              className="object-contain aspect-square"
               unoptimized // For external URLs
             />
           ) : (
@@ -77,7 +89,7 @@ export default function MediaDialog({
               src={mediaUrl}
               controls
               autoPlay
-              className="w-full h-full object-contain"
+              className="w-full h-full object-contain aspect-video"
             >
               Your browser does not support the video tag.
             </video>

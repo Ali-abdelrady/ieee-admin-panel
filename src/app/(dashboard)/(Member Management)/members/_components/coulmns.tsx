@@ -1,14 +1,17 @@
-import { PermissionType } from "@/types/userManagement/premissions";
-import ActionCell from "@/components/table/actionCell";
+// src/app/users/_components/columns.tsx
 import { Checkbox } from "@/components/ui/checkbox";
-import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
+import ActionCell from "@/components/table/actionCell";
+import { ColumnDef } from "@tanstack/react-table";
+import { MemberType } from "@/types/member"; // adjust path if needed
+import GreenBagde from "@/components/badges/greenBadge";
+import RedBadge from "@/components/badges/redBadge";
 
-export const permissionColumns = (
-  onEdit: (row: PermissionType) => React.ReactNode,
-  onDelete: (row: PermissionType) => React.ReactNode,
-  onPreview: (row: PermissionType) => React.ReactNode
-): ColumnDef<PermissionType>[] => [
+export const memberColumns = (
+  onEdit: (row: MemberType) => React.ReactNode,
+  onDelete: (row: MemberType) => React.ReactNode,
+  onPreview: (row: MemberType) => React.ReactNode
+): ColumnDef<MemberType>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -32,25 +35,60 @@ export const permissionColumns = (
     enableSorting: false,
     enableHiding: false,
   },
-
   {
-    accessorKey: "title",
-    header: "Title",
-    cell: (row) => {
-      const value = row.getValue() as string;
-      return value ? <Badge>{value}</Badge> : "N/A";
-    },
+    accessorKey: "name",
+    header: "Name",
+  },
+  {
+    accessorKey: "email",
+    header: "Email",
+  },
+  {
+    accessorKey: "personalEmail",
+    header: "Personal Email",
+  },
+  {
+    accessorKey: "phone",
+    header: "Phone",
+  },
+  {
+    accessorKey: "roles",
+    header: "Roles",
+    cell: ({ row }) => <Badge variant="outline">{row.original.roles}</Badge>,
+  },
+  {
+    accessorKey: "university",
+    header: "University",
+  },
+  {
+    accessorKey: "faculty",
+    header: "Faculty",
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) =>
+      row.original.status == "ACTIVE" ? (
+        <GreenBagde text="ACTIVE" />
+      ) : (
+        <RedBadge text="INACTIVE" />
+      ),
+  },
+  {
+    accessorKey: "committee?.name",
+    header: "Committee",
+    cell: ({ row }) => row.original.committee?.name || "—",
   },
   {
     id: "actions",
     header: "Actions",
     cell: ({ row }) => (
-      <ActionCell<PermissionType>
+      <ActionCell<MemberType>
         row={row.original}
         onEdit={onEdit}
         onDelete={onDelete}
         onPreview={onPreview}
-        label="permission"
+        label="Member"
       />
     ),
   },

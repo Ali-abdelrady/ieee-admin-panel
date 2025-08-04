@@ -1,17 +1,24 @@
+import { CommitteeType } from "./committee";
+
 export interface MemberType {
   id: number;
-  firstName: string;
-  lastName: string;
+  name: string;
+  nationalId?: string;
+  status?: string;
   password: string;
   email: string;
-  roles: string[];
+  personalEmail: string;
+  role: string;
   phone: string;
   university: string;
   faculty: string;
+  internalRoleId?: string;
+  committeeId?: string;
+  committee?: CommitteeType;
 }
 export interface ApiResponse<T> {
   data?: {
-    boardMember: T;
+    members: T;
   };
   message?: string;
 }

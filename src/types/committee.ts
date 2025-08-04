@@ -4,7 +4,7 @@ export interface CommitteTopicType {
 }
 export interface CommitteeType {
   id: number;
-  headId: string;
+  headIds: string;
   name: string;
   description: string;
   image: File | string;

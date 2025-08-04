@@ -2,6 +2,7 @@ export interface PartnerType {
   id: number;
   name: string;
   image: File | string;
+  images?: string[];
   isSeasonPartner: boolean;
 }
 export interface ApiResponse<T> {

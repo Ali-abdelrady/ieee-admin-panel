@@ -1,5 +1,5 @@
 import { loginFormSchema } from "@/validations/forms";
-import { z } from "zod";
+import { string, z } from "zod";
 
 export type FormFieldType = {
   name: string;
@@ -34,14 +34,22 @@ export type FormFieldType = {
     | "socialLinks"
     | "topics"
     | "switch"
-    | "dynamicArrayField";
-  options?: { label: string; value: number | string }[]; // for select
+    | "dynamicArrayField"
+    | "search";
+
+  options?:
+    | { label: string; value: number | string }[]
+    | { value: string; id: number | string }[]; // for select
   dynamicOptions?: boolean;
   extraProps?: object;
   fileUploadConfig?: {
     maxFiles: number;
     maxSize?: number;
     fileType: "video" | "image" | "all";
+  };
+  searchConfig?: {
+    searchFunc?: (value: string) => { id: string; value: string }[];
+    debounceTime?: number;
   };
 };
 export type FormSection = {

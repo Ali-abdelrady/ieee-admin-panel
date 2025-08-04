@@ -38,7 +38,7 @@ export function calculateDuration(startDate: string, endDate: string): number {
   // Convert milliseconds to days
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-  return diffDays;
+  return diffDays | 1 ;
 }
 
 export function isoToTimeHHMM(isoString: string): string {

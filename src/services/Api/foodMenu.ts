@@ -46,16 +46,16 @@ export const MenuApi = api.injectEndpoints({
     }),
     updateMenu: builder.mutation<
       FoodMenuResponse,
-      { eventId: string; data: FoodMenuType }
+      { eventId: string; data: FoodMenuType; menuId: string }
     >({
-      query: ({ eventId, data }) => ({
-        url: `/admin/events/${eventId}/food-menus/${data.id}`,
+      query: ({ eventId, menuId, data }) => ({
+        url: `/admin/events/${eventId}/food-menus/${menuId}`,
         method: "PATCH",
         body: data,
         formData: true,
       }),
-      invalidatesTags: (result, error, { eventId, data }) => [
-        { type: "Menus", id: data.id },
+      invalidatesTags: (result, error, { eventId, data, menuId }) => [
+        { type: "Menus", id: menuId.toString() },
         { type: "Menus", id: "LIST" },
         { type: "Menus", id: `EVENT-${eventId}` },
       ],
@@ -69,13 +69,13 @@ export const MenuApi = api.injectEndpoints({
         method: "DELETE",
       }),
       invalidatesTags: (result, error, { eventId, menuId }) => [
-        { type: "Menus", id: menuId },
+        { type: "Menus", id: menuId.toString() },
         { type: "Menus", id: "LIST" },
         { type: "Menus", id: `EVENT-${eventId}` },
       ],
     }),
   }),
-  overrideExisting: false,
+  overrideExisting: true,
 });
 
 export const {

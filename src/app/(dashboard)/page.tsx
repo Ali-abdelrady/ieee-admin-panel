@@ -22,7 +22,8 @@ import { BarChartVertical } from "@/components/charts/barChartVertical";
 import { ChartPieLabelList } from "@/components/charts/pieChart";
 import { CustomLineChart } from "@/components/charts/lineChart";
 import TabsDatables from "@/components/table/tabsDataTable";
-import { FileUploadFormDemo } from "@/components/forms/file-upload-form-demo";
+
+import { useState } from "react";
 // import { BaseTabConfig } from "@/types/tabs";
 
 export default function DashboardPage() {

@@ -50,6 +50,7 @@ export const CommitteeApi = api.injectEndpoints({
         body: {
           ...data,
         },
+        formData: true,
       }),
       invalidatesTags: (result, error, arg) => [
         { type: "Committees", id: arg.id },

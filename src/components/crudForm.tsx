@@ -62,6 +62,7 @@ import { Switch } from "./ui/switch";
 import DynamicArrayField from "./forms/DynamicArrayFields";
 import { isoToTimeHHMM } from "@/services/helpers/dateHelpers";
 import FileUploadField from "./forms/fields/FileUploader";
+import SearchField from "./forms/fields/SearchField";
 
 interface CrudFormProps<T extends z.ZodTypeAny> {
   schema: T;
@@ -78,7 +79,7 @@ interface CrudFormProps<T extends z.ZodTypeAny> {
 }
 export const CrudForm = <T extends z.ZodTypeAny>({
   schema,
-  fields: theFields,
+  fields,
   operation,
   defaultValues,
   onAdd,
@@ -89,7 +90,7 @@ export const CrudForm = <T extends z.ZodTypeAny>({
   asDialog = true,
   trigger,
 }: CrudFormProps<T>) => {
-  const [fields, setFields] = useState<FormFieldType[]>(theFields);
+  const [removedImages, setRemovedImages] = useState<string[]>([]);
 
   const form = useForm<z.infer<T>>({
     resolver: zodResolver(schema),
@@ -329,7 +330,8 @@ function FormDetails<T extends z.ZodTypeAny>({
                 {(fieldItem.type === "text" ||
                   fieldItem.type === "email" ||
                   fieldItem.type === "number" ||
-                  fieldItem.type === "time") && (
+                  fieldItem.type === "time" ||
+                  fieldItem.type === "password") && (
                   <FormControl>
                     <Input
                       placeholder={fieldItem.label}
@@ -402,58 +404,27 @@ function FormDetails<T extends z.ZodTypeAny>({
                     </Select>
                   </FormControl>
                 )}
-
+                {fieldItem.type === "search" && (
+                  <FormControl>
+                    <SearchField
+                      options={fieldItem.options}
+                      placeholder={fieldItem.placeholder ?? "Search for item"}
+                      disabled={operation == "preview"}
+                      onChange={field.onChange}
+                      value={field.value}
+                      searchConfig={fieldItem.searchConfig}
+                    />
+                  </FormControl>
+                )}
                 {fieldItem.type === "file" && (
                   <FileUploadField
                     disabled={operation === "preview"}
                     field={field}
                     form={form}
                     fileUploadConfig={fieldItem.fileUploadConfig}
+                    operation={operation}
+                    // onRemovedImages={setRemo}
                   />
-
-                  // <FormControl>
-                  //   <div className="space-y-2">
-                  //     <Input
-                  //       type="file"
-                  //       disabled={operation === "preview"}
-                  //       // onChange={(e) => {
-                  //       //   const file = e.target.files?.[0];
-                  //       //   form.setValue(
-                  //       //     fieldItem.name as Path<z.infer<T>>,
-                  //       //     file || null // Always set to File or null, never undefined
-                  //       //   );
-                  //       // }}
-                  //       onChange={(e) => field.onChange(e.target.files[0])}
-                  //       multiple
-                  //     />
-
-                  //     {field.value?.original_url && (
-                  //       <div className="space-y-2">
-                  //         <a
-                  //           href={field.value.original_url}
-                  //           target="_blank"
-                  //           rel="noopener noreferrer"
-                  //           className="block w-fit"
-                  //         >
-                  //           {field.value.mime_type?.startsWith("image/") ? (
-                  //             <Image
-                  //               src={field.value.original_url}
-                  //               alt="Current file"
-                  //               width={100}
-                  //               height={100}
-                  //               className="h-32 rounded-md object-cover"
-                  //             />
-                  //           ) : (
-                  //             <div className="p-2 border rounded flex items-center gap-2">
-                  //               <FileIcon className="w-5 h-5" />
-                  //               <span>{field.value.file_name}</span>
-                  //             </div>
-                  //           )}
-                  //         </a>
-                  //       </div>
-                  //     )}
-                  //   </div>
-                  // </FormControl>
                 )}
                 {fieldItem.type === "date" &&
                   (() => {

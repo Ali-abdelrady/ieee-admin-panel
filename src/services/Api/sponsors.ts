@@ -39,7 +39,7 @@ export const SponsorApi = api.injectEndpoints({
           : [{ type: "Sponsors" as const, id: "LIST" }],
     }),
 
-    addSponsor: builder.mutation<SponsorResponse, SponsorRequest>({
+    addSponsor: builder.mutation<SponsorResponse, SponsorRequest | FormData>({
       query: (data) => ({
         url: "/admin/sponsors",
         method: "POST",
@@ -49,15 +49,18 @@ export const SponsorApi = api.injectEndpoints({
       invalidatesTags: [{ type: "Sponsors", id: "LIST" }],
     }),
 
-    updateSponsor: builder.mutation<SponsorResponse, SponsorType>({
-      query: (data) => ({
-        url: `/admin/sponsors/${data.id}`,
+    updateSponsor: builder.mutation<
+      SponsorResponse,
+      { sponsorId: string | number; data: FormData }
+    >({
+      query: ({ data, sponsorId }) => ({
+        url: `/admin/sponsors/${sponsorId}`,
         method: "PATCH",
         body: data,
         formData: true,
       }),
       invalidatesTags: (result, error, arg) => [
-        { type: "Sponsors", id: arg.id },
+        { type: "Sponsors", id: arg.sponsorId },
         { type: "Sponsors", id: "LIST" },
       ],
     }),

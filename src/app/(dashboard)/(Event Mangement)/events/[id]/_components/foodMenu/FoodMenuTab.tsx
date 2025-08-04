@@ -76,6 +76,7 @@ export function FoodMenuTab({ eventId }: { eventId: string }) {
                         variant="ghost"
                       />
                     }
+                    menuId={menu.id as string}
                   />
 
                   <DeleteDialog
@@ -114,5 +115,3 @@ export function FoodMenuTab({ eventId }: { eventId: string }) {
     </div>
   );
 }
-
-

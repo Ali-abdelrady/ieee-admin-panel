@@ -16,6 +16,7 @@ import {
 import MediaForm from "./MediaForm";
 import AddButton from "@/components/button/addButton";
 import MediaDialog from "@/components/dialogs/mediaDialog";
+import DeleteButton from "@/components/button/deleteButton";
 
 export default function MediaTab({ eventId }: { eventId: string }) {
   const { data, isLoading, isError } = useGetEventMediaQuery(eventId);
@@ -37,13 +38,25 @@ export default function MediaTab({ eventId }: { eventId: string }) {
         </div>
         {images.length > 0 ? (
           <Card>
-            <CardContent className="grid grid-cols-4 gap-4">
+            <CardContent className="grid grid-cols-6 gap-4 ">
               {images.map((img) => (
-                <MediaDialog
-                  mediaType="image"
-                  mediaUrl={img.url}
-                  key={img.id}
-                />
+                <div key={img.id}>
+                  <MediaDialog mediaType="image" mediaUrl={img.url} />
+                  <DeleteDialog
+                    deleteFn={deleteMedia}
+                    rows={img}
+                    getDeleteParams={(img) => ({
+                      eventId: eventId,
+                      mediaId: img.id,
+                    })}
+                    trigger={
+                      <DeleteButton
+                        // variant="destructive"
+                        className="w-full rounded-t-none text-destructive hover:text-destructive "
+                      />
+                    }
+                  />
+                </div>
               ))}
             </CardContent>
           </Card>
@@ -72,13 +85,25 @@ export default function MediaTab({ eventId }: { eventId: string }) {
         </div>
         {videos.length > 0 ? (
           <Card>
-            <CardContent>
+            <CardContent className="grid grid-cols-6 gap-4">
               {videos.map((video) => (
-                <MediaDialog
-                  mediaType="video"
-                  mediaUrl={video.url}
-                  key={video.id}
-                />
+                <div key={video.id}>
+                  <MediaDialog mediaType="video" mediaUrl={video.url} />
+                  <DeleteDialog
+                    deleteFn={deleteMedia}
+                    rows={video}
+                    getDeleteParams={(img) => ({
+                      eventId: eventId,
+                      mediaId: video.id,
+                    })}
+                    trigger={
+                      <DeleteButton
+                        // variant="destructive"
+                        className="w-full rounded-t-none text-destructive hover:text-destructive "
+                      />
+                    }
+                  />
+                </div>
               ))}
             </CardContent>
           </Card>
