@@ -20,12 +20,24 @@ export const awardApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Awards"],
     }),
-    updateAward: builder.mutation<AwardResponse, AwardType>({
-      query: ({ id, ...body }) => ({
-        url: `/admin/awards/${id}`,
-        method: "PATCH",
-        body,
-      }),
+    updateAward: builder.mutation<AwardResponse, AwardType | FormData>({
+      query: (data) => {
+        console.log("FROM API DATA", data);
+        let id: string | number;
+
+        if (data instanceof FormData) {
+          id = data.get("id") as string;
+        } else {
+          id = data.id;
+        }
+
+        return {
+          url: `/admin/awards/${id}`,
+          method: "PATCH",
+          body: data,
+          formData: data instanceof FormData,
+        };
+      },
       invalidatesTags: ["Awards"],
     }),
     deleteAward: builder.mutation<AwardResponse, string | number>({

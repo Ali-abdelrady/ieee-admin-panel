@@ -24,7 +24,7 @@ export default function MediaTab({ eventId }: { eventId: string }) {
     useDeleteEventMediaMutation();
 
   if (isLoading) {
-    <Loader error={isError} />;
+    return <Loader error={isError} />;
   }
   const media = data?.data?.eventMedia;
   const images = media?.images ?? [];

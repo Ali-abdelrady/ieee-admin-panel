@@ -6,6 +6,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import GreenBagde from "@/components/badges/greenBadge";
 import RedBadge from "@/components/badges/redBadge";
+import { formatDate, formatDateString } from "@/services/helpers/dateHelpers";
 
 export const postColumns = (
   onEdit: (row: PostType) => React.ReactNode,
@@ -59,10 +60,14 @@ export const postColumns = (
   {
     accessorKey: "createdAt",
     header: "CreatedAt",
+    cell: ({ row }) =>
+      formatDateString(row?.original?.createdAt as string) ?? "N/A",
   },
   {
     accessorKey: "updatedAt",
     header: "UpdatedAt",
+    cell: ({ row }) =>
+      formatDateString(row?.original?.updatedAt as string) ?? "N/A",
   },
   {
     id: "actions",

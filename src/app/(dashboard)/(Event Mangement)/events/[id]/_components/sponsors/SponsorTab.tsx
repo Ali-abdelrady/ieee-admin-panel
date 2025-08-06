@@ -20,7 +20,7 @@ export default function SponsorsTab({ eventId }: { eventId: string }) {
     useDeleteEventSponsorMutation();
 
   if (isLoading) {
-    <Loader error={isError} />;
+    return <Loader error={isError} />;
   }
   const sponsors = data?.data ?? [];
   console.log("Event sponsors:", sponsors);

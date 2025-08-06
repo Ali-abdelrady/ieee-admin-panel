@@ -43,17 +43,29 @@ export const CommitteeApi = api.injectEndpoints({
       }),
       invalidatesTags: [{ type: "Committees", id: "LIST" }],
     }),
-    updateCommittee: builder.mutation<CommitteeResponse, CommitteeType>({
-      query: (data) => ({
-        url: `/admin/committees/${data.id}`,
-        method: "PATCH",
-        body: {
-          ...data,
-        },
-        formData: true,
-      }),
+    updateCommittee: builder.mutation<
+      CommitteeResponse,
+      CommitteeType | FormData
+    >({
+      query: (data) => {
+        let id: string | number;
+        if (data instanceof FormData) {
+          id = data.get("id") as string;
+        } else {
+          id = data.id;
+        }
+        return {
+          url: `/admin/committees/${id}`,
+          method: "PATCH",
+          body: data,
+          formData: data instanceof FormData,
+        };
+      },
       invalidatesTags: (result, error, arg) => [
-        { type: "Committees", id: arg.id },
+        {
+          type: "Committees",
+          id: arg instanceof FormData ? (arg.get("id") as string) : arg.id,
+        },
         { type: "Committees", id: "LIST" },
       ],
     }),

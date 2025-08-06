@@ -44,17 +44,28 @@ export const BoardApi = api.injectEndpoints({
       }),
       invalidatesTags: [{ type: "Boards", id: "LIST" }],
     }),
-    updateBoard: builder.mutation<BoardResponse, BoardType>({
-      query: (data) => ({
-        url: `/admin/board/${data.id}`,
-        method: "PATCH",
-        body: {
-          ...data,
-        },
-        formData: true,
-      }),
+    updateBoard: builder.mutation<BoardResponse, BoardType | FormData>({
+      query: (data) => {
+        console.log("FROM API DATA", data);
+        let id: string | number;
+
+        if (data instanceof FormData) {
+          id = data.get("id") as string;
+        } else {
+          id = data.id;
+        }
+        return {
+          url: `/admin/board/${id}`,
+          method: "PATCH",
+          body: data,
+          formData: data instanceof FormData,
+        };
+      },
       invalidatesTags: (result, error, arg) => [
-        { type: "Boards", id: arg.id },
+        {
+          type: "Boards",
+          id: arg instanceof FormData ? (arg.get("id") as string) : arg.id,
+        },
         { type: "Boards", id: "LIST" },
       ],
     }),

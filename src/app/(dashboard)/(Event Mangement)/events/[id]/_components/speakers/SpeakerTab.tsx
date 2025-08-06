@@ -26,7 +26,7 @@ export default function SpeakersTab({ eventId }: { eventId: string }) {
     useDeleteEventSpeakerMutation();
 
   if (isLoading) {
-    <Loader error={isError} />;
+    return <Loader error={isError} />;
   }
   const speakers = data?.data ?? [];
   console.log("Event Speakers:", speakers);
