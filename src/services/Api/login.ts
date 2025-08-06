@@ -40,3 +40,7 @@ export const authApi = api.injectEndpoints({
 // auto-generated based on the defined endpoints
 export const { useLoginMutation, useLogoutMutation, useAuthCheckQuery } =
   authApi;
+
+export const auth = api.injectEndpoints({ endpoints: (builder) => ({
+
+}) });

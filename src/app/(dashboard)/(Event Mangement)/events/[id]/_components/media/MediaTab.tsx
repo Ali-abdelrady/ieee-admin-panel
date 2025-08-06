@@ -38,7 +38,7 @@ export default function MediaTab({ eventId }: { eventId: string }) {
         </div>
         {images.length > 0 ? (
           <Card>
-            <CardContent className="grid grid-cols-6 gap-4 ">
+            <CardContent className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
               {images.map((img) => (
                 <div key={img.id}>
                   <MediaDialog mediaType="image" mediaUrl={img.url} />

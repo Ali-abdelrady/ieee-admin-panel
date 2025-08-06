@@ -41,6 +41,7 @@ const TimeLineForm = ({
 
   return (
     <CrudForm
+      key={defaultValues?.id ?? "new"}
       trigger={trigger}
       schema={timelineFormSchema}
       fields={fields}

@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import Image from "next/image";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Loader2Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Loader = ({ error = false }) => {
@@ -9,16 +9,17 @@ const Loader = ({ error = false }) => {
     window.location.reload();
   };
   return (
-    <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm">
+    <div className="absolute inset-0 z-50 flex items-center justify-center  ">
       {!error && (
         <div className="animate-pulse duration-[2000ms]">
-          <Image
+          {/* <Image
             src="/images/logo/logo.png"
             alt="loader"
             width={300}
             height={300}
             className="object-contain"
-          />
+          /> */}
+          <Loader2Icon className="animate-spin" size={40} />
         </div>
       )}
 

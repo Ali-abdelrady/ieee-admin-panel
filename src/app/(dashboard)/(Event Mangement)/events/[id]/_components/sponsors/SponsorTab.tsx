@@ -3,7 +3,7 @@ import { SponsorType } from "@/types/sponsors";
 import { useState } from "react";
 import { Plus, User, Edit, Trash2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import DataTable from "@/components/table/dataTable";
 import Image from "next/image";
 import { ImageCell } from "@/components/table/imageCell";
@@ -36,7 +36,7 @@ export default function SponsorsTab({ eventId }: { eventId: string }) {
       </div>
 
       {sponsors.length > 0 ? (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {sponsors.map((item) => {
             const { sponsor } = item;
             return (
@@ -44,17 +44,19 @@ export default function SponsorsTab({ eventId }: { eventId: string }) {
                 key={sponsor.id}
                 className="hover:shadow-md transition-shadow"
               >
-                <CardContent className="flex items-center space-x-4">
-                  <div className="min-w-18 rounded-lg overflow-hidden bg-muted">
+                <CardHeader>
+                  <div className="rounded-xl overflow-hidden bg-muted">
                     <Image
                       src={sponsor.images?.url ?? "/images/speaker2.jpg"}
                       alt={sponsor.name}
-                      width={100}
+                      width={200}
                       height={100}
                       className="h-full w-full object-cover"
                     />
                   </div>
-                  <div className="flex-grow">
+                </CardHeader>
+                <CardContent className="flex text-center flex-col gap-2  items-center">
+                  <div>
                     <h4 className="font-medium">{sponsor.name}</h4>
                     <p className="text-sm text-muted-foreground">
                       {sponsor.url}
@@ -65,7 +67,7 @@ export default function SponsorsTab({ eventId }: { eventId: string }) {
                     </p>
                   )} */}
                   </div>
-                  <div className="flex space-x-1">
+                  <div className="flex items-center">
                     <SponsorForm
                       operation="edit"
                       defaultValues={sponsor}

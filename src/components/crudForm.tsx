@@ -44,7 +44,7 @@ import {
 import { SelectInputTypeField } from "./forms/selectInputTypeField";
 
 import cookieService from "@/services/cookies/cookieService";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import ImportDialog from "@/components/dialogs/importDialog";
 import AddButton from "./button/addButton";
 import EditButton from "./button/editButton";
@@ -91,19 +91,17 @@ export const CrudForm = <T extends z.ZodTypeAny>({
   trigger,
 }: CrudFormProps<T>) => {
   const [removedImages, setRemovedImages] = useState<string[]>([]);
-
-  const form = useForm<z.infer<T>>({
-    resolver: zodResolver(schema),
-    defaultValues: fields?.reduce((acc, field) => {
+  const transformedDefaults = useMemo(() => {
+    return fields?.reduce((acc, field) => {
       let value = defaultValues?.[field.name];
       if (field.type === "date" && typeof value === "string") {
         value = new Date(value);
       }
       if (field.type === "file") {
-        value = value ?? []; // Ensure array default
+        value = value ?? [];
       }
       if (field.type === "checkbox") {
-        value = value === 1; // Convert 1/0 to true/false
+        value = value === 1;
       }
       if (field.type === "selectInputType") {
         value = typeof value === "string" ? value : JSON.stringify(value);
@@ -112,11 +110,9 @@ export const CrudForm = <T extends z.ZodTypeAny>({
         value = value ? isoToTimeHHMM(value) : "10:30";
       }
       if (field.type === "dynamicArrayField") {
-        // Ensure the value is a string (or the expected type used in select's options)
         value = value ?? [];
       }
       if (field.type === "select") {
-        // Ensure the value is a string (or the expected type used in select's options)
         value = value !== undefined ? String(value) : "";
       }
       if (field.type === "socialLinks") {
@@ -124,7 +120,12 @@ export const CrudForm = <T extends z.ZodTypeAny>({
       }
       acc[field.name] = value ?? "";
       return acc;
-    }, {} as Record<string, any>) as z.infer<T>,
+    }, {} as Record<string, any>) as z.infer<T>;
+  }, [defaultValues, fields]);
+
+  const form = useForm<z.infer<T>>({
+    resolver: zodResolver(schema),
+    defaultValues: transformedDefaults,
   });
 
   const handleFormSubmit = (): Promise<boolean> => {
@@ -252,7 +253,9 @@ export const CrudForm = <T extends z.ZodTypeAny>({
         return null;
     }
   };
-
+  useEffect(() => {
+    form.reset(transformedDefaults);
+  }, [transformedDefaults]);
   if (!asDialog) {
     return (
       <FormDetails

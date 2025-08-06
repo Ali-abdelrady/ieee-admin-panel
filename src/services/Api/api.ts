@@ -33,5 +33,5 @@ export const api = createApi({
     "Seasons",
   ],
 
-  endpoints: () => ({}), // start empty
+  endpoints: () => ({}), // start empty // 100
 });

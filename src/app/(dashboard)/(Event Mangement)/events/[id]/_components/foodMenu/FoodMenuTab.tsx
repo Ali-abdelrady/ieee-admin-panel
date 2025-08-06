@@ -1,8 +1,8 @@
 import { FoodMenuType } from "@/types/foodMenu";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Plus, User, Edit, Trash2, Pizza } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 import Image from "next/image";
 import { ImageCell } from "@/components/table/imageCell";
@@ -21,7 +21,10 @@ import { ImageSwiper } from "@/components/dialogs/ImageSwiper";
 export function FoodMenuTab({ eventId }: { eventId: string }) {
   const { data, isLoading, isError } = useGetMenusQuery(eventId);
   const [deleteMenu, { isLoading: isDeleting }] = useDeleteMenuMutation();
-  const menus = data?.data?.menus ?? [];
+  const menus = useMemo(() => {
+    return data?.data?.menus ?? [];
+  }, [data]);
+  console.log("Food Menue Rendered");
   if (isLoading) {
     return <Loader error={isError} />;
   }
@@ -33,17 +36,17 @@ export function FoodMenuTab({ eventId }: { eventId: string }) {
       </div>
 
       {menus.length > 0 ? (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {menus.map((menu) => (
             <Card key={menu.id} className="hover:shadow-md transition-shadow">
-              <CardContent className="flex items-center space-x-4">
+              <CardHeader>
                 <Dialog>
                   <DialogTrigger className="relative cursor-pointer group">
                     <div className="relative min-w-18 rounded-xl overflow-hidden bg-muted">
                       <Image
                         src={menu.coverImage ?? ""}
                         alt={menu.coverImage}
-                        width={100}
+                        width={200}
                         height={100}
                         className="h-full w-full object-cover group-hover:brightness-75 transition"
                       />
@@ -51,7 +54,7 @@ export function FoodMenuTab({ eventId }: { eventId: string }) {
                         View Food Menu
                       </div>
                     </div>
-                    <p className="text-xs text-muted-foreground text-center mt-1">
+                    <p className=" text-muted-foreground text-center mt-1">
                       Click to view all Food Menu
                     </p>
                   </DialogTrigger>
@@ -60,12 +63,14 @@ export function FoodMenuTab({ eventId }: { eventId: string }) {
                     <ImageSwiper images={menu.menuImages} />
                   </DialogContent>
                 </Dialog>
-
-                <div className="flex-grow">
+              </CardHeader>
+              <CardContent className="flex text-center flex-col gap-3  items-center">
+                <div>
                   <h4 className="font-medium">{menu.name}</h4>
                 </div>
-                <div className="flex space-x-1">
+                <div className="flex items-center">
                   <MenuForm
+                    key={menu.id}
                     operation="edit"
                     defaultValues={menu}
                     eventId={eventId}

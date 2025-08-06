@@ -54,9 +54,10 @@ const MenuForm = ({
 }: MenuFormProps) => {
   const [addMenu, { isLoading: isLoadingAdd }] = useAddMenuMutation();
   const [updateMenu, { isLoading: isLoadingEdit }] = useUpdateMenuMutation();
-  console.log(defaultValues?.id);
+  console.log("defaultVales", defaultValues);
   return (
     <CrudForm
+      key={defaultValues?.id ?? "new"}
       schema={foodMenuSchema}
       fields={fields}
       operation={operation}

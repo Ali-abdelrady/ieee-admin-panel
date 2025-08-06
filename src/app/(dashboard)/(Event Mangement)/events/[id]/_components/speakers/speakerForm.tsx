@@ -80,7 +80,17 @@ export default function SpeakerForm({
       setIsSearchMode(true);
     }
   }, [operation, allSpeakers.length, selectedSpeaker]);
-
+  useEffect(() => {
+    if (defaultValues) {
+      form.reset({
+        name: defaultValues?.speaker?.name || "",
+        title: defaultValues?.speaker?.title || "",
+        image: defaultValues?.speaker?.image || "",
+        socialLinks: parseSocialLinks(defaultValues?.speaker?.socialLinks),
+        ...defaultValues,
+      });
+    }
+  }, [defaultValues]);
   const form = useForm<SpeakerFormValues>({
     resolver: zodResolver(speakerFormSchema(operation === "edit")),
     defaultValues: {
@@ -317,8 +327,18 @@ export default function SpeakerForm({
                 >
                   Close
                 </Button>
-                <Button type="submit" disabled={isAdding || isUpdating}>
-                  {operation == "edit" ? "Update Speaker" : "Add Speaker"}
+                <Button
+                  type="submit"
+                  isLoading={isUpdating || isAdding}
+                  disabled={isUpdating || isAdding}
+                >
+                  {operation == "edit"
+                    ? isUpdating
+                      ? "Updating..."
+                      : "Update Sponsor"
+                    : isAdding
+                    ? "Add..."
+                    : "Add Sponsor"}
                 </Button>
               </div>
             </div>

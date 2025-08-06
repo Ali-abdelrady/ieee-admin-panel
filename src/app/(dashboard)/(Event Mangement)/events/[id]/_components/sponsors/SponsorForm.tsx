@@ -49,7 +49,7 @@ export default function SponsorForm({
   eventId,
   eventSponsors,
 }: SponsorFormProps) {
-  console.log("I Rerenderd");
+  console.log("defaultValues:", defaultValues);
   const dialogRef = useRef<{ openDialog: () => void; closeDialog: () => void }>(
     null
   );
@@ -76,7 +76,15 @@ export default function SponsorForm({
       setIsSearchMode(true);
     }
   }, [operation, allSponsors.length, selectedSponsor]);
-
+  useEffect(() => {
+    if (defaultValues) {
+      form.reset({
+        name: defaultValues?.sponsor?.name || "",
+        image: defaultValues?.sponsor?.image || "",
+        ...defaultValues,
+      });
+    }
+  }, [defaultValues]);
   const form = useForm<SponsorFormValues>({
     resolver: zodResolver(sponsorFormSchema(operation === "edit")),
     defaultValues: {
@@ -250,8 +258,18 @@ export default function SponsorForm({
                 >
                   Close
                 </Button>
-                <Button type="submit">
-                  {operation == "edit" ? "Update Sponsor" : "Add Sponsor"}
+                <Button
+                  type="submit"
+                  isLoading={isUpdating || isAdding}
+                  disabled={isUpdating || isAdding}
+                >
+                  {operation == "edit"
+                    ? isUpdating
+                      ? "Updating..."
+                      : "Update Sponsor"
+                    : isAdding
+                    ? "Add..."
+                    : "Add Sponsor"}
                 </Button>
               </div>
             </div>
