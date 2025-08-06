@@ -177,12 +177,12 @@ export const CrudForm = <T extends z.ZodTypeAny>({
 
   const onSubmit = async (formData: z.infer<T>): Promise<boolean> => {
     // Create a copy to avoid mutating the original
-    const payloadData = { ...formData };
+    // const formData = { ...formData };
 
-    if (payloadData.socialLinks) {
+    if (formData.socialLinks) {
       // Transform to the correct format and stringify
-      payloadData.socialLinks = JSON.stringify(
-        payloadData.socialLinks.map((link: any) => ({
+      formData.socialLinks = JSON.stringify(
+        formData.socialLinks.map((link: any) => ({
           url: link.url,
           icon: link.platform,
           name: link.platform,
@@ -191,9 +191,9 @@ export const CrudForm = <T extends z.ZodTypeAny>({
     }
 
     console.log("FormData before prepareRequestPayload:", formData);
-    console.log("PayloadData after transformation:", payloadData);
+    console.log("formData after transformation:", formData);
 
-    const payload = prepareRequestPayload(payloadData); // Note: pass payloadData, not formData
+    const payload = prepareRequestPayload(formData); // Note: pass formData, not formData
     console.log(payload);
     try {
       if (operation === "add") {

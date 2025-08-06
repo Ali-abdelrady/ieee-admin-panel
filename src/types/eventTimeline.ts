@@ -12,10 +12,7 @@ export interface ApiResponse<T> {
   message?: string;
 }
 
-export type TimelineRequest = Omit<
-  TimelineType,
-  "id" | "agendaItems" | "eventId"
->;
+export type TimelineRequest = Omit<TimelineType, "id" | "agendaItems" | "eventId">;
 export type TimelineResponse = ApiResponse<TimelineType[]>;
 
 export interface AgendaItemType {
