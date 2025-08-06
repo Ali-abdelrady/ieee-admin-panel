@@ -16,11 +16,10 @@ import Loader from "@/components/Loader";
 
 export default function SponsorsTab({ eventId }: { eventId: string }) {
   const { data, isLoading, isError } = useGetEventSponsorsQuery(eventId);
-  const [deleteSponsor, { isLoading: isDeleting }] =
-    useDeleteEventSponsorMutation();
+  const [deleteSponsor, { isLoading: isDeleting }] = useDeleteEventSponsorMutation();
 
   if (isLoading) {
-    <Loader error={isError} />;
+    return <Loader error={isError} />;
   }
   const sponsors = data?.data ?? [];
   console.log("Event sponsors:", sponsors);
@@ -28,11 +27,7 @@ export default function SponsorsTab({ eventId }: { eventId: string }) {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-medium">Sponsors</h3>
-        <SponsorForm
-          operation="add"
-          eventId={eventId}
-          eventSponsors={sponsors}
-        />
+        <SponsorForm operation="add" eventId={eventId} eventSponsors={sponsors} />
       </div>
 
       {sponsors.length > 0 ? (
@@ -40,10 +35,7 @@ export default function SponsorsTab({ eventId }: { eventId: string }) {
           {sponsors.map((item) => {
             const { sponsor } = item;
             return (
-              <Card
-                key={sponsor.id}
-                className="hover:shadow-md transition-shadow"
-              >
+              <Card key={sponsor.id} className="hover:shadow-md transition-shadow">
                 <CardContent className="flex items-center space-x-4">
                   <div className="min-w-18 rounded-lg overflow-hidden bg-muted">
                     <Image
@@ -56,9 +48,7 @@ export default function SponsorsTab({ eventId }: { eventId: string }) {
                   </div>
                   <div className="flex-grow">
                     <h4 className="font-medium">{sponsor.name}</h4>
-                    <p className="text-sm text-muted-foreground">
-                      {sponsor.url}
-                    </p>
+                    <p className="text-sm text-muted-foreground">{sponsor.url}</p>
                     {/* {sponsor.image && sponsor.image.length > 1 && (
                     <p className="text-xs text-muted-foreground mt-1">
                       {sponsor.image.length} images available
@@ -101,11 +91,7 @@ export default function SponsorsTab({ eventId }: { eventId: string }) {
               Add sponsors to your event to showcase who will be presenting.
             </p>
             <div className="mt-4 flex justify-center gap-2">
-              <SponsorForm
-                operation="add"
-                eventId={eventId}
-                eventSponsors={sponsors}
-              />
+              <SponsorForm operation="add" eventId={eventId} eventSponsors={sponsors} />
             </div>
           </CardContent>
         </Card>

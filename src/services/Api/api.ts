@@ -21,6 +21,8 @@ export const api = createApi({
     "Committees",
     "Awards",
     "Partners",
+    "Forms",
+    "EventForms",
     "Events",
     "Speakers",
     "Sponsors",

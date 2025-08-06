@@ -16,12 +16,9 @@ import SpeakersTab from "./_components/speakers/SpeakerTab";
 import SponsorsTab from "./_components/sponsors/SponsorTab";
 import { FoodMenuTab } from "./_components/foodMenu/FoodMenuTab";
 import MediaTab from "./_components/media/MediaTab";
+import FromsTab from "./_components/forms/FormsTab";
 
-export default function EventDetails({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default function EventDetails({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const { data, isLoading, isError } = useGetEventByIdQuery(id);
   if (isLoading) {
@@ -61,7 +58,7 @@ export default function EventDetails({
     },
     {
       value: "forms",
-      component: <FormsTab eventId={id} />,
+      component: <FromsTab eventId={id} />,
       label: "Forms",
       icon: null,
     },
@@ -111,8 +108,4 @@ export default function EventDetails({
       </Tabs>
     </div>
   );
-}
-
-function FormsTab({ eventId }) {
-  return <div className="">Forms content here</div>;
 }
