@@ -1,6 +1,7 @@
 // src/app/committee/_components/columns.tsx
 import ActionCell from "@/components/table/actionCell";
 import { ImageCell } from "@/components/table/imageCell";
+import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CommitteeType } from "@/types/committee";
 import { ColumnDef } from "@tanstack/react-table";
@@ -40,8 +41,21 @@ export const committeeColumns = (
     header: "Name",
   },
   {
-    accessorKey: "headId",
-    header: "Head ID",
+    accessorKey: "leaders",
+    header: "Leaders",
+    cell: ({ row }) => {
+      const leaders = row.original.leaders;
+      if (!leaders) {
+        return "No Leaders";
+      }
+      return (
+        <div className="flex flex-wrap ">
+          {leaders.map((leader, index) => (
+            <Badge key={index}>{leader.name}</Badge>
+          ))}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "description",

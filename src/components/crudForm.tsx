@@ -123,6 +123,8 @@ export const CrudForm = <T extends z.ZodTypeAny>({
     }, {} as Record<string, any>) as z.infer<T>;
   }, [defaultValues, fields]);
 
+  console.log("default values:", defaultValues);
+
   const form = useForm<z.infer<T>>({
     resolver: zodResolver(schema),
     defaultValues: transformedDefaults,
@@ -636,14 +638,14 @@ function FormDetails<T extends z.ZodTypeAny>({
                         fieldItem.dynamicArrayFieldsConfig?.addButtonLabel ??
                         fieldItem.label
                       }
-                      disabled={operation == "preview"}
                       simpleArray={
                         fieldItem.dynamicArrayFieldsConfig?.isSimpleArray
                       }
+                      fieldsConfig={fieldItem.dynamicArrayFieldsConfig?.fields}
                       itemName={
                         fieldItem.dynamicArrayFieldsConfig?.itemName ?? "item"
                       }
-                      fieldsConfig={fieldItem.dynamicArrayFieldsConfig?.fields}
+                      disabled={operation == "preview"}
                     />
                   </FormControl>
                 )}

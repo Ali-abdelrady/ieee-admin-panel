@@ -9,12 +9,11 @@ import {
 } from "@/services/Api/committee";
 import { useGetBoardByIdQuery, useGetBoardsQuery } from "@/services/Api/board";
 import { useMemo } from "react";
+import { CommitteeType } from "@/types/committee";
 
 interface CommitteeFormProps {
   operation: "add" | "edit" | "preview";
-  defaultValues?: Partial<z.infer<typeof committeeFormSchema>> & {
-    id?: number;
-  };
+  defaultValues?: CommitteeType;
 }
 
 const CommitteeForm = ({ operation, defaultValues }: CommitteeFormProps) => {
@@ -31,6 +30,9 @@ const CommitteeForm = ({ operation, defaultValues }: CommitteeFormProps) => {
     return options;
   }, [data]);
 
+  const leadersId = useMemo(() => {
+    return defaultValues?.leaders?.map((leader) => String(leader.id)) ?? [];
+  }, [defaultValues]);
   const fields: FormFieldType[] = [
     {
       name: "name",
@@ -72,7 +74,7 @@ const CommitteeForm = ({ operation, defaultValues }: CommitteeFormProps) => {
       schema={committeeFormSchema}
       fields={fields}
       operation={operation}
-      defaultValues={defaultValues}
+      defaultValues={{ ...defaultValues, headIds: leadersId }}
       onAdd={(data) => addItem(data).unwrap()}
       onUpdate={(data) => updateItem(data).unwrap()}
       itemName="Committee"

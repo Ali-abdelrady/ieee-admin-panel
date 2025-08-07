@@ -18,7 +18,11 @@ import { FoodMenuTab } from "./_components/foodMenu/FoodMenuTab";
 import MediaTab from "./_components/media/MediaTab";
 import FromsTab from "./_components/forms/FormsTab";
 
-export default function EventDetails({ params }: { params: Promise<{ id: string }> }) {
+export default function EventDetails({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = use(params);
   const { data, isLoading, isError } = useGetEventByIdQuery(id);
   if (isLoading) {

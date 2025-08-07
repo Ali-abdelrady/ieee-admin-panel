@@ -9,7 +9,7 @@ export type FormFieldType = {
   readonly?: boolean;
   dynamicArrayFieldsConfig?: {
     fields?: FormFieldType[];
-    isSimpleArray?: boolean;
+    isSimpleArray?: boolean; // [1,2,3] , [{},{}]
     addButtonLabel?: string;
     itemName?: string;
   };

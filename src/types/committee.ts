@@ -1,3 +1,5 @@
+import { BoardType } from "./board";
+
 export interface CommitteTopicType {
   title: string;
   content: string;
@@ -9,7 +11,9 @@ export interface CommitteeType {
   description: string;
   image: File | string;
   topics: CommitteTopicType[];
+  leaders?: BoardType[];
 }
+
 export interface ApiResponse<T> {
   data?: {
     committees: T;
