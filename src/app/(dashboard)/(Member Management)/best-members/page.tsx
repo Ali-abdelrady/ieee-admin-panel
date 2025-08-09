@@ -18,6 +18,7 @@ import PreviewButton from "@/components/button/previewButton";
 import { faqFormSchema } from "@/validations/faq";
 import FaqForm from "./_components/form";
 import { faqColumns } from "./_components/coulmns";
+import Loader from "@/components/Loader";
 
 export default function FaqPage() {
   const { data, isError, isLoading: isFetching, error } = useGetFaqsQuery();
@@ -41,11 +42,7 @@ export default function FaqPage() {
   );
 
   if (isFetching) {
-    return (
-      <div className="absolute left-1/2 top-1/2 -translate-1/2">
-        <Loader2Icon className="animate-spin" size={40} />
-      </div>
-    );
+    return <Loader error={isError} />;
   }
 
   if (isError) {

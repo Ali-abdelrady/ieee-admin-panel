@@ -14,6 +14,7 @@ import ImportDialog from "@/components/dialogs/importDialog";
 import { awardFormSchema } from "@/validations/awards";
 import AwardForm from "./_components/form";
 import { awardColumns } from "./_components/coulmns";
+import Loader from "@/components/Loader";
 
 export default function AwardPage() {
   const { data, isError, isLoading: isFetching, error } = useGetAwardsQuery();
@@ -37,11 +38,7 @@ export default function AwardPage() {
   );
 
   if (isFetching) {
-    return (
-      <div className="absolute left-1/2 top-1/2 -translate-1/2">
-        <Loader2Icon className="animate-spin" size={40} />
-      </div>
-    );
+    return <Loader error={isError} />;
   }
 
   if (isError) {

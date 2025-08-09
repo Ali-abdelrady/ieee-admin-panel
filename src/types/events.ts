@@ -17,9 +17,10 @@ export interface EventType {
   category: "event" | "bootcamp" | "workshop" | "outing";
   formId: number | string;
   location: string;
+  locationLink: string;
   images?: string[];
-  image?: File;
-  videos?: File | string[];
+  coverImage?: File | string;
+  eventVideo?: File | string;
   speakers: SpeakerType[];
   sponsors: SponsorType[];
   eventDays: TimelineType[];

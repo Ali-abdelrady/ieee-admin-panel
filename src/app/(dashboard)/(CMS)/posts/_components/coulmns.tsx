@@ -36,6 +36,12 @@ export const postColumns = (
     enableSorting: false,
     enableHiding: false,
   },
+  {
+    accessorKey: "id", // matches your data key
+    header: "ID",
+    enableHiding: true, // allows it to be hidden
+    cell: () => null,
+  },
 
   {
     accessorKey: "title",

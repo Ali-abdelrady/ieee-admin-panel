@@ -15,6 +15,7 @@ import ImportDialog from "@/components/dialogs/importDialog";
 import { boardFormSchema } from "@/validations/board";
 import BoardForm from "./_components/form";
 import { boardColumns } from "./_components/coulmns";
+import Loader from "@/components/Loader";
 
 export default function BoardPage() {
   const { data, isError, isLoading: isFetching, error } = useGetBoardsQuery();
@@ -38,11 +39,7 @@ export default function BoardPage() {
   );
 
   if (isFetching) {
-    return (
-      <div className="absolute left-1/2 top-1/2 -translate-1/2">
-        <Loader2Icon className="animate-spin" size={40} />
-      </div>
-    );
+    return <Loader error={isError} />;
   }
 
   if (isError) {

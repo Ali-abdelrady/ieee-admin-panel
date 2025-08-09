@@ -35,6 +35,12 @@ export const committeeColumns = (
     enableSorting: false,
     enableHiding: false,
   },
+  {
+    accessorKey: "id", // matches your data key
+    header: "ID",
+    enableHiding: true, // allows it to be hidden
+    cell: () => null,
+  },
 
   {
     accessorKey: "name",
@@ -49,7 +55,7 @@ export const committeeColumns = (
         return "No Leaders";
       }
       return (
-        <div className="flex flex-wrap ">
+        <div className="flex gap-2 flex-wrap ">
           {leaders.map((leader, index) => (
             <Badge key={index}>{leader.name}</Badge>
           ))}

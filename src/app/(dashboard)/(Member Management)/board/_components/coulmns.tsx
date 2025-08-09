@@ -36,6 +36,12 @@ export const boardColumns = (
     enableHiding: false,
   },
   {
+    accessorKey: "id", // matches your data key
+    header: "ID",
+    enableHiding: true, // allows it to be hidden
+    cell: () => null,
+  },
+  {
     accessorKey: "name",
     header: "Name",
   },

@@ -24,6 +24,12 @@ const EventForm = ({ operation, defaultValues, trigger }: EventFormProps) => {
     { name: "description", label: "Description", type: "textArea" },
     { name: "startDate", label: "Start Date", type: "date" },
     { name: "endDate", label: "End Date", type: "date" },
+    {
+      name: "registrationStart",
+      label: "Registration Start",
+      type: "date",
+    },
+    { name: "registrationEnd", label: "Registration End", type: "date" },
     { name: "private", label: "Private Event", type: "switch" },
     {
       name: "category",
@@ -37,8 +43,9 @@ const EventForm = ({ operation, defaultValues, trigger }: EventFormProps) => {
       ],
     },
     { name: "location", label: "Location", type: "text" },
+    { name: "locationLink", label: "Location Link", type: "text" },
     {
-      name: "image",
+      name: "coverImage",
       label: "Event Image",
       type: "file",
       fileUploadConfig: {
@@ -46,13 +53,15 @@ const EventForm = ({ operation, defaultValues, trigger }: EventFormProps) => {
         maxFiles: 1,
       },
     },
-    // { name: "videos", label: "Videos", type: "file", isMultiFiles: true },
     {
-      name: "registrationStart",
-      label: "Registration Start",
-      type: "date",
+      name: "eventVideo",
+      label: "Event Intro Video",
+      type: "file",
+      fileUploadConfig: {
+        fileType: "video",
+        maxFiles: 1,
+      },
     },
-    { name: "registrationEnd", label: "Registration End", type: "date" },
   ];
 
   // async function handleAddNewEevnt(data) {

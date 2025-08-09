@@ -18,6 +18,7 @@ import PreviewButton from "@/components/button/previewButton";
 import { committeeFormSchema } from "@/validations/committee";
 import CommitteeForm from "./_components/form";
 import { committeeColumns } from "./_components/coulmns";
+import Loader from "@/components/Loader";
 
 export default function CommitteePage() {
   const {
@@ -47,11 +48,7 @@ export default function CommitteePage() {
   );
 
   if (isFetching) {
-    return (
-      <div className="absolute left-1/2 top-1/2 -translate-1/2">
-        <Loader2Icon className="animate-spin" size={40} />
-      </div>
-    );
+    return <Loader error={isError} />;
   }
 
   if (isError) {

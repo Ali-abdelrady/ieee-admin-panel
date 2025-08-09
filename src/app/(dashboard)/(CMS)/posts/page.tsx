@@ -18,6 +18,7 @@ import PostForm from "./_components/form";
 import { postColumns } from "./_components/coulmns";
 import { PostType } from "@/types/post";
 import ImportDialog from "@/components/dialogs/importDialog";
+import Loader from "@/components/Loader";
 
 export default function PostPage() {
   const { data, isError, isLoading: isFetching, error } = useGetPostsQuery();
@@ -33,19 +34,15 @@ export default function PostPage() {
         rows={rows}
         isLoading={isDeleting}
         deleteFn={deletePost}
-        getId={(row) => row.id}
         isIcon={true}
+
       />
     ),
     (row) => <PostForm operation="preview" defaultValues={row} />
   );
 
   if (isFetching) {
-    return (
-      <div className="absolute left-1/2 top-1/2 -translate-1/2">
-        <Loader2Icon className="animate-spin" size={40} />
-      </div>
-    );
+    return <Loader error={isError} />;
   }
 
   if (isError) {

@@ -51,17 +51,26 @@ export const EventApi = api.injectEndpoints({
       }),
       invalidatesTags: [{ type: "Events", id: "LIST" }],
     }),
-    updateEvent: builder.mutation<EventResponse, EventType>({
-      query: (data) => ({
-        url: `/admin/events/${data.id}`,
-        method: "PATCH",
-        body: {
-          ...data,
-        },
-        formData: true,
-      }),
+    updateEvent: builder.mutation<EventResponse, EventType | FormData>({
+      query: (data) => {
+        let id: string | number;
+        if (data instanceof FormData) {
+          id = data.get("id") as string;
+        } else {
+          id = data.id;
+        }
+        return {
+          url: `/admin/events/${id}`,
+          method: "PATCH",
+          body: data,
+          formData: data instanceof FormData,
+        };
+      },
       invalidatesTags: (result, error, arg) => [
-        { type: "Events", id: arg.id },
+        {
+          type: "Events",
+          id: arg instanceof FormData ? (arg.get("id") as string) : arg.id,
+        },
         { type: "Events", id: "LIST" },
       ],
     }),
