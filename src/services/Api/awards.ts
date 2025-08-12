@@ -10,27 +10,35 @@ export const awardApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getAwards: builder.query<AwardsResponse, void>({
       query: () => "/admin/awards",
-      providesTags: ["Awards"],
+      providesTags: (result) => {
+        const awards = result?.data?.awards ?? [];
+        if (Array.isArray(awards) && awards.length) {
+          return [
+            ...awards.map((a) => ({ type: "Awards" as const, id: a.id })),
+            { type: "Awards" as const, id: "LIST" },
+          ];
+        }
+        return [{ type: "Awards" as const, id: "LIST" }];
+      },
     }),
+
     addAward: builder.mutation<AwardResponse, AwardRequest>({
       query: (body) => ({
         url: "/admin/awards",
         method: "POST",
         body,
       }),
-      invalidatesTags: ["Awards"],
+      invalidatesTags: [{ type: "Awards", id: "LIST" }],
     }),
+
     updateAward: builder.mutation<AwardResponse, AwardType | FormData>({
       query: (data) => {
-        console.log("FROM API DATA", data);
         let id: string | number;
-
         if (data instanceof FormData) {
           id = data.get("id") as string;
         } else {
           id = data.id;
         }
-
         return {
           url: `/admin/awards/${id}`,
           method: "PATCH",
@@ -38,14 +46,23 @@ export const awardApi = api.injectEndpoints({
           formData: data instanceof FormData,
         };
       },
-      invalidatesTags: ["Awards"],
+      invalidatesTags: (result, error, arg) => [
+        {
+          type: "Awards",
+          id: arg instanceof FormData ? (arg.get("id") as string) : arg.id,
+        },
+      ],
     }),
+
     deleteAward: builder.mutation<AwardResponse, string | number>({
       query: (id) => ({
         url: `/admin/awards/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Awards"],
+      invalidatesTags: (result, error, id) => [
+        { type: "Awards", id },
+        { type: "Awards", id: "LIST" },
+      ],
     }),
   }),
 });

@@ -1,16 +1,17 @@
+// src/services/Api/admin/eventTimeline.ts
 import { api } from "./api";
 import {
-  TimelineType,
   TimelineRequest,
   TimelineResponse,
-  AgendaItemType,
   AgendaItemRequest,
   AgendaItemResponse,
 } from "@/types/eventTimeline";
 
-export const EventApi = api.injectEndpoints({
+export const eventTimelineApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    // Timeline CRUD endpoints
+    /** ─────────────────────────────
+     *  TIMELINE CRUD
+     *  ───────────────────────────── */
     addTimeline: builder.mutation<
       TimelineResponse,
       { data: TimelineRequest; eventId: string }
@@ -20,29 +21,21 @@ export const EventApi = api.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: (result, error, arg) => [
-        { type: "Timelines", id: arg.eventId },
-        { type: "Timelines", id: "LIST" },
+      invalidatesTags: (result, error, { eventId }) => [
+        { type: "Timelines", id: `EVENT-${eventId}` },
       ],
     }),
 
     getTimelines: builder.query<TimelineResponse, string>({
       query: (eventId) => `/admin/events/${eventId}/timeline/`,
       providesTags: (result, error, eventId) => {
-        const data = result?.data?.timeline ?? [];
-        if (Array.isArray(data) && data.length) {
-          return [
-            ...data.map((t) => ({
-              type: "Timelines" as const,
-              id: t.id,
-            })),
-            { type: "Timelines" as const, id: eventId },
-            { type: "Timelines" as const, id: "LIST" },
-          ];
-        }
+        const timelines = result?.data?.timeline ?? [];
         return [
-          { type: "Timelines" as const, id: eventId },
-          { type: "Timelines" as const, id: "LIST" },
+          ...timelines.map((t) => ({
+            type: "Timelines" as const,
+            id: t.id,
+          })),
+          { type: "Timelines", id: `EVENT-${eventId}` },
         ];
       },
     }),
@@ -55,10 +48,9 @@ export const EventApi = api.injectEndpoints({
         url: `/admin/events/${eventId}/timeline/${timelineId}`,
         method: "DELETE",
       }),
-      invalidatesTags: (result, error, arg) => [
-        { type: "Timelines", id: arg.timelineId },
-        { type: "Timelines", id: arg.eventId },
-        { type: "Timelines", id: "LIST" },
+      invalidatesTags: (result, error, { timelineId, eventId }) => [
+        { type: "Timelines", id: timelineId },
+        { type: "Timelines", id: `EVENT-${eventId}` },
       ],
     }),
 
@@ -71,14 +63,15 @@ export const EventApi = api.injectEndpoints({
         method: "PATCH",
         body: data,
       }),
-      invalidatesTags: (result, error, arg) => [
-        { type: "Timelines", id: arg.timelineId },
-        { type: "Timelines", id: arg.eventId },
-        { type: "Timelines", id: "LIST" },
+      invalidatesTags: (result, error, { timelineId, eventId }) => [
+        { type: "Timelines", id: timelineId },
+        { type: "Timelines", id: `EVENT-${eventId}` },
       ],
     }),
 
-    // Agenda Items CRUD endpoints
+    /** ─────────────────────────────
+     *  AGENDA ITEMS CRUD
+     *  ───────────────────────────── */
     addAgendaItem: builder.mutation<
       AgendaItemResponse,
       {
@@ -92,16 +85,14 @@ export const EventApi = api.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: (result, error, arg) => [
-        { type: "Timelines", id: arg.eventId },
-        { type: "Timelines", id: "LIST" },
+      invalidatesTags: (result, error, { eventId }) => [
+        { type: "Timelines", id: `EVENT-${eventId}` },
       ],
     }),
 
     deleteAgendaItem: builder.mutation<
       AgendaItemResponse,
       {
-        // data: AgendaItemRequest;
         eventId: string | number;
         timelineId: string | number;
         agendaItemId: string | number;
@@ -111,10 +102,8 @@ export const EventApi = api.injectEndpoints({
         url: `/admin/events/${eventId}/timeline/${timelineId}/sessions/${agendaItemId}`,
         method: "DELETE",
       }),
-      invalidatesTags: (result, error, arg) => [
-        { type: "Timelines", id: arg.eventId },
-        { type: "Timelines", id: arg.eventId },
-        { type: "Timelines", id: "LIST" },
+      invalidatesTags: (result, error, { eventId }) => [
+        { type: "Timelines", id: `EVENT-${eventId}` },
       ],
     }),
 
@@ -132,14 +121,11 @@ export const EventApi = api.injectEndpoints({
         method: "PATCH",
         body: data,
       }),
-      invalidatesTags: (result, error, arg) => [
-        { type: "Timelines", id: arg.eventId },
-        { type: "Timelines", id: arg.eventId },
-        { type: "Timelines", id: "LIST" },
+      invalidatesTags: (result, error, { eventId }) => [
+        { type: "Timelines", id: `EVENT-${eventId}` },
       ],
     }),
   }),
-  overrideExisting: false,
 });
 
 export const {
@@ -152,4 +138,4 @@ export const {
   useAddAgendaItemMutation,
   useDeleteAgendaItemMutation,
   useUpdateAgendaItemMutation,
-} = EventApi;
+} = eventTimelineApi;
