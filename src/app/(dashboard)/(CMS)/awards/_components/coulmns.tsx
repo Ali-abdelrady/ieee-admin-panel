@@ -1,6 +1,7 @@
 import ActionCell from "@/components/table/actionCell";
 import { ImageCell } from "@/components/table/imageCell";
 import { Checkbox } from "@/components/ui/checkbox";
+import { formatDate } from "@/services/helpers/dateHelpers";
 import { AwardType } from "@/types/awards";
 import { ColumnDef } from "@tanstack/react-table";
 import Image from "next/image";
@@ -47,6 +48,7 @@ export const awardColumns = (
   {
     accessorKey: "winningDate",
     header: "Winning Date",
+    cell: ({ row }) => formatDate(row.original.winningDate),
   },
   {
     accessorKey: "place",
