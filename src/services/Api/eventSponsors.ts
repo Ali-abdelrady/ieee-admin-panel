@@ -8,7 +8,7 @@ import { SponsorRequest, SponsorsResponse } from "@/types/sponsors";
 
 export const EventApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    // Event sponsors endpoints
+    // Add event sponsor
     addEventSponsor: builder.mutation<
       EventSponsorResponse,
       { data: EventSponsorRequest; eventId: string }
@@ -19,34 +19,31 @@ export const EventApi = api.injectEndpoints({
         body: data,
         formData: true,
       }),
-      invalidatesTags: (result, error, arg) => [
-        { type: "EventSponsors", id: arg.eventId },
-        { type: "EventSponsors", id: "LIST" },
-        { type: "Sponsors", id: "LIST" },
+      invalidatesTags: (result, error, { eventId }) => [
+        { type: "EventSponsors", id: `EVENT-${eventId}` },
+        { type: "Sponsors", id: "LIST" }, // refresh sponsors list if needed
       ],
     }),
 
+    // Get all sponsors for an event
     getEventSponsors: builder.query<EventSponsorResponse, string>({
       query: (eventId) => `/admin/events/${eventId}/sponsors/`,
       providesTags: (result, error, eventId) => {
-        const data = result?.data ?? [];
-        if (Array.isArray(data) && data.length) {
+        const sponsors = result?.data ?? [];
+        if (Array.isArray(sponsors) && sponsors.length) {
           return [
-            ...data.map((e) => ({
+            ...sponsors.map((s) => ({
               type: "EventSponsors" as const,
-              id: e.id,
+              id: s.id,
             })),
-            { type: "EventSponsors" as const, id: eventId },
-            { type: "EventSponsors" as const, id: "LIST" },
+            { type: "EventSponsors" as const, id: `EVENT-${eventId}` },
           ];
         }
-        return [
-          { type: "EventSponsors" as const, id: eventId },
-          { type: "EventSponsors" as const, id: "LIST" },
-        ];
+        return [{ type: "EventSponsors", id: `EVENT-${eventId}` }];
       },
     }),
 
+    // Delete sponsor from event
     deleteEventSponsor: builder.mutation<
       EventSponsorResponse,
       { sponsorId: string; eventId: string }
@@ -55,13 +52,13 @@ export const EventApi = api.injectEndpoints({
         url: `/admin/events/${eventId}/sponsors/${sponsorId}`,
         method: "DELETE",
       }),
-      invalidatesTags: (result, error, arg) => [
-        // { type: "EventSponsors", id: arg.sponsorId },
-        { type: "EventSponsors", id: arg.eventId },
-        { type: "EventSponsors", id: "LIST" },
+      invalidatesTags: (result, error, { sponsorId, eventId }) => [
+        { type: "EventSponsors", id: sponsorId },
+        { type: "EventSponsors", id: `EVENT-${eventId}` },
       ],
     }),
 
+    // Update sponsor in event
     updateEventSponsor: builder.mutation<
       SponsorsResponse,
       { data: SponsorRequest; sponsorId: string; eventId: string }
@@ -72,14 +69,12 @@ export const EventApi = api.injectEndpoints({
         body: data,
         formData: true,
       }),
-      invalidatesTags: (result, error, arg) => [
-        // { type: "EventSponsors", id: arg.sponsorId },
-        { type: "EventSponsors", id: arg.eventId },
-        { type: "EventSponsors", id: "LIST" },
+      invalidatesTags: (result, error, { sponsorId, eventId }) => [
+        { type: "EventSponsors", id: sponsorId },
+        { type: "EventSponsors", id: `EVENT-${eventId}` },
       ],
     }),
   }),
-  overrideExisting: false,
 });
 
 export const {

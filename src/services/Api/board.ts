@@ -1,4 +1,3 @@
-// src/services/Api/board.ts
 import { api } from "./api";
 import {
   BoardRequest,
@@ -12,29 +11,28 @@ export const BoardApi = api.injectEndpoints({
     getBoards: builder.query<BoardsResponse, void>({
       query: () => "/board",
       providesTags: (result) => {
-        const data = result?.data?.boards ?? [];
-        if (Array.isArray(data) && data.length) {
+        const boards = result?.data?.boards ?? [];
+        if (Array.isArray(boards) && boards.length) {
           return [
-            ...data.map((e) => ({
-              type: "Boards" as const,
-              id: e.id,
-            })),
+            ...boards.map((b) => ({ type: "Boards" as const, id: b.id })),
             { type: "Boards" as const, id: "LIST" },
           ];
         }
-        return [{ type: "Boards" as const, id: "LIST" }];
+        return [{ type: "Boards", id: "LIST" }];
       },
     }),
+
     getBoardById: builder.query<BoardResponse, string>({
       query: (id) => `/board/${id}`,
-      providesTags: (result) =>
+      providesTags: (result, error, id) =>
         result
           ? [
-              { type: "Boards" as const, id: result?.data?.boards?.id },
-              { type: "Boards" as const, id: "LIST" },
+              { type: "Boards", id },
+              { type: "Boards", id: "LIST" },
             ]
-          : [{ type: "Boards" as const, id: "LIST" }],
+          : [{ type: "Boards", id: "LIST" }],
     }),
+
     addBoard: builder.mutation<BoardResponse, BoardRequest>({
       query: (data) => ({
         url: "/admin/board",
@@ -44,11 +42,10 @@ export const BoardApi = api.injectEndpoints({
       }),
       invalidatesTags: [{ type: "Boards", id: "LIST" }],
     }),
+
     updateBoard: builder.mutation<BoardResponse, BoardType | FormData>({
       query: (data) => {
-        console.log("FROM API DATA", data);
         let id: string | number;
-
         if (data instanceof FormData) {
           id = data.get("id") as string;
         } else {
@@ -66,12 +63,12 @@ export const BoardApi = api.injectEndpoints({
           type: "Boards",
           id: arg instanceof FormData ? (arg.get("id") as string) : arg.id,
         },
-        { type: "Boards", id: "LIST" },
       ],
     }),
+
     deleteBoard: builder.mutation<BoardResponse, string | number>({
       query: (id) => ({
-        url: `/admin/board/${id.toString()}`,
+        url: `/admin/board/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: (result, error, id) => [
@@ -80,7 +77,6 @@ export const BoardApi = api.injectEndpoints({
       ],
     }),
   }),
-  overrideExisting: false,
 });
 
 export const {

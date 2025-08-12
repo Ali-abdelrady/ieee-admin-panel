@@ -49,7 +49,10 @@ export const EventApi = api.injectEndpoints({
         body: data,
         formData: true,
       }),
-      invalidatesTags: [{ type: "Events", id: "LIST" }],
+      invalidatesTags: (result) =>
+        result
+          ? [{ type: "Events", id: result?.data?.event.id }] // only new event
+          : [{ type: "Events" as const, id: "LIST" }],
     }),
     updateEvent: builder.mutation<EventResponse, EventType | FormData>({
       query: (data) => {
@@ -71,7 +74,6 @@ export const EventApi = api.injectEndpoints({
           type: "Events",
           id: arg instanceof FormData ? (arg.get("id") as string) : arg.id,
         },
-        { type: "Events", id: "LIST" },
       ],
     }),
     deleteEvent: builder.mutation<EventResponse, string | number>({
@@ -79,10 +81,7 @@ export const EventApi = api.injectEndpoints({
         url: `/admin/events/${id.toString()}`,
         method: "DELETE",
       }),
-      invalidatesTags: (result, error, id) => [
-        { type: "Events", id },
-        { type: "Events", id: "LIST" },
-      ],
+      invalidatesTags: (result, error, id) => [{ type: "Events", id }],
     }),
     addEventDetails: builder.mutation<EventResponse, EventDetailsType>({
       query: (data) => ({

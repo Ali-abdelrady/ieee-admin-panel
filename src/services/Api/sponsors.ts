@@ -1,42 +1,42 @@
+// src/services/Api/admin/sponsors.ts
 import { api } from "./api";
 import {
-  SponsorType,
   SponsorRequest,
   SponsorResponse,
   SponsorsResponse,
 } from "@/types/sponsors";
 
-export const SponsorApi = api.injectEndpoints({
+export const sponsorApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getSponsors: builder.query<SponsorsResponse, void>({
       query: () => "/admin/sponsors",
       providesTags: (result) => {
-        const data = result?.data?.sponsors ?? [];
-        if (Array.isArray(data) && data.length) {
+        const sponsors = result?.data?.sponsors ?? [];
+        if (sponsors.length) {
           return [
-            ...data.map((sponsor) => ({
+            ...sponsors.map((sponsor) => ({
               type: "Sponsors" as const,
-              id: sponsor.id,
+              id: sponsor.id.toString(),
             })),
             { type: "Sponsors" as const, id: "LIST" },
           ];
         }
-        return [{ type: "Sponsors" as const, id: "LIST" }];
+        return [{ type: "Sponsors", id: "LIST" }];
       },
     }),
 
     getSponsorById: builder.query<SponsorResponse, string | number>({
       query: (id) => `/admin/sponsors/${id}`,
-      providesTags: (result) =>
+      providesTags: (result, error, id) =>
         result?.data?.sponsors
           ? [
-              {
-                type: "Sponsors" as const,
-                id: result.data.sponsors.id,
-              },
-              { type: "Sponsors" as const, id: "LIST" },
+              { type: "Sponsors", id: result.data.sponsors.id.toString() },
+              { type: "Sponsors", id: "LIST" },
             ]
-          : [{ type: "Sponsors" as const, id: "LIST" }],
+          : [
+              { type: "Sponsors", id: id.toString() },
+              { type: "Sponsors", id: "LIST" },
+            ],
     }),
 
     addSponsor: builder.mutation<SponsorResponse, SponsorRequest | FormData>({
@@ -51,7 +51,7 @@ export const SponsorApi = api.injectEndpoints({
 
     updateSponsor: builder.mutation<
       SponsorResponse,
-      { sponsorId: string | number; data: FormData }
+      { sponsorId: string | number; data: SponsorRequest | FormData }
     >({
       query: ({ data, sponsorId }) => ({
         url: `/admin/sponsors/${sponsorId}`,
@@ -59,8 +59,8 @@ export const SponsorApi = api.injectEndpoints({
         body: data,
         formData: true,
       }),
-      invalidatesTags: (result, error, arg) => [
-        { type: "Sponsors", id: arg.sponsorId },
+      invalidatesTags: (result, error, { sponsorId }) => [
+        { type: "Sponsors", id: sponsorId.toString() },
         { type: "Sponsors", id: "LIST" },
       ],
     }),
@@ -71,7 +71,7 @@ export const SponsorApi = api.injectEndpoints({
         method: "DELETE",
       }),
       invalidatesTags: (result, error, id) => [
-        { type: "Sponsors", id },
+        { type: "Sponsors", id: id.toString() },
         { type: "Sponsors", id: "LIST" },
       ],
     }),
@@ -80,9 +80,9 @@ export const SponsorApi = api.injectEndpoints({
 });
 
 export const {
-  useAddSponsorMutation,
   useGetSponsorsQuery,
   useGetSponsorByIdQuery,
+  useAddSponsorMutation,
   useUpdateSponsorMutation,
   useDeleteSponsorMutation,
-} = SponsorApi;
+} = sponsorApi;

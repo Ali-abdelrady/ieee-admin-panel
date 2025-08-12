@@ -75,12 +75,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  exportToCSV,
-  exportToExcel,
-  exportToJSON,
-  exportToPDF,
-} from "@/lib/exportUtils";
+import { exportToCSV, exportToExcel, exportToJSON, exportToPDF } from "@/lib/exportUtils";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 interface DataTableProps<TData, TValue> {
@@ -121,20 +116,17 @@ export default function DataTable<TData, TValue>({
   const inputRef = useRef<HTMLInputElement>(null);
   const importInputRef = useRef<HTMLInputElement>(null);
   const defaultFilterKey =
-    filterKey && columns.some((col) => col.id === filterKey)
-      ? filterKey
-      : undefined;
+    filterKey && columns.some((col) => col.id === filterKey) ? filterKey : undefined;
 
-  const [sorting, setSorting] = useState<SortingState>(
-    // defaultFilterKey ? [{ id: defaultFilterKey, desc: true }] : []
-    [{ id: "id", desc: true }] // this assumes your rows have an "id" field
-  );
+  const [sorting, setSorting] = useState<SortingState>();
+  // defaultFilterKey ? [{ id: defaultFilterKey, desc: true }] : []
+  // [{ id: "id", desc: true }] // this assumes your rows have an "id" field
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    onSortingChange: setSorting,
+    // onSortingChange: setSorting,
     enableSortingRemoval: false,
     getPaginationRowModel: getPaginationRowModel(),
     onPaginationChange: setPagination,
@@ -149,9 +141,7 @@ export default function DataTable<TData, TValue>({
       columnVisibility,
     },
   });
-  const selectedRows = table
-    .getSelectedRowModel()
-    .rows.map((row) => row.original);
+  const selectedRows = table.getSelectedRowModel().rows.map((row) => row.original);
   return (
     <div className="space-y-4 ">
       {/* Filters */}
@@ -164,12 +154,9 @@ export default function DataTable<TData, TValue>({
                 ref={inputRef}
                 className={cn(
                   "peer min-w-60 ps-9",
-                  Boolean(table.getColumn(filterKey)?.getFilterValue()) &&
-                    "pe-9"
+                  Boolean(table.getColumn(filterKey)?.getFilterValue()) && "pe-9"
                 )}
-                value={
-                  (table.getColumn(filterKey)?.getFilterValue() ?? "") as string
-                }
+                value={(table.getColumn(filterKey)?.getFilterValue() ?? "") as string}
                 onChange={(e) =>
                   table.getColumn(filterKey)?.setFilterValue(e.target.value)
                 }
@@ -200,11 +187,7 @@ export default function DataTable<TData, TValue>({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline">
-                <Columns3Icon
-                  className="-ms-1 opacity-60"
-                  size={16}
-                  aria-hidden="true"
-                />
+                <Columns3Icon className="-ms-1 opacity-60" size={16} aria-hidden="true" />
                 View
               </Button>
             </DropdownMenuTrigger>
@@ -212,18 +195,14 @@ export default function DataTable<TData, TValue>({
               <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
               {table
                 .getAllColumns()
-                .filter(
-                  (column) => column.getCanHide() && column.id !== "actions"
-                )
+                .filter((column) => column.getCanHide() && column.id !== "actions")
                 .map((column) => {
                   return (
                     <DropdownMenuCheckboxItem
                       key={column.id}
                       className="capitalize"
                       checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
+                      onCheckedChange={(value) => column.toggleVisibility(!!value)}
                       onSelect={(event) => event.preventDefault()}
                     >
                       {column.id}
@@ -241,10 +220,7 @@ export default function DataTable<TData, TValue>({
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="flex items-center">
-                    <MoreHorizontalIcon
-                      className="-ms-1 opacity-60"
-                      size={16}
-                    />
+                    <MoreHorizontalIcon className="-ms-1 opacity-60" size={16} />
                     Actions
                   </Button>
                 </DropdownMenuTrigger>
@@ -254,9 +230,7 @@ export default function DataTable<TData, TValue>({
                   <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
                   {addDialogContent && (
-                    <DropdownMenuItem asChild>
-                      {addDialogContent}
-                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>{addDialogContent}</DropdownMenuItem>
                   )}
 
                   <DropdownMenuSub>
@@ -265,27 +239,19 @@ export default function DataTable<TData, TValue>({
                       Export
                     </DropdownMenuSubTrigger>
                     <DropdownMenuSubContent>
-                      <DropdownMenuItem
-                        onClick={() => exportToPDF(data, label)}
-                      >
+                      <DropdownMenuItem onClick={() => exportToPDF(data, label)}>
                         <FileText size={16} className="mr-2" />
                         PDF
                       </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => exportToCSV(data, label)}
-                      >
+                      <DropdownMenuItem onClick={() => exportToCSV(data, label)}>
                         <FileSpreadsheet size={16} className="mr-2" />
                         CSV
                       </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => exportToJSON(data, label)}
-                      >
+                      <DropdownMenuItem onClick={() => exportToJSON(data, label)}>
                         <FileJson size={16} className="mr-2" />
                         JSON
                       </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => exportToExcel(data, label)}
-                      >
+                      <DropdownMenuItem onClick={() => exportToExcel(data, label)}>
                         <FileX size={16} className="mr-2" />
                         Excel
                       </DropdownMenuItem>
@@ -293,9 +259,7 @@ export default function DataTable<TData, TValue>({
                   </DropdownMenuSub>
 
                   {importDialogContent && (
-                    <DropdownMenuItem asChild>
-                      {importDialogContent}
-                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>{importDialogContent}</DropdownMenuItem>
                   )}
 
                   {table.getSelectedRowModel().rows.length > 0 &&
@@ -312,10 +276,7 @@ export default function DataTable<TData, TValue>({
                     <Button variant="outline" className="flex items-center">
                       <Upload className="-ms-1 opacity-60" size={16} />
                       Export
-                      <ChevronDownIcon
-                        className="mt-0.5 ml-1.5 opacity-60"
-                        size={16}
-                      />
+                      <ChevronDownIcon className="mt-0.5 ml-1.5 opacity-60" size={16} />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
@@ -331,9 +292,7 @@ export default function DataTable<TData, TValue>({
                       <FileJson className="-ms-1 opacity-60" size={16} />
                       JSON
                     </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => exportToExcel(data, label)}
-                    >
+                    <DropdownMenuItem onClick={() => exportToExcel(data, label)}>
                       <FileX className="-ms-1 opacity-60" size={16} />
                       Excel Sheet
                     </DropdownMenuItem>
@@ -353,14 +312,16 @@ export default function DataTable<TData, TValue>({
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id} className="hover:bg-transparent">
-                {headerGroup.headers.map((header) => {
+                {headerGroup.headers.map((header, index) => {
                   const isActions = header.column.id === "actions";
                   return (
                     <TableHead
                       key={header.id}
                       className={cn(
                         "h-11 overflow-hidden text-ellipsis whitespace-nowrap sticky top-0",
-                        isActions
+                        index === 0
+                          ? "w-[50px]"
+                          : isActions
                           ? "w-[200px] min-w-[200px] max-w-[200px]"
                           : "w-[200px] min-w-[200px] max-w-[200px]"
                       )}
@@ -369,8 +330,7 @@ export default function DataTable<TData, TValue>({
                         <div
                           className={cn(
                             "flex items-center gap-2",
-                            header.column.getCanSort() &&
-                              "cursor-pointer select-none"
+                            header.column.getCanSort() && "cursor-pointer select-none"
                           )}
                           onClick={header.column.getToggleSortingHandler()}
                           onKeyDown={(e) => {
@@ -422,11 +382,8 @@ export default function DataTable<TData, TValue>({
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
+              table.getRowModel().rows.map((row, index) => (
+                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
                   {row.getVisibleCells().map((cell) => {
                     const isActions = cell.column.id === "actions";
                     return (
@@ -434,15 +391,14 @@ export default function DataTable<TData, TValue>({
                         key={cell.id}
                         className={cn(
                           "overflow-hidden text-ellipsis whitespace-nowrap last:py-0",
-                          isActions
+                          index === 0
+                            ? "w-[50px]"
+                            : isActions
                             ? "w-[200px] min-w-[100px] max-w-[200px]"
                             : "w-[200px] min-w-[100px] max-w-[200px]"
                         )}
                       >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </TableCell>
                     );
                   })}
@@ -450,10 +406,7 @@ export default function DataTable<TData, TValue>({
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
+                <TableCell colSpan={columns.length} className="h-24 text-center">
                   No results.
                 </TableCell>
               </TableRow>
@@ -508,10 +461,7 @@ export default function DataTable<TData, TValue>({
                 table.getRowCount()
               )}
             </span>{" "}
-            of{" "}
-            <span className="text-foreground">
-              {table.getRowCount().toString()}
-            </span>
+            of <span className="text-foreground">{table.getRowCount().toString()}</span>
           </p>
         </div>
 

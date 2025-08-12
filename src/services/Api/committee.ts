@@ -12,29 +12,31 @@ export const CommitteeApi = api.injectEndpoints({
     getCommittees: builder.query<CommitteesResponse, void>({
       query: () => "/admin/committees",
       providesTags: (result) => {
-        const data = result?.data?.committees ?? [];
-        if (Array.isArray(data) && data.length) {
+        const committees = result?.data?.committees ?? [];
+        if (Array.isArray(committees) && committees.length) {
           return [
-            ...data.map((e) => ({
+            ...committees.map((c) => ({
               type: "Committees" as const,
-              id: e.id,
+              id: c.id,
             })),
             { type: "Committees" as const, id: "LIST" },
           ];
         }
-        return [{ type: "Committees" as const, id: "LIST" }];
+        return [{ type: "Committees", id: "LIST" }];
       },
     }),
+
     getCommitteeById: builder.query<CommitteeResponse, string>({
       query: (id) => `/admin/committees/${id}`,
-      providesTags: (result) =>
+      providesTags: (result, error, id) =>
         result
           ? [
-              { type: "Committees" as const, id: result?.data?.committees?.id },
-              { type: "Committees" as const, id: "LIST" },
+              { type: "Committees", id },
+              { type: "Committees", id: "LIST" },
             ]
-          : [{ type: "Committees" as const, id: "LIST" }],
+          : [{ type: "Committees", id: "LIST" }],
     }),
+
     addCommittee: builder.mutation<CommitteeResponse, CommitteeRequest>({
       query: (data) => ({
         url: "/admin/committees",
@@ -43,6 +45,7 @@ export const CommitteeApi = api.injectEndpoints({
       }),
       invalidatesTags: [{ type: "Committees", id: "LIST" }],
     }),
+
     updateCommittee: builder.mutation<
       CommitteeResponse,
       CommitteeType | FormData
@@ -66,12 +69,12 @@ export const CommitteeApi = api.injectEndpoints({
           type: "Committees",
           id: arg instanceof FormData ? (arg.get("id") as string) : arg.id,
         },
-        { type: "Committees", id: "LIST" },
       ],
     }),
+
     deleteCommittee: builder.mutation<CommitteeResponse, string | number>({
       query: (id) => ({
-        url: `/admin/committees/${id.toString()}`,
+        url: `/admin/committees/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: (result, error, id) => [
@@ -80,7 +83,6 @@ export const CommitteeApi = api.injectEndpoints({
       ],
     }),
   }),
-  overrideExisting: false,
 });
 
 export const {

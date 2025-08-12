@@ -1,24 +1,19 @@
+// src/services/Api/admin/eventMedia.ts
 import { api } from "./api";
 import { EventMediaRequest, EventMediaResponse } from "@/types/eventMedia";
 
-export const EventMediaApi = api.injectEndpoints({
+export const eventMediaApi = api.injectEndpoints({
   endpoints: (builder) => ({
     uploadEventMedia: builder.mutation<
       EventMediaResponse,
       { data: EventMediaRequest; eventId: string }
     >({
-      query: ({ data, eventId }) => {
-        // const formData = new FormData();
-        // const media = Array.isArray(data.media) ? data.media : [data.media];
-        // media.forEach((file) => formData.append("media", file));
-
-        return {
-          url: `/admin/events/${eventId}/media/`,
-          method: "POST",
-          body: data,
-          formData: true,
-        };
-      },
+      query: ({ data, eventId }) => ({
+        url: `/admin/events/${eventId}/media/`,
+        method: "POST",
+        body: data,
+        formData: true,
+      }),
       invalidatesTags: (result, error, { eventId }) => [
         { type: "EventMedia", id: eventId },
         { type: "EventMedia", id: "LIST" },
@@ -55,4 +50,4 @@ export const {
   useUploadEventMediaMutation,
   useGetEventMediaQuery,
   useDeleteEventMediaMutation,
-} = EventMediaApi;
+} = eventMediaApi;

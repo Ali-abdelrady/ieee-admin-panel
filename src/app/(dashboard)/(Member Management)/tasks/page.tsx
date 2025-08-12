@@ -18,6 +18,7 @@ import PreviewButton from "@/components/button/previewButton";
 import { faqFormSchema } from "@/validations/faq";
 import FaqForm from "./_components/form";
 import { faqColumns } from "./_components/coulmns";
+import Loader from "@/components/Loader";
 
 export default function FaqPage() {
   const { data, isError, isLoading: isFetching, error } = useGetFaqsQuery();

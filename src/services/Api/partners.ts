@@ -1,32 +1,19 @@
 // src/services/Api/admin/events.ts
 import { PartnerRequest } from "@/types/partners";
+import { PartnersResponse } from "@/types/sponsors";
 import { api } from "./api";
-import { PartnersResponse, SponsorRequest } from "@/types/sponsors";
 
-export const EventApi = api.injectEndpoints({
+export const eventApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    // Event partners endpoints
-    addPartner: builder.mutation<PartnersResponse, { data: PartnerRequest }>({
-      query: ({ data }) => ({
-        url: `/admin/partners/`,
-        method: "POST",
-        body: data,
-        formData: true,
-      }),
-      invalidatesTags: (result, error, arg) => [
-        { type: "Partners", id: "LIST" },
-      ],
-    }),
-
     getPartners: builder.query<PartnersResponse, void>({
-      query: () => `/admin/partners/`, // ✅ Required
+      query: () => `/admin/partners/`,
       providesTags: (result) => {
-        const data = result?.data?.partners ?? [];
-        if (Array.isArray(data) && data.length) {
+        const partners = result?.data?.partners ?? [];
+        if (partners.length) {
           return [
-            ...data.map((e) => ({
+            ...partners.map((partner) => ({
               type: "Partners" as const,
-              id: e.id.toString(),
+              id: partner.id.toString(),
             })),
             { type: "Partners" as const, id: "LIST" },
           ];
@@ -35,30 +22,39 @@ export const EventApi = api.injectEndpoints({
       },
     }),
 
-    deletePartner: builder.mutation<PartnersResponse, string>({
-      query: (sponsorId) => ({
-        url: `/admin/partners/${sponsorId}`,
-        method: "DELETE",
+    addPartner: builder.mutation<PartnersResponse, { data: PartnerRequest }>({
+      query: ({ data }) => ({
+        url: `/admin/partners/`,
+        method: "POST",
+        body: data,
+        formData: true,
       }),
-      invalidatesTags: (result, error, arg) => [
-        // { type: "Partners", id: arg.sponsorId },
-        { type: "Partners", id: "LIST" },
-      ],
+      invalidatesTags: [{ type: "Partners", id: "LIST" }],
     }),
 
     updatePartner: builder.mutation<
       PartnersResponse,
-      { data: PartnerRequest; sponsorId: string }
+      { sponsorId: string; data: PartnerRequest }
     >({
-      query: ({ data, sponsorId }) => ({
+      query: ({ sponsorId, data }) => ({
         url: `/admin/partners/${sponsorId}`,
         method: "PATCH",
         body: data,
         formData: true,
       }),
-      invalidatesTags: (result, error, arg) => [
-        // { type: "Partners", id: arg.sponsorId },
-        { type: "Partners", id: arg.sponsorId },
+      invalidatesTags: (result, error, { sponsorId }) => [
+        { type: "Partners", id: sponsorId },
+        { type: "Partners", id: "LIST" },
+      ],
+    }),
+
+    deletePartner: builder.mutation<PartnersResponse, string>({
+      query: (sponsorId) => ({
+        url: `/admin/partners/${sponsorId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (result, error, sponsorId) => [
+        { type: "Partners", id: sponsorId },
         { type: "Partners", id: "LIST" },
       ],
     }),
@@ -67,8 +63,8 @@ export const EventApi = api.injectEndpoints({
 });
 
 export const {
-  useAddPartnerMutation,
   useGetPartnersQuery,
-  useDeletePartnerMutation,
+  useAddPartnerMutation,
   useUpdatePartnerMutation,
-} = EventApi;
+  useDeletePartnerMutation,
+} = eventApi;
