@@ -50,42 +50,16 @@ export function LoginForm({
     },
   });
 
-  function onSubmit(formData: z.infer<typeof loginFormSchema>) {
-    console.log(loginData, "login data");
-    console.log(error, "error");
-    console.log(formData, "form data");
-    login(formData)
-      .unwrap()
-      .then((res) => {
-        console.log("Login success:", res);
-        // dispatch(
-        //   setCredentials({ user: res.data.user, token: res.data.token })
-        // );
-        toast.success("Login successful");
-        router.push("/");
-      })
-      .catch((err) => {
-        console.log("Login failed:", err);
+  async function onSubmit(formData: z.infer<typeof loginFormSchema>) {
+    try {
+      await login(formData).unwrap();
+      toast.success("Login successful");
+      router.push("/");
+    } catch (error) {
+      console.error(error);
 
-        // Type-safe check for error with .data
-        if ("data" in err && err.data && typeof err.data === "object") {
-          toast("Login failed", {
-            style: {
-              width: "max-content",
-              // marginRight: "auto",
-            },
-            description: (
-              <pre className="mt-2 rounded-md bg-slate-950 p-4">
-                <code className="text-white">{err.data.error as any}</code>
-              </pre>
-            ),
-          });
-        } else {
-          toast("Login failed", {
-            description: "Something went wrong. Please try again.",
-          });
-        }
-      });
+      toast.error(error?.data?.message ?? "Invalid username or password");
+    }
   }
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
