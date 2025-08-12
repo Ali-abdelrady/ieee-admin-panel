@@ -18,6 +18,7 @@ import PreviewButton from "@/components/button/previewButton";
 import { seasonFormSchema } from "@/validations/season";
 import SeasonForm from "./_components/form";
 import { seasonColumns } from "./_components/coulmns";
+import Loader from "@/components/Loader";
 
 export default function SeasonPage() {
   const { data, isError, isLoading: isFetching, error } = useGetSeasonsQuery();
