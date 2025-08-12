@@ -90,13 +90,23 @@ export default function EventDetails({
       </div>
 
       <Tabs className="w-full space-y-6" defaultValue="details">
+        {/* Make tab list horizontally scrollable on small screens */}
         <div className="overflow-x-auto">
-          <TabsList className="w-full  justify-start">
+          <TabsList
+            className="
+        w-full flex flex-nowrap md:flex-wrap gap-2
+        justify-start md:justify-center
+        min-w-max md:min-w-0
+      "
+          >
             {tabs.map((tab) => (
               <TabsTrigger
                 key={tab.value}
                 value={tab.value}
-                className="relative h-full  rounded-lg "
+                className="
+            relative rounded-lg px-4 py-2 text-sm
+            whitespace-nowrap
+          "
               >
                 {tab.label}
               </TabsTrigger>

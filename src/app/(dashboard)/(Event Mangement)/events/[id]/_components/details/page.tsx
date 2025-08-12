@@ -52,7 +52,7 @@ export default function DetailsTab({ eventId }: { eventId: string }) {
             <div className="relative">
               <div className="aspect-[2/1] relative overflow-hidden rounded-t-lg bg-gradient-to-br from-primary/20 via-primary/10 to-background">
                 <Image
-                  src={event?.images?.[0] ?? "/images/event.jpg"}
+                  src={event?.coverImage ?? ""}
                   alt={event?.name ?? "eventImage"}
                   className="object-cover w-full h-full"
                   width={800}
