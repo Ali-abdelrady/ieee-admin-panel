@@ -13,10 +13,7 @@ export const eventFormSchema = z.object({
     .transform((val) => String(val)),
   category: z.enum(["event", "bootcamp", "workshop", "outing"]),
   location: z.string().min(1, "Location is required"),
-  locationLink: z
-    .string()
-    .url("Enter a valid url")
-    .min(1, "Location  Link is required"),
+  locationLink: z.string().optional(),
   coverImage: z.any().optional(),
   eventVideo: z.any().optional(),
   registrationStart: dateToISO.optional(),
