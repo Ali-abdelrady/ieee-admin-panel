@@ -77,14 +77,14 @@ export default function SponsorForm({
     }
   }, [operation, allSponsors.length, selectedSponsor]);
   useEffect(() => {
-    if (defaultValues) {
+    if (defaultValues && operation == "edit") {
       form.reset({
         name: defaultValues?.sponsor?.name || "",
         image: defaultValues?.sponsor?.image || "",
         ...defaultValues,
       });
     }
-  }, [defaultValues]);
+  }, [defaultValues, operation]);
   const form = useForm<SponsorFormValues>({
     resolver: zodResolver(sponsorFormSchema(operation === "edit")),
     defaultValues: {
@@ -122,7 +122,7 @@ export default function SponsorForm({
           await addEventSponsor({
             data: formData,
             eventId,
-          });
+          }).unwrap();
         } else {
           await addEventSponsor({
             data: formData,
@@ -137,12 +137,12 @@ export default function SponsorForm({
         }).unwrap();
       }
       toast.success(`sponsor ${operation}ed successfully`);
-      form.reset();
+      form.reset({ name: "", image: "" });
       dialogRef.current?.closeDialog();
     } catch (error) {
-      console.error("Error submitting sponsor:", error.message);
+      console.error("Error submitting sponsor:", error?.data?.message);
       toast.error(`Something wrong`, {
-        description: error.message,
+        description: error?.data?.message,
       });
     }
   }

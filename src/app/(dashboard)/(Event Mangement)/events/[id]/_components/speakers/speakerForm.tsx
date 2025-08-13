@@ -81,7 +81,7 @@ export default function SpeakerForm({
     }
   }, [operation, allSpeakers.length, selectedSpeaker]);
   useEffect(() => {
-    if (defaultValues) {
+    if (defaultValues && operation == "edit") {
       form.reset({
         name: defaultValues?.speaker?.name || "",
         title: defaultValues?.speaker?.title || "",
@@ -90,7 +90,7 @@ export default function SpeakerForm({
         ...defaultValues,
       });
     }
-  }, [defaultValues]);
+  }, [defaultValues, operation]);
   const form = useForm<SpeakerFormValues>({
     resolver: zodResolver(speakerFormSchema(operation === "edit")),
     defaultValues: {
@@ -115,6 +115,7 @@ export default function SpeakerForm({
 
   async function handleSubmit(data: SpeakerFormValues) {
     try {
+      let response;
       const formData = new FormData();
       const formatedSocialLinks = data.socialLinks.map((item) => ({
         url: item.url,
@@ -136,18 +137,18 @@ export default function SpeakerForm({
       if (operation === "add") {
         if (selectedSpeaker) {
           formData.append("speakerId", selectedSpeaker?.id.toString());
-          await addEventSpeaker({
+          response = await addEventSpeaker({
             data: formData,
             eventId,
-          });
+          }).unwrap();
         } else {
-          await addEventSpeaker({
+          response = await addEventSpeaker({
             data: formData,
             eventId,
           }).unwrap();
         }
       } else if (operation === "edit" && defaultValues?.speaker?.id) {
-        await updateEventSpeaker({
+        response = await updateEventSpeaker({
           data: formData,
           speakerId: defaultValues.speakerId,
           eventId,
@@ -155,12 +156,17 @@ export default function SpeakerForm({
       }
 
       toast.success(`Speaker ${operation}ed successfully`);
-      form.reset();
+      form.reset({
+        name: "",
+        title: "",
+        image: "",
+        socialLinks: [],
+      });
       dialogRef.current?.closeDialog();
     } catch (error) {
       console.error("Error submitting speaker:", error.message);
       toast.error(`Something wrong`, {
-        description: error.message,
+        description: error?.data?.message,
       });
     }
   }

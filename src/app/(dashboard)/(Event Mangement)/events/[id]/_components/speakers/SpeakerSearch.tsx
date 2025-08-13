@@ -51,7 +51,7 @@ export default function SpeakerSearch({
                     />
                     <AvatarFallback>{speaker.name.charAt(0)}</AvatarFallback>
                   </Avatar>
-                  <div>
+                  <div className="text-start">
                     <p className="font-medium">{speaker.name}</p>
                     <p className="text-sm text-muted-foreground">
                       {speaker.title}

@@ -51,7 +51,7 @@ export default function SponsorSearch({
                     />
                     <AvatarFallback>{sponsor.name.charAt(0)}</AvatarFallback>
                   </Avatar>
-                  <div>
+                  <div className="text-start">
                     <p className="font-medium">{sponsor.name}</p>
                     <p className="text-sm text-muted-foreground">
                       {sponsor.name}
