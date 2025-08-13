@@ -11,7 +11,7 @@ export const authApi = api.injectEndpoints({
     login: builder.mutation<LoginResponse, LoginRequest>({
       query: (data) => {
         return {
-          url: "/login",
+          url: "/admin/auth/login",
           method: "POST",
           body: {
             ...data,
@@ -23,7 +23,7 @@ export const authApi = api.injectEndpoints({
     }),
     logout: builder.mutation<void, void>({
       query: () => ({
-        url: "/logout",
+        url: "/admin/auth/logout",
         method: "POST",
         credentials: "include",
       }),
@@ -38,9 +38,6 @@ export const authApi = api.injectEndpoints({
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useLoginMutation, useLogoutMutation, useAuthCheckQuery } =
-  authApi;
+export const { useLoginMutation, useLogoutMutation, useAuthCheckQuery } = authApi;
 
-export const auth = api.injectEndpoints({ endpoints: (builder) => ({
-
-}) });
+export const auth = api.injectEndpoints({ endpoints: (builder) => ({}) });
