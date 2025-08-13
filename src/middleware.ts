@@ -5,7 +5,7 @@ import type { NextRequest } from "next/server";
 export async function middleware(request: NextRequest) {
   console.log(process.env.NEXT_PUBLIC_API_ENDPOINT);
   const authCheckResponse = await fetch(
-    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/auth/check?type=admin`,
+    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/admin/auth/check`,
     {
       method: "GET",
       credentials: "include", // Necessary for HTTP-only cookies
