@@ -49,9 +49,12 @@ import { Button } from "./ui/button";
 import Image from "next/image";
 import { logout } from "@/services/store/features/AuthSlice";
 import { useRouter } from "next/navigation";
+import { useLogoutMutation } from "@/services/Api/login";
+import { toast } from "sonner";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useSelector((state: RootState) => state.auth);
+  const [logout] = useLogoutMutation();
   const dispatch = useDispatch();
   const router = useRouter();
   // This is sample data.
@@ -65,10 +68,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   if (!isMounted) {
     return <Sidebar {...props} />;
   }
-  const handleLogout = () => {
+  const handleLogout = async () => {
     console.log("logout");
-    dispatch(logout());
-    router.push("/login");
+    // dispatch(logout());
+    try {
+      await logout().unwrap();
+      router.push("/login");
+      toast.success("Logout Successfully");
+    } catch (error) {
+      toast.error(error?.data?.message || "Error on logout");
+    }
   };
   const data = {
     user: {
