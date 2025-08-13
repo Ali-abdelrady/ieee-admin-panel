@@ -234,8 +234,8 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ form, onSave }) => {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
+          <Card className="max-h-[600px] overflow-y-auto">
+            <CardHeader className="flex sticky top-0  backdrop-blur-2xl bg-gray-50 py-4 flex-row items-center justify-between">
               <CardTitle>Form Fields</CardTitle>
               <Button size="sm" onClick={handleAddField}>
                 <Plus className="mr-2 h-4 w-4" /> Add Field
@@ -354,6 +354,30 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ form, onSave }) => {
                     }
                   />
                 </div>
+                {editingField.type === "FILE" && (
+                  <div>
+                    <Label htmlFor="field-placeholder">Max size</Label>
+                    <div className="flex gap-2 items-center">
+                      <Input
+                        id="field-placeholder"
+                        type="number"
+                        className="max-w-[180px]"
+                        value={editingField.maxFileSize || ""}
+                        onChange={(e) =>
+                          setEditingField({
+                            ...editingField,
+                            maxFileSize: +e.target.value,
+                          })
+                        }
+                      />
+                      <span className="font-semibold">MB</span>{" "}
+                      <span className="text-sm text-muted-foreground italic">
+                        {" "}
+                        default is 10 mb
+                      </span>
+                    </div>
+                  </div>
+                )}
 
                 <div className="flex items-center gap-2">
                   <div className="flex items-center gap-2">
@@ -366,30 +390,38 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ form, onSave }) => {
                     />
                     <Label htmlFor="field-required">Required Field</Label>
                   </div>
-                  <div>
-                    <Label htmlFor="field-placeholder">Min</Label>
-                    <Input
-                      id="field-placeholder"
-                      type="number"
-                      className="max-w-[100px]"
-                      value={editingField.min || ""}
-                      onChange={(e) =>
-                        setEditingField({ ...editingField, min: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="field-placeholder">Max</Label>
-                    <Input
-                      id="field-placeholder"
-                      type="number"
-                      className="max-w-[100px]"
-                      value={editingField.max || ""}
-                      onChange={(e) =>
-                        setEditingField({ ...editingField, max: e.target.value })
-                      }
-                    />
-                  </div>
+                  {["NUMBER", "TEXT", "TEXTAREA", "PARAGRAPH"].includes(
+                    editingField.type
+                  ) && (
+                    <div>
+                      <Label htmlFor="field-placeholder">Min</Label>
+                      <Input
+                        id="field-placeholder"
+                        type="number"
+                        className="max-w-[100px]"
+                        value={editingField.min || ""}
+                        onChange={(e) =>
+                          setEditingField({ ...editingField, min: e.target.value })
+                        }
+                      />
+                    </div>
+                  )}
+                  {["NUMBER", "TEXT", "TEXTAREA", "PARAGRAPH"].includes(
+                    editingField.type
+                  ) && (
+                    <div>
+                      <Label htmlFor="field-placeholder">Max</Label>
+                      <Input
+                        id="field-placeholder"
+                        type="number"
+                        className="max-w-[100px]"
+                        value={editingField.max || ""}
+                        onChange={(e) =>
+                          setEditingField({ ...editingField, max: e.target.value })
+                        }
+                      />
+                    </div>
+                  )}
                 </div>
 
                 {["SELECT", "RADIO", "CHECKBOX"].includes(editingField.type) && (

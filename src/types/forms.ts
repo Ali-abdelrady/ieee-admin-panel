@@ -48,7 +48,7 @@ export interface FormFieldType {
   id: string;
   label: string;
   type: FieldType;
-
+  maxFileSize?: number;
   name: string;
   required: boolean;
   min?: number;
