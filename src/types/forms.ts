@@ -22,10 +22,11 @@ export interface FormType {
   eventId?: string;
   isPublic: boolean;
   isPublished: boolean;
+  hasQrCode: boolean;
   isRegistrationForm: boolean;
   startDate: string;
   endDate: string;
-
+  responsesCount?: number;
   createdAt: string;
   updatedAt?: string;
   fields?: FormFieldType[];
@@ -58,3 +59,32 @@ export interface FormFieldType {
 
   options?: string[]; // for select;
 }
+
+export type RawSubmission = {
+  id: string;
+  submittedAt: string;
+  user?: { id: string; name?: string | null; email?: string | null } | null;
+  // dynamic keys: name/email/anything-else -> { id, value, fieldId, submissionId }
+  [key: string]:
+    | unknown
+    | { id: string; value?: unknown; fieldId: string; submissionId: string };
+};
+
+export type RawApiForm = {
+  id: string;
+  name: string;
+  description?: string | null;
+  type: string;
+  responses?: RawSubmission[];
+  // ...other form fields
+};
+
+export type ApiEnvelope = {
+  status: string;
+  data: { form: RawApiForm };
+};
+
+export type NormalizedFormResponses = {
+  form: RawApiForm;
+  responses: FormResponse[];
+};

@@ -322,8 +322,8 @@ export default function DataTable<TData, TValue>({
                         index === 0
                           ? "w-[50px]"
                           : isActions
-                          ? "w-[200px] min-w-[200px] max-w-[200px]"
-                          : "w-[200px] min-w-[200px] max-w-[200px]"
+                          ? "w-[140px] min-w-[140px] max-w-[140px]"
+                          : "w-[140px] min-w-[140px] max-w-[140px]"
                       )}
                     >
                       {header.isPlaceholder ? null : (
@@ -394,8 +394,8 @@ export default function DataTable<TData, TValue>({
                           index === 0
                             ? "w-[50px]"
                             : isActions
-                            ? "w-[200px] min-w-[100px] max-w-[200px]"
-                            : "w-[200px] min-w-[100px] max-w-[200px]"
+                            ? "w-[140px] min-w-[100px] max-w-[140px]"
+                            : "w-[140px] min-w-[100px] max-w-[140px]"
                         )}
                       >
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}

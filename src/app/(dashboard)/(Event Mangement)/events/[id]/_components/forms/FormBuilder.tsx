@@ -37,6 +37,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ form, onSave }) => {
     form?.endDate || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
   ); //start date + week
   const [isPublic, setIsPublic] = useState(form?.isPublic || false);
+  const [hasQrCode, setHasQrCode] = useState(form?.hasQrCode || false);
   const [editingField, setEditingField] = useState<EventFormField | null>(null);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
@@ -127,6 +128,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ form, onSave }) => {
       isPublic,
       startDate,
       endDate,
+      hasQrCode,
       description,
       fields,
       isPublished,
@@ -192,6 +194,20 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ form, onSave }) => {
           </p>
         </div>
         <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Switch
+              id="published"
+              checked={hasQrCode}
+              onCheckedChange={(checked) => {
+                if (form?.isRegistrationForm) {
+                  toast.error("You can't disable qr code for event registartion form");
+                } else {
+                  setHasQrCode(checked);
+                }
+              }}
+            />
+            <Label htmlFor="published">QR Code</Label>
+          </div>
           <div className="flex items-center gap-2">
             <Switch
               id="published"

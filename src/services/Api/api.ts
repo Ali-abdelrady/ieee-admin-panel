@@ -51,6 +51,7 @@ export const api = createApi({
     "Forms",
     "EventForms",
     "Events",
+    "FormResponses",
     "Speakers",
     "Sponsors",
     "Menus",
