@@ -20,6 +20,7 @@ import {
   FormType as EventForm,
 } from "@/types/forms";
 import { toast } from "sonner";
+import RulesEditor from "./RulesEditor";
 
 interface FormBuilderProps {
   form?: EventForm;
@@ -149,6 +150,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ form, onSave }) => {
           type === "SELECT" || type === "RADIO" || type === "CHECKBOX"
             ? editingField.options || ["Option 1"]
             : undefined,
+        rules: undefined,
       });
     }
   };
@@ -395,6 +397,20 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ form, onSave }) => {
                   </div>
                 )}
 
+                {(editingField.type === "TEXT" ||
+                  editingField.type === "NUMBER" ||
+                  editingField.type === "TEXTAREA" ||
+                  editingField.type === "EMAIL") && (
+                  <div className="space-y-2 pt-2">
+                    <Label>Validation Rules</Label>
+                    <RulesEditor
+                      fieldType={editingField.type}
+                      value={editingField.rules}
+                      onChange={(rules) => setEditingField({ ...editingField, rules })}
+                    />
+                  </div>
+                )}
+
                 <div className="flex items-center gap-2">
                   <div className="flex items-center gap-2">
                     <Switch
@@ -406,7 +422,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ form, onSave }) => {
                     />
                     <Label htmlFor="field-required">Required Field</Label>
                   </div>
-                  {["NUMBER", "TEXT", "TEXTAREA", "PARAGRAPH"].includes(
+                  {["NUMBER", "TEXT", "TEXTAREA", "TEXTAREA"].includes(
                     editingField.type
                   ) && (
                     <div>
@@ -422,7 +438,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ form, onSave }) => {
                       />
                     </div>
                   )}
-                  {["NUMBER", "TEXT", "TEXTAREA", "PARAGRAPH"].includes(
+                  {["NUMBER", "TEXT", "TEXTAREA", "TEXTAREA"].includes(
                     editingField.type
                   ) && (
                     <div>

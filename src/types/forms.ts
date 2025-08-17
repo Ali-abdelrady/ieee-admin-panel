@@ -14,6 +14,25 @@ export type FormResponses = ApiResponse<FormType[]>;
 
 export type FormRequest = Omit<FormType, "id">;
 
+export type TextRules = {
+  preset?: "email" | "url" | "phone";
+  allowChars?: {
+    lower?: boolean;
+    upper?: boolean;
+    digits?: boolean;
+    space?: boolean;
+    underscore?: boolean;
+    dash?: boolean;
+    dot?: boolean;
+    at?: boolean;
+  };
+  startsWith?: string;
+  endsWith?: string;
+  mustContain?: string;
+  disallow?: string;
+  advanced?: { source: string; flags?: "" | "i" | "m" | "u" };
+};
+
 export interface FormType {
   id: string;
   name: string;
@@ -43,8 +62,7 @@ export type FieldType =
   | "DROPDOWN"
   | "OPTIONS"
   | "FILE"
-  | "DATE"
-  | "PARAGRAPH";
+  | "DATE";
 export interface FormFieldType {
   id: string;
   label: string;
@@ -54,7 +72,8 @@ export interface FormFieldType {
   required: boolean;
   min?: number;
   max?: number;
-  pattern?: string;
+  rules?: TextRules;
+
   placeholder?: string;
 
   options?: string[]; // for select;
