@@ -174,7 +174,11 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ form, onSave }) => {
   const watchedImage = useWatch({ control, name: "image" });
   const nameVal = useWatch({ control, name: "name" });
   const descVal = useWatch({ control, name: "description" });
-
+  const fieldsWatch = useWatch({ control, name: "fields" }); // array of fields from RHF
+  const currentType =
+    editingIndex !== null ? fieldsWatch?.[editingIndex]?.type : undefined;
+  const currentOptions =
+    editingIndex !== null ? fieldsWatch?.[editingIndex]?.options : undefined;
   // Image preview: prefer new file if selected; else existing URL from form
   const existingImageUrl = typeof form?.image === "string" ? form?.image : null;
   const [blobUrl, setBlobUrl] = useState<string | null>(null);
@@ -435,59 +439,62 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ form, onSave }) => {
                     your form.
                   </p>
                 ) : (
-                  fields.map((f, index) => (
-                    <Card
-                      key={f.id}
-                      className={index === editingIndex ? "border-primary" : ""}
-                    >
-                      <CardContent className="p-4">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <h4 className="font-medium">{f.label}</h4>
-                            <p className="text-sm text-muted-foreground">
-                              {f.type} {f.required && "(Required)"}
-                            </p>
+                  fields.map((field, index) => {
+                    const f = fieldsWatch[index] ?? field; // <-- live values
+                    return (
+                      <Card
+                        key={f.id}
+                        className={index === editingIndex ? "border-primary" : ""}
+                      >
+                        <CardContent className="p-4">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <h4 className="font-medium">{f.label}</h4>
+                              <p className="text-sm text-muted-foreground">
+                                {f.type} {f.required && "(Required)"}
+                              </p>
+                            </div>
+                            <div className="flex gap-1">
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                disabled={index === 0}
+                                onClick={() => onMoveField(index, "up")}
+                              >
+                                <ArrowUp className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                disabled={index === fields.length - 1}
+                                onClick={() => onMoveField(index, "down")}
+                              >
+                                <ArrowDown className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => setEditingIndex(index)}
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => onDeleteField(index)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
                           </div>
-                          <div className="flex gap-1">
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              disabled={index === 0}
-                              onClick={() => onMoveField(index, "up")}
-                            >
-                              <ArrowUp className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              disabled={index === fields.length - 1}
-                              onClick={() => onMoveField(index, "down")}
-                            >
-                              <ArrowDown className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => setEditingIndex(index)}
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => onDeleteField(index)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))
+                        </CardContent>
+                      </Card>
+                    );
+                  })
                 )}
               </CardContent>
             </Card>
@@ -511,21 +518,26 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ form, onSave }) => {
                         <Select
                           value={field.value}
                           onValueChange={(val) => {
-                            // reset options/rules when type changes
                             const t = val as FieldType;
                             field.onChange(t);
+
                             const needsOptions = ["SELECT", "RADIO", "CHECKBOX"].includes(
                               t
                             );
                             setValue(
                               `fields.${editingIndex}.options`,
                               needsOptions
-                                ? getValues(`fields.${editingIndex}.options`) || [
-                                    "Option 1",
-                                  ]
-                                : undefined
+                                ? currentOptions?.length
+                                  ? currentOptions
+                                  : ["Option 1"]
+                                : undefined,
+                              { shouldDirty: true, shouldValidate: false }
                             );
-                            setValue(`fields.${editingIndex}.rules`, undefined);
+                            // rules are field-type specific, clear on change
+                            setValue(`fields.${editingIndex}.rules`, undefined, {
+                              shouldDirty: true,
+                              shouldValidate: false,
+                            });
                           }}
                         >
                           <SelectTrigger id="field-type">
@@ -573,10 +585,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ form, onSave }) => {
                     />
                   </div>
 
-                  {/* File max size */}
-                  {["FILE"].includes(
-                    getValues(`fields.${editingIndex}.type`) as string
-                  ) && (
+                  {currentType === "FILE" && (
                     <div>
                       <Label htmlFor="field-maxsize">Max size</Label>
                       <div className="flex gap-2 items-center">
@@ -595,7 +604,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ form, onSave }) => {
                             />
                           )}
                         />
-                        <span className="font-semibold">MB</span>{" "}
+                        <span className="font-semibold">MB</span>
                         <span className="text-sm text-muted-foreground italic">
                           default is 10 mb
                         </span>
@@ -605,7 +614,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ form, onSave }) => {
 
                   {/* Rules */}
                   {["TEXT", "NUMBER", "TEXTAREA", "EMAIL"].includes(
-                    (getValues(`fields.${editingIndex}.type`) as string) || ""
+                    currentType || ""
                   ) && (
                     <div className="space-y-2 pt-2">
                       <Label>Validation Rules</Label>
