@@ -6,15 +6,12 @@ import { FormRequest, FormResponse, FormResponses } from "@/types/forms";
 export const EventApi = api.injectEndpoints({
   endpoints: (builder) => ({
     // Event sponsors endpoints
-    addEventForm: builder.mutation<
-      FormResponse,
-      { data: FormRequest; eventId: string }
-    >({
+    addEventForm: builder.mutation<FormResponse, { data: FormRequest; eventId: string }>({
       query: ({ data, eventId }) => ({
         url: `/admin/forms/`,
         method: "POST",
         body: { ...data, eventId },
-        // formData: true,
+        formData: true,
       }),
       invalidatesTags: (result, error, arg) => [
         { type: "EventForms", id: arg.eventId },
@@ -44,10 +41,7 @@ export const EventApi = api.injectEndpoints({
       },
     }),
 
-    deleteEventForm: builder.mutation<
-      FormResponse,
-      { formId: string; eventId: string }
-    >({
+    deleteEventForm: builder.mutation<FormResponse, { formId: string; eventId: string }>({
       query: ({ formId, eventId }) => ({
         url: `/admin/events/${eventId}/foms/${formId}`,
         method: "DELETE",

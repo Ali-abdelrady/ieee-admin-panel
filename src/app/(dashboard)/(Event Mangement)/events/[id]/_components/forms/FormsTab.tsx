@@ -120,13 +120,13 @@ const FromsTab: React.FC<FromsTabProps> = ({
       onFormDelete(currentForm.id);
     }
   };
-  const handleSaveForm = async (form: EventForm) => {
+  const handleSaveForm = async (form: FormData) => {
     try {
       if (isCreateFormOpen) {
         await addEventForm({ eventId, data: form }).unwrap();
         toast.success("Form created successfully");
       } else if (isEditFormOpen) {
-        await updateEventForm({ data: form, formId: form.id, eventId }).unwrap();
+        await updateEventForm({ data: form, formId: form.get("id"), eventId }).unwrap();
         toast.success("Form updated successfully");
       }
     } catch (error: any) {

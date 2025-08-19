@@ -36,6 +36,7 @@ export type TextRules = {
 export interface FormType {
   id: string;
   name: string;
+  image?: string;
   description: string;
   type: "EVENT" | "SURVEY" | "OUTING" | "FEEDBACK" | "ANY";
   eventId?: string;
