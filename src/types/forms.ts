@@ -11,6 +11,10 @@ export interface ApiResponse<T> {
 
 export type FormResponse = ApiResponse<FormType>;
 export type FormResponses = ApiResponse<FormType[]>;
+export type registrationAcceptResponse = {
+  status: string;
+  message: string;
+};
 
 export type FormRequest = Omit<FormType, "id">;
 

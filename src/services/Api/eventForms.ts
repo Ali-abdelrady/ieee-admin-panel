@@ -1,7 +1,12 @@
 // src/services/Api/admin/events.ts
 
 import { api } from "./api";
-import { FormRequest, FormResponse, FormResponses } from "@/types/forms";
+import {
+  FormRequest,
+  FormResponse,
+  FormResponses,
+  registrationAcceptResponse,
+} from "@/types/forms";
 
 export const EventApi = api.injectEndpoints({
   endpoints: (builder) => ({

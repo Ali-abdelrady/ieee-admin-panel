@@ -2,7 +2,11 @@
 
 import { normalizeApiPayload } from "@/lib/nomrllizeFormResponse";
 import { api } from "./api";
-import { ApiEnvelope, NormalizedFormResponses } from "@/types/forms";
+import {
+  ApiEnvelope,
+  NormalizedFormResponses,
+  registrationAcceptResponse,
+} from "@/types/forms";
 
 export const EventApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -23,6 +27,22 @@ export const EventApi = api.injectEndpoints({
     //     { type: "Forms", id: "LIST" },
     //   ],
     // }),
+
+    acceptEventRegistration: builder.mutation<
+      registrationAcceptResponse,
+      { formId: string; responseId: string; status: string }
+    >({
+      query: ({ responseId, status }) => ({
+        url: `/admin/events/responses/${responseId}/accept-user`,
+        method: "POST",
+        body: { responseId, status },
+        formData: true,
+      }),
+      invalidatesTags: (result, error, arg) => [
+        { type: "FormResponses", id: "LIST" },
+        { type: "FormResponses", id: arg.formId },
+      ],
+    }),
 
     getFormResponses: builder.query<NormalizedFormResponses, string>({
       query: (formId) => `/admin/forms/${formId}/responses/`,
@@ -72,6 +92,7 @@ export const EventApi = api.injectEndpoints({
 export const {
   //   useAddEventFormMutation,
   useGetFormResponsesQuery,
+  useAcceptEventRegistrationMutation,
   //   useDeleteEventFormMutation,
   //   useUpdateEventFormMutation,
 } = EventApi;

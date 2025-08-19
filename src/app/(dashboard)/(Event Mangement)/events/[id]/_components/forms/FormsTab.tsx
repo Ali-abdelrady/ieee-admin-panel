@@ -38,6 +38,7 @@ import {
 } from "@/services/Api/eventForms";
 import Loader from "@/components/Loader";
 import FormResponses from "./FormResponses";
+import { useAcceptEventRegistrationMutation } from "@/services/Api/form";
 
 interface FromsTabProps {
   eventId: string;
@@ -68,8 +69,30 @@ const FromsTab: React.FC<FromsTabProps> = ({
   const [addEventForm, { isLoading: isCreating, isSuccess }] = useAddEventFormMutation();
   const [updateEventForm, { isLoading: isUpdating, isSuccess: isUpdateSuccess }] =
     useUpdateEventFormMutation();
-
+  const [acceptEventRegistration, { isLoading: isAccepting }] =
+    useAcceptEventRegistrationMutation();
   const [deleteEventForm, { isLoading: isDeleting }] = useDeleteEventFormMutation();
+
+  const handleUpdateStatus = async (
+    responseId: string,
+    status: "PENDING" | "CONFIRMED" | "DECLINED"
+  ) => {
+    try {
+      await acceptEventRegistration({
+        formId: formResponsesId as string,
+        responseId,
+        status,
+      }).unwrap();
+      toast.success("Status updated successfully", {
+        description: `Status changed to ${status.toLowerCase()}.`,
+      });
+    } catch (error: any) {
+      console.error("Delete failed:", error);
+      toast.error("Failed to delete form", {
+        description: error?.data?.message || "Something went wrong.",
+      });
+    }
+  };
 
   const onFormDelete = async (id: string) => {
     try {
@@ -330,7 +353,7 @@ const FromsTab: React.FC<FromsTabProps> = ({
       {formResponsesId && (
         <FormResponses
           formId={formResponsesId}
-          // onUpdateStatus={handleUpdateStatus}
+          onUpdateStatus={handleUpdateStatus}
           // onSendConfirmation={handleSendConfirmation}
           onBackToForms={() => setFormResponsesId(null)}
         />
